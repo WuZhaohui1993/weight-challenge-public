@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.weight.mapper.WeightCircleRankingMapper">
+    
+    <resultMap type="WeightCircleRanking" id="WeightCircleRankingResult">
+        <result property="id"    column="id"    />
+        <result property="circleId"    column="circle_id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="period"    column="period"    />
+        <result property="rankNum"    column="rank_num"    />
+        <result property="score"    column="score"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectWeightCircleRankingVo">
+        select id, circle_id, user_id, period, rank_num, score, update_time from weight_circle_ranking
+    </sql>
+
+    <select id="selectWeightCircleRankingList" parameterType="WeightCircleRanking" resultMap="WeightCircleRankingResult">
+        <include refid="selectWeightCircleRankingVo"/>
+        <where>  
+            <if test="circleId != null "> and circle_id = #{circleId}</if>
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="period != null  and period != ''"> and period = #{period}</if>
+            <if test="rankNum != null "> and rank_num = #{rankNum}</if>
+            <if test="score != null "> and score = #{score}</if>
+        </where>
+    </select>
+    
+    <select id="selectWeightCircleRankingById" parameterType="Long" resultMap="WeightCircleRankingResult">
+        <include refid="selectWeightCircleRankingVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertWeightCircleRanking" parameterType="WeightCircleRanking" useGeneratedKeys="true" keyProperty="id">
+        insert into weight_circle_ranking
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="circleId != null">circle_id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="period != null and period != ''">period,</if>
+            <if test="rankNum != null">rank_num,</if>
+            <if test="score != null">score,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="circleId != null">#{circleId},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="period != null and period != ''">#{period},</if>
+            <if test="rankNum != null">#{rankNum},</if>
+            <if test="score != null">#{score},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateWeightCircleRanking" parameterType="WeightCircleRanking">
+        update weight_circle_ranking
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="circleId != null">circle_id = #{circleId},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="period != null and period != ''">period = #{period},</if>
+            <if test="rankNum != null">rank_num = #{rankNum},</if>
+            <if test="score != null">score = #{score},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteWeightCircleRankingById" parameterType="Long">
+        delete from weight_circle_ranking where id = #{id}
+    </delete>
+
+    <delete id="deleteWeightCircleRankingByIds" parameterType="String">
+        delete from weight_circle_ranking where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

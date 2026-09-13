@@ -1,0 +1,61 @@
+.flow-btn {
+  margin: 0;
+  width: auto;
+  min-width: 0;
+  padding: 0 24rpx;
+  border-radius: 999rpx;
+  border: 1px solid transparent;
+  font-size: 24rpx;
+  font-weight: 700;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.flow-btn::after {
+  border: none;
+}
+
+.flow-btn[disabled] {
+  opacity: 0.62;
+  box-shadow: none;
+}
+
+.flow-btn--primary {
+  height: 68rpx;
+  line-height: 68rpx;
+  background: linear-gradient(180deg, #35c58d, #1c9a6c);
+  color: #fff;
+  box-shadow: 0 8rpx 18rpx rgba(47, 179, 123, 0.16);
+}
+
+.flow-btn--secondary {
+  height: 60rpx;
+  line-height: 60rpx;
+  background: rgba(255, 255, 255, 0.72);
+  border-color: rgba(39, 92, 72, 0.08);
+  color: var(--wc-text);
+  box-shadow: none;
+}
+
+.flow-btn--compact {
+  height: 56rpx;
+  line-height: 56rpx;
+  padding: 0 22rpx;
+  font-size: 22rpx;
+}
+
+.flow-btn--primary.flow-btn--compact {
+  box-shadow: 0 8rpx 16rpx rgba(47, 179, 123, 0.14);
+}
+
+.flow-btn--secondary.flow-btn--compact {
+  box-shadow: none;
+}
+
+.flow-btn--wide {
+  width: 100%;
+}

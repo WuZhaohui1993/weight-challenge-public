@@ -1,0 +1,29 @@
+# 本地覆盖配置示例
+# 这个 .example 文件不会被 Spring Boot 自动加载，只作示例。
+# 生效文件名必须是 application-local.yml 或 application-secret.yml。
+# MySQL 默认读取 ruoyi-admin/src/main/resources/application-druid.yml。
+# Redis 默认读取 ruoyi-admin/src/main/resources/application.yml。
+# 只有需要覆盖默认值时，才需要在这里补 spring.datasource / spring.redis。
+
+server:
+  address: 0.0.0.0
+  port: 8080
+
+spring:
+  datasource:
+    druid:
+      master:
+        url: jdbc:mysql://localhost:3306/weight_challenge?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+        username: <your_db_user>
+        password: <your_db_password>
+  redis:
+    host: localhost
+    port: 6379
+    database: 0
+    password: <optional_password>
+
+wx:
+  miniapp:
+    appid: <your_wechat_appid>
+    secret: <your_wechat_appsecret>
+    mock-login-enabled: false

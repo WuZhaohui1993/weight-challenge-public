@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.weight.mapper.WeightCircleGoalMapper">
+    
+    <resultMap type="WeightCircleGoal" id="WeightCircleGoalResult">
+        <result property="id"    column="id"    />
+        <result property="circleId"    column="circle_id"    />
+        <result property="goalType"    column="goal_type"    />
+        <result property="goalName"    column="goal_name"    />
+        <result property="description"    column="description"    />
+        <result property="targetValue"    column="target_value"    />
+        <result property="targetUnit"    column="target_unit"    />
+        <result property="period"    column="period"    />
+        <result property="verificationType"    column="verification_type"    />
+        <result property="penaltyForFailure"    column="penalty_for_failure"    />
+        <result property="isRequired"    column="is_required"    />
+        <result property="sortOrder"    column="sort_order"    />
+        <result property="status"    column="status"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectWeightCircleGoalVo">
+        select id, circle_id, goal_type, goal_name, description, target_value, target_unit, period, verification_type, penalty_for_failure, is_required, sort_order, status, create_by, create_time, update_by, update_time from weight_circle_goal
+    </sql>
+
+    <select id="selectWeightCircleGoalList" parameterType="WeightCircleGoal" resultMap="WeightCircleGoalResult">
+        <include refid="selectWeightCircleGoalVo"/>
+        <where>  
+            <if test="circleId != null "> and circle_id = #{circleId}</if>
+            <if test="goalType != null  and goalType != ''"> and goal_type = #{goalType}</if>
+            <if test="goalName != null  and goalName != ''"> and goal_name like concat('%', #{goalName}, '%')</if>
+            <if test="description != null  and description != ''"> and description = #{description}</if>
+            <if test="targetValue != null "> and target_value = #{targetValue}</if>
+            <if test="targetUnit != null  and targetUnit != ''"> and target_unit = #{targetUnit}</if>
+            <if test="period != null  and period != ''"> and period = #{period}</if>
+            <if test="verificationType != null  and verificationType != ''"> and verification_type = #{verificationType}</if>
+            <if test="penaltyForFailure != null  and penaltyForFailure != ''"> and penalty_for_failure = #{penaltyForFailure}</if>
+            <if test="isRequired != null "> and is_required = #{isRequired}</if>
+            <if test="sortOrder != null "> and sort_order = #{sortOrder}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+        </where>
+    </select>
+    
+    <select id="selectWeightCircleGoalById" parameterType="Long" resultMap="WeightCircleGoalResult">
+        <include refid="selectWeightCircleGoalVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertWeightCircleGoal" parameterType="WeightCircleGoal" useGeneratedKeys="true" keyProperty="id">
+        insert into weight_circle_goal
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="circleId != null">circle_id,</if>
+            <if test="goalType != null and goalType != ''">goal_type,</if>
+            <if test="goalName != null and goalName != ''">goal_name,</if>
+            <if test="description != null">description,</if>
+            <if test="targetValue != null">target_value,</if>
+            <if test="targetUnit != null">target_unit,</if>
+            <if test="period != null">period,</if>
+            <if test="verificationType != null">verification_type,</if>
+            <if test="penaltyForFailure != null">penalty_for_failure,</if>
+            <if test="isRequired != null">is_required,</if>
+            <if test="sortOrder != null">sort_order,</if>
+            <if test="status != null">status,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="circleId != null">#{circleId},</if>
+            <if test="goalType != null and goalType != ''">#{goalType},</if>
+            <if test="goalName != null and goalName != ''">#{goalName},</if>
+            <if test="description != null">#{description},</if>
+            <if test="targetValue != null">#{targetValue},</if>
+            <if test="targetUnit != null">#{targetUnit},</if>
+            <if test="period != null">#{period},</if>
+            <if test="verificationType != null">#{verificationType},</if>
+            <if test="penaltyForFailure != null">#{penaltyForFailure},</if>
+            <if test="isRequired != null">#{isRequired},</if>
+            <if test="sortOrder != null">#{sortOrder},</if>
+            <if test="status != null">#{status},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateWeightCircleGoal" parameterType="WeightCircleGoal">
+        update weight_circle_goal
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="circleId != null">circle_id = #{circleId},</if>
+            <if test="goalType != null and goalType != ''">goal_type = #{goalType},</if>
+            <if test="goalName != null and goalName != ''">goal_name = #{goalName},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="targetValue != null">target_value = #{targetValue},</if>
+            <if test="targetUnit != null">target_unit = #{targetUnit},</if>
+            <if test="period != null">period = #{period},</if>
+            <if test="verificationType != null">verification_type = #{verificationType},</if>
+            <if test="penaltyForFailure != null">penalty_for_failure = #{penaltyForFailure},</if>
+            <if test="isRequired != null">is_required = #{isRequired},</if>
+            <if test="sortOrder != null">sort_order = #{sortOrder},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteWeightCircleGoalById" parameterType="Long">
+        delete from weight_circle_goal where id = #{id}
+    </delete>
+
+    <delete id="deleteWeightCircleGoalByIds" parameterType="String">
+        delete from weight_circle_goal where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

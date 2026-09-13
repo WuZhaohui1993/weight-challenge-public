@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Weight Challenge - 记录</title>
+    <style>
+        :root {
+            --primary: #4A90E2;
+            --accent: #50E3C2;
+            --bg-page: #F7F8FA;
+            --card-bg: #FFFFFF;
+            --text-main: #333333;
+            --text-sub: #888888;
+            --radius-m: 16px;
+            --radius-s: 8px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 顶部导航 */
+        .header {
+            padding: 44px 20px 10px;
+            background: var(--card-bg);
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05);
+        }
+
+        .page-title {
+            font-size: 18px;
+            font-weight: bold;
+            position: relative;
+        }
+
+        .btn-close {
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 24px;
+            color: var(--text-main);
+            text-decoration: none;
+            padding: 0 10px;
+        }
+
+        /* 记录类型Tab */
+        .type-tabs {
+            display: flex;
+            padding: 10px 20px;
+            background: var(--card-bg);
+            margin-bottom: 20px;
+            justify-content: space-around;
+        }
+
+        .type-tab {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            color: var(--text-sub);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .type-tab.active {
+            background: var(--primary);
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 4px 10px rgba(74, 144, 226, 0.3);
+        }
+
+        /* 内容区域 */
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 20px 40px;
+        }
+
+        /* 表单卡片 */
+        .form-card {
+            background: var(--card-bg);
+            border-radius: var(--radius-m);
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .label {
+            display: block;
+            font-size: 14px;
+            color: var(--text-sub);
+            margin-bottom: 8px;
+        }
+
+        .input-row {
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 8px;
+        }
+
+        .input-huge {
+            font-size: 32px;
+            font-weight: bold;
+            border: none;
+            width: 100px;
+            color: var(--text-main);
+            outline: none;
+            background: transparent;
+        }
+
+        .unit {
+            font-size: 14px;
+            color: var(--text-sub);
+            margin-left: 5px;
+        }
+
+        /* 拍照区域 */
+        .photo-upload {
+            width: 100%;
+            height: 160px;
+            border: 2px dashed #ddd;
+            border-radius: var(--radius-m);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-sub);
+            background: #F9FAFC;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .photo-upload:active {
+            background: #EEE;
+        }
+
+        .photo-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .photo-tip {
+            font-size: 12px;
+        }
+
+        .preview-img {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+        }
+
+        /* 饮食专属 - 餐次选择 */
+        .meal-tags {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .meal-tag {
+            padding: 6px 12px;
+            border: 1px solid #ddd;
+            border-radius: 16px;
+            font-size: 12px;
+            color: var(--text-sub);
+            cursor: pointer;
+        }
+
+        .meal-tag.active {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: #E3F2FD;
+        }
+
+        /* AI识别按钮 (饮食页专属) */
+        .btn-ai-scan {
+            width: 100%;
+            background: linear-gradient(135deg, #FF9A9E, #FECFEF);
+            color: #C2185B;
+            border: none;
+            padding: 12px;
+            border-radius: var(--radius-s);
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+
+        /* 底部提交栏 */
+        .footer-action {
+            padding: 20px;
+            background: var(--card-bg);
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.03);
+        }
+
+        .btn-submit {
+            width: 100%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        .btn-submit:active {
+            transform: scale(0.98);
+        }
+
+        /* tab内容切换 */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- 顶部 -->
+    <div class="header">
+        <a href="index.html" class="btn-close">×</a>
+        <div class="page-title">
+            <span id="pageTitle">记录体重</span>
+        </div>
+    </div>
+
+    <!-- 类型切换 -->
+    <div class="type-tabs">
+        <div class="type-tab active" onclick="switchTab('weight')">⚖️ 体重</div>
+        <div class="type-tab" onclick="switchTab('diet')">🥗 饮食</div>
+        <div class="type-tab" onclick="switchTab('exercise')">🏃 运动</div>
+        <div class="type-tab" onclick="switchTab('habit')">📋 任务</div>
+    </div>
+
+    <div class="content">
+
+        <!-- 1. 体重记录模块 -->
+        <div id="tab-weight" class="tab-content active">
+            <div class="form-card">
+                <div class="form-group">
+                    <label class="label">当前体重</label>
+                    <div class="input-row">
+                        <input type="number" class="input-huge" value="72.4" step="0.1" id="weightInput">
+                        <span class="unit">kg</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="label">体脂率 (选填)</label>
+                    <div class="input-row">
+                        <input type="number" class="input-huge" placeholder="--" style="font-size: 24px; width: 80px;">
+                        <span class="unit">%</span>
+                    </div>
+                </div>
+            </div>
+
+            <label class="label" style="margin-left:5px;">上秤照片 (验证用)</label>
+            <div class="photo-upload" onclick="triggerPhoto('weight-preview')">
+                <img id="weight-preview" class="preview-img">
+                <div class="photo-icon">📷</div>
+                <div class="photo-tip">点击拍摄秤盘读数</div>
+            </div>
+        </div>
+
+        <!-- 2. 饮食记录模块 -->
+        <div id="tab-diet" class="tab-content">
+            <button class="btn-ai-scan" onclick="simulateAIScan()">
+                <span>✨ AI 拍照识别卡路里</span>
+            </button>
+
+            <div class="form-card">
+                <div class="meal-tags">
+                    <div class="meal-tag active" onclick="selectMeal(this)">早餐</div>
+                    <div class="meal-tag" onclick="selectMeal(this)">午餐</div>
+                    <div class="meal-tag" onclick="selectMeal(this)">晚餐</div>
+                    <div class="meal-tag" onclick="selectMeal(this)">加餐</div>
+                </div>
+
+                <div class="photo-upload" style="height: 200px;" onclick="triggerPhoto('food-preview')">
+                    <img id="food-preview" class="preview-img">
+                    <div class="photo-icon">🍲</div>
+                    <div class="photo-tip">点击拍摄食物</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="label">食物描述</label>
+                    <textarea
+                        style="width: 100%; border: 1px solid #eee; padding: 10px; border-radius: 8px; font-size: 14px;"
+                        rows="3" placeholder="例如：燕麦牛奶，一个鸡蛋..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="label">估算热量</label>
+                    <div class="input-row">
+                        <input type="number" class="input-huge" placeholder="0" id="caloriesInput">
+                        <span class="unit">kcal</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. 运动记录模块 -->
+        <div id="tab-exercise" class="tab-content">
+            <div class="form-card">
+                <div class="form-group">
+                    <label class="label">运动类型</label>
+                    <select
+                        style="width: 100%; padding: 10px; font-size: 16px; border: 1px solid #eee; border-radius: 8px; background: white;">
+                        <option>跑步</option>
+                        <option>游泳</option>
+                        <option>力量训练</option>
+                        <option>瑜伽</option>
+                        <option>骑行</option>
+                        <option>HIIT</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="label">持续时长</label>
+                    <div class="input-row">
+                        <input type="number" class="input-huge" value="30">
+                        <span class="unit">分钟</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="label">消耗热量</label>
+                    <div class="input-row">
+                        <input type="number" class="input-huge" value="200">
+                        <span class="unit">kcal</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. 今日任务模块（原习惯打卡） -->
+        <div id="tab-habit" class="tab-content">
+            <div class="form-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h3 style="font-size: 16px;">📋 今日待完成</h3>
+                    <a href="habit.html" style="font-size: 13px; color: #4A90E2; text-decoration: none;">管理习惯 →</a>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <div class="habit-item"
+                        style="display: flex; align-items: center; padding: 12px; background: #F9FAFB; border-radius: 12px;"
+                        onclick="toggleHabit(this)">
+                        <div style="font-size: 24px; margin-right: 12px;">💧</div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600;">喝水 8 杯</div>
+                            <div style="font-size: 12px; color: #888;">已完成 4/8</div>
+                        </div>
+                        <div class="check"
+                            style="width: 28px; height: 28px; border: 2px solid #ddd; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                        </div>
+                    </div>
+                    <div class="habit-item"
+                        style="display: flex; align-items: center; padding: 12px; background: #F9FAFB; border-radius: 12px;"
+                        onclick="toggleHabit(this)">
+                        <div style="font-size: 24px; margin-right: 12px;">🥗</div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600;">吃蔬菜</div>
+                            <div style="font-size: 12px; color: #888;">每餐都要有蔬菜</div>
+                        </div>
+                        <div class="check"
+                            style="width: 28px; height: 28px; border: 2px solid #ddd; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                        </div>
+                    </div>
+                    <div class="habit-item"
+                        style="display: flex; align-items: center; padding: 12px; background: #F9FAFB; border-radius: 12px;"
+                        onclick="toggleHabit(this)">
+                        <div style="font-size: 24px; margin-right: 12px;">😴</div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600;">早睡挑战</div>
+                            <div style="font-size: 12px; color: #888;">23:00 前睡觉</div>
+                        </div>
+                        <div class="check"
+                            style="width: 28px; height: 28px; border: 2px solid #ddd; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 提示区域 -->
+                <div
+                    style="margin-top: 16px; padding: 12px; background: linear-gradient(135deg, #E8F5E9, #F1F8E9); border-radius: 10px; font-size: 12px; color: #558B2F;">
+                    <span>💡</span> 快速完成今日任务，详细统计和历史记录请前往<a href="habit.html"
+                        style="color: #2E7D32; font-weight: 600;">习惯管理</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 底部提交 -->
+    <div class="footer-action">
+        <button class="btn-submit" onclick="submitRecord()">完成记录</button>
+    </div>
+
+    <script>
+        let currentType = 'weight';
+
+        // 初始化：检查URL参数切换Tab
+        window.onload = function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const tab = urlParams.get('tab');
+            if (tab) {
+                switchTab(tab);
+            }
+
+            // 检查是否来自AI识别跳转
+            if (urlParams.get('from') === 'ai') {
+                loadAIData();
+            }
+        };
+
+        // 读取并填充AI数据
+        function loadAIData() {
+            const dataStr = sessionStorage.getItem('ai_food_data');
+            if (dataStr) {
+                const data = JSON.parse(dataStr);
+
+                // 1. 填充卡路里
+                document.getElementById('caloriesInput').value = data.calories;
+
+                // 2. 填充描述
+                document.querySelector('#tab-diet textarea').value = data.foodDescription;
+
+                // 3. 填充图片预览
+                const img = document.getElementById('food-preview');
+                img.src = data.imageSrc;
+                img.style.display = 'block';
+
+                // 4. 自动选中当前时间的餐次 (简单逻辑)
+                const hour = new Date().getHours();
+                const tags = document.querySelectorAll('.meal-tag');
+                tags.forEach(t => t.classList.remove('active'));
+                if (hour < 10) tags[0].click(); // 早餐
+                else if (hour < 14) tags[1].click(); // 午餐
+                else if (hour < 20) tags[2].click(); // 晚餐
+                else tags[3].click(); // 加餐
+
+                // 清除一次性数据
+                sessionStorage.removeItem('ai_food_data');
+            }
+        }
+
+        function switchTab(type) {
+            currentType = type;
+
+            // 定义类型与索引的映射
+            const typeIndex = {
+                'weight': 0,
+                'diet': 1,
+                'exercise': 2,
+                'habit': 3
+            };
+
+            // 更新Tab样式
+            const tabs = document.querySelectorAll('.type-tab');
+            tabs.forEach(el => el.classList.remove('active'));
+
+            // 如果是通过点击触发，且event.target是tab元素，则使用event.target
+            // 否则（如程序调用），根据type找到对应索引的tab
+            if (window.event && window.event.type === 'click' && window.event.target.classList.contains('type-tab')) {
+                window.event.target.classList.add('active');
+            } else {
+                // 兼容处理：如果没有event或非点击，通过索引激活
+                const index = typeIndex[type] || 0;
+                if (tabs[index]) tabs[index].classList.add('active');
+            }
+
+            // 更新内容显示
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            const activeContent = document.getElementById('tab-' + type);
+            if (activeContent) activeContent.classList.add('active');
+
+            // 更新标题
+            const titles = {
+                'weight': '记录体重',
+                'diet': '记录饮食',
+                'exercise': '记录运动',
+                'habit': '习惯打卡'
+            };
+            document.getElementById('pageTitle').innerText = titles[type] || '记录';
+        }
+
+        function triggerPhoto(previewId) {
+            // 模拟拍照上传
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        const img = document.getElementById(previewId);
+                        img.src = event.target.result;
+                        img.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+            input.click();
+        }
+
+        function selectMeal(el) {
+            document.querySelectorAll('.meal-tag').forEach(tag => tag.classList.remove('active'));
+            el.classList.add('active');
+        }
+
+        function simulateAIScan() {
+            // 跳转到识别结果页
+            window.location.href = 'camera_result.html';
+        }
+
+        function toggleHabit(el) {
+            const check = el.querySelector('.check');
+            if (check.style.background === 'rgb(74, 144, 226)' || check.style.background === '#4A90E2') {
+                check.style.background = 'transparent';
+                check.style.border = '2px solid #ddd';
+            } else {
+                check.style.background = '#4A90E2'; // var(--primary)
+                check.style.border = 'none';
+
+                // 简单的粒子特效模拟
+                const rect = check.getBoundingClientRect();
+                createParticles(rect.left + 12, rect.top + 12);
+            }
+        }
+
+        function createParticles(x, y) {
+            // 简单模拟，实际可用canvas
+            console.log('Pop effect at', x, y);
+        }
+
+        function submitRecord() {
+            // 显示同步弹窗
+            document.getElementById('syncModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeSyncModal() {
+            document.getElementById('syncModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        function syncToCircle(circleName) {
+            const recordType = document.getElementById('pageTitle').innerText;
+            closeSyncModal();
+
+            // 显示成功提示
+            alert(`✅ ${recordType} 已保存！\n\n📤 已同步到「${circleName}」`);
+
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 800);
+        }
+
+        function saveOnly() {
+            const recordType = document.getElementById('pageTitle').innerText;
+            closeSyncModal();
+
+            alert(`✅ ${recordType} 已保存！`);
+
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 800);
+        }
+    </script>
+
+    <!-- 同步到圈子弹窗 -->
+    <div id="syncModal"
+        style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); z-index:9999; align-items:center; justify-content:center;"
+        onclick="closeSyncModal()">
+        <div style="background:white; border-radius:20px; padding:24px; width:90%; max-width:340px;"
+            onclick="event.stopPropagation()">
+            <div style="font-size:20px; font-weight:700; text-align:center; margin-bottom:6px;">📤 同步到圈子</div>
+            <div style="font-size:13px; color:#888; text-align:center; margin-bottom:20px;">选择同步的圈子（可多选）</div>
+
+            <!-- 
+                [后端关联] 圈子列表数据来源：
+                API: GET /api/circles?joined=true
+                返回用户已加入的所有圈子，按 is_pinned 排序
+            -->
+            <div id="circleList" style="display:flex; flex-direction:column; gap:10px; margin-bottom:20px;">
+                <!-- 圈子项：减脂三剑客 (主圈子，默认勾选) -->
+                <div class="sync-circle-item selected" onclick="toggleCircleSelect(this)" data-circle-id="uuid-001">
+                    <div class="sync-circle-icon"
+                        style="background:linear-gradient(135deg, #667eea, #764ba2); color:white;">🔥</div>
+                    <div class="sync-circle-info">
+                        <div class="sync-circle-name">减脂三剑客 <span class="sync-main-tag">主圈子</span></div>
+                        <div class="sync-circle-desc">私密圈子 · 3人</div>
+                    </div>
+                    <div class="sync-checkbox">✓</div>
+                </div>
+
+                <!-- 圈子项：早起打卡挑战 -->
+                <div class="sync-circle-item" onclick="toggleCircleSelect(this)" data-circle-id="uuid-002">
+                    <div class="sync-circle-icon" style="background:#E3F2FD;">⏰</div>
+                    <div class="sync-circle-info">
+                        <div class="sync-circle-name">早起打卡挑战</div>
+                        <div class="sync-circle-desc">公开圈子 · 1.2k人</div>
+                    </div>
+                    <div class="sync-checkbox"></div>
+                </div>
+
+                <!-- 圈子项：不吃夜宵组 -->
+                <div class="sync-circle-item" onclick="toggleCircleSelect(this)" data-circle-id="uuid-003">
+                    <div class="sync-circle-icon" style="background:#F3E5F5;">🌙</div>
+                    <div class="sync-circle-info">
+                        <div class="sync-circle-name">不吃夜宵组</div>
+                        <div class="sync-circle-desc">习惯养成 · 56人</div>
+                    </div>
+                    <div class="sync-checkbox"></div>
+                </div>
+            </div>
+
+            <!-- 记住选择 -->
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:16px;">
+                <input type="checkbox" id="rememberChoice" style="width:16px; height:16px;">
+                <label for="rememberChoice" style="font-size:13px; color:#666;">记住我的选择</label>
+            </div>
+
+            <!-- 确认同步按钮 -->
+            <div onclick="confirmSync()"
+                style="background:#4A90E2; color:white; text-align:center; padding:14px; border-radius:12px; font-size:15px; font-weight:600; cursor:pointer; margin-bottom:12px;">
+                确认同步 <span id="syncCountBadge">(1个圈子)</span>
+            </div>
+
+            <!-- 仅保存（不参与圈子） -->
+            <div onclick="saveOnly()"
+                style="text-align:center; padding:12px; color:#888; font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px;">
+                <span>🔒</span> 仅自己可见，不同步到圈子
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .sync-circle-item {
+            display: flex;
+            align-items: center;
+            padding: 14px;
+            background: #F8F9FA;
+            border-radius: 12px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .sync-circle-item.selected {
+            border-color: #4A90E2;
+            background: #F0F7FF;
+        }
+
+        .sync-circle-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            margin-right: 12px;
+        }
+
+        .sync-circle-info {
+            flex: 1;
+        }
+
+        .sync-circle-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .sync-circle-desc {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .sync-main-tag {
+            font-size: 10px;
+            background: #E3F2FD;
+            color: #4A90E2;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 6px;
+        }
+
+        .sync-checkbox {
+            width: 22px;
+            height: 22px;
+            border: 2px solid #ddd;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+        }
+
+        .sync-circle-item.selected .sync-checkbox {
+            background: #4A90E2;
+            border-color: #4A90E2;
+        }
+    </style>
+
+    <script>
+        function toggleCircleSelect(item) {
+            item.classList.toggle('selected');
+            const checkbox = item.querySelector('.sync-checkbox');
+            checkbox.textContent = item.classList.contains('selected') ? '✓' : '';
+            updateSyncCount();
+        }
+
+        function updateSyncCount() {
+            const count = document.querySelectorAll('.sync-circle-item.selected').length;
+            document.getElementById('syncCountBadge').textContent = count > 0 ? `(${count}个圈子)` : '(未选择)';
+        }
+
+        function confirmSync() {
+            const selected = document.querySelectorAll('.sync-circle-item.selected');
+            if (selected.length === 0) {
+                alert('请至少选择一个圈子');
+                return;
+            }
+
+            const names = Array.from(selected).map(el => el.querySelector('.sync-circle-name').textContent.split(' ')[0]);
+            const recordType = document.getElementById('pageTitle').innerText;
+            closeSyncModal();
+
+            /*
+                [后端关联] 提交逻辑：
+                API: POST /api/records/{type}
+                Body: { ...recordData, sync_to_circles: [uuid-001, uuid-003] }
+                
+                后端处理：
+                1. 创建 Record 记录
+                2. 为每个 circle_id 创建 CircleFeed
+                3. 触发成就检测（如连续打卡）
+            */
+
+            alert(`✅ ${recordType} 已保存！\n\n📤 已同步到：${names.join('、')}`);
+            setTimeout(() => { window.location.href = 'index.html'; }, 800);
+        }
+    </script>
+</body>
+
+</html>

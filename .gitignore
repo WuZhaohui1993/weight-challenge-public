@@ -1,0 +1,47 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+dist/
+build/
+target/
+
+# Logs
+*.log
+logs/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Backend (RuoYi)
+backend/ruoyi-admin/target/
+backend/ruoyi-*/target/
+backend/*.jar
+backend/cookies.txt
+backend/ruoyi-weight-code.zip
+backend/config/application-local.yml
+backend/config/application-secret.yml
+backend/config/*.local.yml
+backend/config/*.secret.yml
+
+# Mobile (uni-app)
+mobile/unpackage/
+mobile/node_modules/
+
+# Temp files
+*.tmp
+*.temp
+.cache/

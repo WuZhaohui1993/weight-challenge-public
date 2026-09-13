@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.weight.mapper.WeightRecordMapper">
+    
+    <resultMap type="WeightRecord" id="WeightRecordResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="weight"    column="weight"    />
+        <result property="bmi"    column="bmi"    />
+        <result property="bodyFatRate"    column="body_fat_rate"    />
+        <result property="recordedAt"    column="recorded_at"    />
+        <result property="syncToCircles"    column="sync_to_circles"    />
+        <result property="images"    column="images"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectWeightRecordVo">
+        select id, user_id, weight, bmi, body_fat_rate, recorded_at, sync_to_circles, images, create_by, create_time, update_by, update_time, remark from weight_record
+    </sql>
+
+    <select id="selectWeightRecordList" parameterType="WeightRecord" resultMap="WeightRecordResult">
+        <include refid="selectWeightRecordVo"/>
+        <where>  
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="weight != null "> and weight = #{weight}</if>
+            <if test="recordedAt != null "> and recorded_at = #{recordedAt}</if>
+            <if test="params.beginRecordedAt != null"> and recorded_at &gt;= #{params.beginRecordedAt}</if>
+            <if test="params.endRecordedAt != null"> and recorded_at &lt;= #{params.endRecordedAt}</if>
+            <if test="syncToCircles != null  and syncToCircles != ''"> and sync_to_circles = #{syncToCircles}</if>
+        </where>
+    </select>
+    
+    <select id="selectWeightRecordById" parameterType="Long" resultMap="WeightRecordResult">
+        <include refid="selectWeightRecordVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertWeightRecord" parameterType="WeightRecord" useGeneratedKeys="true" keyProperty="id">
+        insert into weight_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="weight != null">weight,</if>
+            <if test="bmi != null">bmi,</if>
+            <if test="bodyFatRate != null">body_fat_rate,</if>
+            <if test="recordedAt != null">recorded_at,</if>
+            <if test="syncToCircles != null">sync_to_circles,</if>
+            <if test="images != null">images,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="weight != null">#{weight},</if>
+            <if test="bmi != null">#{bmi},</if>
+            <if test="bodyFatRate != null">#{bodyFatRate},</if>
+            <if test="recordedAt != null">#{recordedAt},</if>
+            <if test="syncToCircles != null">#{syncToCircles},</if>
+            <if test="images != null">#{images},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateWeightRecord" parameterType="WeightRecord">
+        update weight_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="weight != null">weight = #{weight},</if>
+            <if test="bmi != null">bmi = #{bmi},</if>
+            <if test="bodyFatRate != null">body_fat_rate = #{bodyFatRate},</if>
+            <if test="recordedAt != null">recorded_at = #{recordedAt},</if>
+            <if test="syncToCircles != null">sync_to_circles = #{syncToCircles},</if>
+            <if test="images != null">images = #{images},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <update id="refreshBmiSnapshotsByUserId">
+        update weight_record
+        set bmi = case
+            when #{height} is null or #{height} &lt;= 0 then null
+            else round(weight / pow(#{height} / 100, 2), 1)
+        end,
+            update_by = #{updateBy},
+            update_time = now()
+        where user_id = #{userId}
+    </update>
+
+    <update id="clearBmiSnapshotsByUserId">
+        update weight_record
+        set bmi = null,
+            update_by = #{updateBy},
+            update_time = now()
+        where user_id = #{userId}
+    </update>
+
+    <delete id="deleteWeightRecordById" parameterType="Long">
+        delete from weight_record where id = #{id}
+    </delete>
+
+    <delete id="deleteWeightRecordByIds" parameterType="String">
+        delete from weight_record where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

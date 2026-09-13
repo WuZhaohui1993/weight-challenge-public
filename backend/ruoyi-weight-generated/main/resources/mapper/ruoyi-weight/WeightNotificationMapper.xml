@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.weight.mapper.WeightNotificationMapper">
+    
+    <resultMap type="WeightNotification" id="WeightNotificationResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="type"    column="type"    />
+        <result property="fromUserId"    column="from_user_id"    />
+        <result property="targetType"    column="target_type"    />
+        <result property="targetId"    column="target_id"    />
+        <result property="content"    column="content"    />
+        <result property="preview"    column="preview"    />
+        <result property="isRead"    column="is_read"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+    <sql id="selectWeightNotificationVo">
+        select id, user_id, type, from_user_id, target_type, target_id, content, preview, is_read, create_time from weight_notification
+    </sql>
+
+    <select id="selectWeightNotificationList" parameterType="WeightNotification" resultMap="WeightNotificationResult">
+        <include refid="selectWeightNotificationVo"/>
+        <where>  
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="type != null  and type != ''"> and type = #{type}</if>
+            <if test="fromUserId != null "> and from_user_id = #{fromUserId}</if>
+            <if test="targetType != null  and targetType != ''"> and target_type = #{targetType}</if>
+            <if test="targetId != null "> and target_id = #{targetId}</if>
+            <if test="content != null  and content != ''"> and content = #{content}</if>
+            <if test="preview != null  and preview != ''"> and preview = #{preview}</if>
+            <if test="isRead != null "> and is_read = #{isRead}</if>
+        </where>
+    </select>
+    
+    <select id="selectWeightNotificationById" parameterType="Long" resultMap="WeightNotificationResult">
+        <include refid="selectWeightNotificationVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertWeightNotification" parameterType="WeightNotification" useGeneratedKeys="true" keyProperty="id">
+        insert into weight_notification
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="type != null and type != ''">type,</if>
+            <if test="fromUserId != null">from_user_id,</if>
+            <if test="targetType != null">target_type,</if>
+            <if test="targetId != null">target_id,</if>
+            <if test="content != null and content != ''">content,</if>
+            <if test="preview != null">preview,</if>
+            <if test="isRead != null">is_read,</if>
+            <if test="createTime != null">create_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="type != null and type != ''">#{type},</if>
+            <if test="fromUserId != null">#{fromUserId},</if>
+            <if test="targetType != null">#{targetType},</if>
+            <if test="targetId != null">#{targetId},</if>
+            <if test="content != null and content != ''">#{content},</if>
+            <if test="preview != null">#{preview},</if>
+            <if test="isRead != null">#{isRead},</if>
+            <if test="createTime != null">#{createTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateWeightNotification" parameterType="WeightNotification">
+        update weight_notification
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="type != null and type != ''">type = #{type},</if>
+            <if test="fromUserId != null">from_user_id = #{fromUserId},</if>
+            <if test="targetType != null">target_type = #{targetType},</if>
+            <if test="targetId != null">target_id = #{targetId},</if>
+            <if test="content != null and content != ''">content = #{content},</if>
+            <if test="preview != null">preview = #{preview},</if>
+            <if test="isRead != null">is_read = #{isRead},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteWeightNotificationById" parameterType="Long">
+        delete from weight_notification where id = #{id}
+    </delete>
+
+    <delete id="deleteWeightNotificationByIds" parameterType="String">
+        delete from weight_notification where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

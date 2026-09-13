@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Weight Challenge - 成就</title>
+    <style>
+        /* 复用全局变量 */
+        :root {
+            --primary: #4A90E2;
+            --accent: #50E3C2;
+            --success: #4CAF50;
+            --warning: #FF9800;
+            --bg-page: #F7F8FA;
+            --card-bg: #FFFFFF;
+            --text-main: #333333;
+            --text-sub: #888888;
+            --radius-m: 16px;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            padding-bottom: 40px;
+        }
+
+        /* 统一 Header */
+        .header {
+            padding: 44px 20px 10px;
+            background: white;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05);
+            height: 88px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-main);
+            cursor: pointer;
+        }
+
+        .header-icon {
+            font-size: 20px;
+        }
+
+        /* 成就统计卡片 (改为白色卡片风格) */
+        .stats-card {
+            background: var(--card-bg);
+            margin: 20px 20px 0;
+            border-radius: var(--radius-m);
+            padding: 24px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 装饰背景 */
+        .stats-bg-decor {
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #FFD700, #FFA000);
+            opacity: 0.1;
+            border-radius: 50%;
+        }
+
+        .stats-title {
+            font-size: 14px;
+            color: var(--text-sub);
+            margin-bottom: 4px;
+        }
+
+        .stats-value {
+            font-size: 36px;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
+
+        .stats-sub {
+            font-size: 12px;
+            color: var(--text-sub);
+            background: #F5F5F5;
+            padding: 2px 8px;
+            border-radius: 10px;
+            display: inline-block;
+        }
+
+        .stats-row {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-num {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: var(--text-sub);
+            margin-top: 4px;
+        }
+
+        /* 分类标题 */
+        .section-title {
+            padding: 24px 20px 12px;
+            font-weight: 700;
+            font-size: 18px;
+            color: var(--text-main);
+        }
+
+        /* 徽章网格 */
+        .badge-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            padding: 0 20px;
+        }
+
+        .badge-item {
+            background: white;
+            border-radius: 16px;
+            padding: 16px 10px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .badge-item:active {
+            transform: scale(0.98);
+        }
+
+        .badge-item.locked {
+            background: #F9FAFC;
+            box-shadow: none;
+            border: 1px solid rgba(0, 0, 0, 0.03);
+        }
+
+        .badge-item.locked .badge-icon {
+            filter: grayscale(100%);
+            opacity: 0.5;
+        }
+
+        .badge-item.locked .badge-name {
+            color: #999;
+        }
+
+        .badge-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .badge-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
+
+        .badge-desc {
+            font-size: 10px;
+            color: var(--text-sub);
+            line-height: 1.4;
+            height: 28px;
+            /* 固定高度防止错位 */
+            overflow: hidden;
+        }
+
+        .badge-progress {
+            margin-top: 8px;
+            height: 4px;
+            background: #F0F0F0;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .badge-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            border-radius: 2px;
+        }
+
+        .badge-earned {
+            display: inline-block;
+            margin-top: 8px;
+            font-size: 10px;
+            padding: 2px 6px;
+            background: #E8F5E9;
+            color: #4CAF50;
+            border-radius: 10px;
+            font-weight: 500;
+        }
+
+        /* 最近获得 */
+        .recent-list {
+            padding: 0 20px;
+        }
+
+        .recent-item {
+            display: flex;
+            align-items: center;
+            background: white;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+        }
+
+        .recent-icon {
+            font-size: 24px;
+            margin-right: 16px;
+            width: 40px;
+            height: 40px;
+            background: #F9FAFC;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .recent-info {
+            flex: 1;
+        }
+
+        .recent-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 2px;
+        }
+
+        .recent-time {
+            font-size: 12px;
+            color: var(--text-sub);
+        }
+
+        .recent-points {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--warning);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <div class="header-left" onclick="history.back()">
+            <span class="header-icon">←</span>
+            <span>成就徽章</span>
+        </div>
+    </div>
+
+    <!-- 成就统计 -->
+    <!--
+        [后端关联] 成就页面数据来源：
+        
+        1. 成就统计 API: GET /api/achievements/stats
+           返回: {
+               unlocked: 6,
+               total: 12,
+               percentile: 85,
+               streak_days: 12,
+               total_points: 280,
+               total_badges: 45
+           }
+        
+        2. 成就列表 API: GET /api/achievements
+           返回: [
+               { id, badge_type: "checkin_7", name: "早起鸟", desc: "连续7天6点前打卡", unlocked: true, unlocked_at: "2024-01-10" },
+               { id, badge_type: "checkin_21", name: "铁人", desc: "连续21天打卡", unlocked: false, progress: 0.57 },
+               ...
+           ]
+        
+        3. 最近获得 API: GET /api/achievements/recent?limit=3
+           返回: [
+               { id, name: "点赞之星", unlocked_at: "今天 09:30", points: 20 },
+               ...
+           ]
+        
+        成就触发逻辑（后端）：
+        - 每次记录提交后检查成就条件
+        - 满足条件自动解锁，更新 Achievement 表
+        - 推送通知给用户
+    -->
+    <div class="stats-card">
+        <div class="stats-bg-decor"></div>
+        <div class="stats-title">已解锁成就</div>
+        <div class="stats-value">6 <span style="font-size:16px; font-weight:normal; color:#999;">/ 12</span></div>
+        <div class="stats-sub">超越了 85% 的用户</div>
+
+        <div class="stats-row">
+            <div class="stat-item">
+                <div class="stat-num">🔥 12</div>
+                <div class="stat-label">连续打卡</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-num" style="color: var(--warning);">280</div>
+                <div class="stat-label">成就积分</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-num">45</div>
+                <div class="stat-label">勋章总数</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 打卡类成就 (来自 Achievement 表 badge_type: checkin_*) -->
+    <div class="section-title">🔥 打卡成就</div>
+    <div class="badge-grid" id="checkinBadges">
+        <div class="badge-item" onclick="showBadgeDetail('早起鸟')" data-badge-type="checkin_7">
+            <span class="badge-icon">🐦</span>
+            <div class="badge-name">早起鸟</div>
+            <div class="badge-desc">连续7天6点前打卡</div>
+            <div class="badge-earned">已获得</div>
+        </div>
+        <div class="badge-item" onclick="showBadgeDetail('铁人')" data-badge-type="checkin_21">
+            <span class="badge-icon">💪</span>
+            <div class="badge-name">铁人</div>
+            <div class="badge-desc">连续21天打卡</div>
+            <div class="badge-progress">
+                <div class="badge-progress-fill" style="width: 57%;"></div>
+            </div>
+        </div>
+        <div class="badge-item locked" data-badge-type="checkin_100">
+            <span class="badge-icon">🏆</span>
+            <div class="badge-name">传奇</div>
+            <div class="badge-desc">连续100天打卡</div>
+            <div class="badge-progress">
+                <div class="badge-progress-fill" style="width: 12%;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 减重类成就 (来自 Achievement 表 badge_type: weight_*) -->
+    <div class="section-title">⚖️ 减重成就</div>
+    <div class="badge-grid" id="weightBadges">
+        <div class="badge-item" onclick="showBadgeDetail('初见成效')" data-badge-type="weight_1kg">
+            <span class="badge-icon">🎯</span>
+            <div class="badge-name">初见成效</div>
+            <div class="badge-desc">累计减重1kg</div>
+            <div class="badge-earned">已获得</div>
+        </div>
+        <div class="badge-item" onclick="showBadgeDetail('减重先锋')" data-badge-type="weight_monthly_3kg">
+            <span class="badge-icon">🚀</span>
+            <div class="badge-name">减重先锋</div>
+            <div class="badge-desc">单月减重≥3kg</div>
+            <div class="badge-earned">已获得</div>
+        </div>
+        <div class="badge-item locked">
+            <span class="badge-icon">👑</span>
+            <div class="badge-name">目标达成</div>
+            <div class="badge-desc">达到目标体重</div>
+            <div class="badge-progress">
+                <div class="badge-progress-fill" style="width: 80%;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 社交类成就 -->
+    <div class="section-title">❤️ 社交成就</div>
+    <div class="badge-grid">
+        <div class="badge-item" onclick="showBadgeDetail('圈子灵魂')">
+            <span class="badge-icon">💬</span>
+            <div class="badge-name">圈子灵魂</div>
+            <div class="badge-desc">累计点赞≥50次</div>
+            <div class="badge-earned">已获得</div>
+        </div>
+        <div class="badge-item" onclick="showBadgeDetail('热心鼓励')">
+            <span class="badge-icon">🤝</span>
+            <div class="badge-name">热心鼓励</div>
+            <div class="badge-desc">催促好友≥10次</div>
+            <div class="badge-earned">已获得</div>
+        </div>
+        <div class="badge-item locked">
+            <span class="badge-icon">🌟</span>
+            <div class="badge-name">人气王</div>
+            <div class="badge-desc">动态获赞≥100</div>
+            <div class="badge-progress">
+                <div class="badge-progress-fill" style="width: 45%;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 最近获得 -->
+    <div class="section-title">🕐 最近获得</div>
+    <div class="recent-list">
+        <div class="recent-item">
+            <span class="recent-icon">🤝</span>
+            <div class="recent-info">
+                <div class="recent-name">热心鼓励</div>
+                <div class="recent-time">1月15日获得</div>
+            </div>
+            <div class="recent-points">+20 积分</div>
+        </div>
+        <div class="recent-item">
+            <span class="recent-icon">🚀</span>
+            <div class="recent-info">
+                <div class="recent-name">减重先锋</div>
+                <div class="recent-time">1月10日获得</div>
+            </div>
+            <div class="recent-points">+50 积分</div>
+        </div>
+        <div class="recent-item">
+            <span class="recent-icon">🐦</span>
+            <div class="recent-info">
+                <div class="recent-name">早起鸟</div>
+                <div class="recent-time">1月7日获得</div>
+            </div>
+            <div class="recent-points">+30 积分</div>
+        </div>
+    </div>
+
+    <script>
+        function showBadgeDetail(name) {
+            alert(`🏅 ${name}\n\n点击查看详情功能开发中...`);
+        }
+    </script>
+</body>
+
+</html>

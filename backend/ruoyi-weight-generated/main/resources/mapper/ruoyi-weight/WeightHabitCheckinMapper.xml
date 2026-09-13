@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.weight.mapper.WeightHabitCheckinMapper">
+    
+    <resultMap type="WeightHabitCheckin" id="WeightHabitCheckinResult">
+        <result property="id"    column="id"    />
+        <result property="habitId"    column="habit_id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="checkedAt"    column="checked_at"    />
+        <result property="note"    column="note"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+    <sql id="selectWeightHabitCheckinVo">
+        select id, habit_id, user_id, checked_at, note, create_time from weight_habit_checkin
+    </sql>
+
+    <select id="selectWeightHabitCheckinList" parameterType="WeightHabitCheckin" resultMap="WeightHabitCheckinResult">
+        <include refid="selectWeightHabitCheckinVo"/>
+        <where>  
+            <if test="habitId != null "> and habit_id = #{habitId}</if>
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="checkedAt != null "> and checked_at = #{checkedAt}</if>
+            <if test="note != null  and note != ''"> and note = #{note}</if>
+        </where>
+    </select>
+    
+    <select id="selectWeightHabitCheckinById" parameterType="Long" resultMap="WeightHabitCheckinResult">
+        <include refid="selectWeightHabitCheckinVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertWeightHabitCheckin" parameterType="WeightHabitCheckin" useGeneratedKeys="true" keyProperty="id">
+        insert into weight_habit_checkin
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="habitId != null">habit_id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="checkedAt != null">checked_at,</if>
+            <if test="note != null">note,</if>
+            <if test="createTime != null">create_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="habitId != null">#{habitId},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="checkedAt != null">#{checkedAt},</if>
+            <if test="note != null">#{note},</if>
+            <if test="createTime != null">#{createTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateWeightHabitCheckin" parameterType="WeightHabitCheckin">
+        update weight_habit_checkin
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="habitId != null">habit_id = #{habitId},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="checkedAt != null">checked_at = #{checkedAt},</if>
+            <if test="note != null">note = #{note},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteWeightHabitCheckinById" parameterType="Long">
+        delete from weight_habit_checkin where id = #{id}
+    </delete>
+
+    <delete id="deleteWeightHabitCheckinByIds" parameterType="String">
+        delete from weight_habit_checkin where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

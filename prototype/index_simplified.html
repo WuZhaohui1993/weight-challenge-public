@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>健康挑战 - 首页 Frontend Design</title>
+  <link rel="stylesheet" href="fd-system.css">
+  <style>
+    body {
+      background: #e8edf5;
+    }
+
+    .online-page {
+      --bg: #f5f7fb;
+      --shell: #e8edf5;
+      --paper: #ffffff;
+      --paper-soft: rgba(255, 255, 255, 0.9);
+      --ink: #18202d;
+      --ink-2: #344255;
+      --muted: #5f6b7a;
+      --faint: #8b95a4;
+      --line: rgba(23, 37, 84, 0.09);
+      --primary: #4a90e2;
+      --primary-deep: #2e6fc8;
+      --primary-soft: #edf5ff;
+      --success: #2ba779;
+      --success-soft: #e9f8f2;
+      --warning: #f29b38;
+      --warning-soft: #fff3df;
+      --danger: #e56767;
+      --danger-soft: #ffefef;
+      --shadow: 0 6px 18px rgba(16, 24, 40, 0.04);
+      --shadow-strong: 0 12px 32px rgba(16, 24, 40, 0.07);
+      --radius: 14px;
+      background: linear-gradient(180deg, #f7f9fc 0%, #f3f6fb 100%);
+    }
+
+    .online-page .app {
+      padding: 18px 16px 112px;
+    }
+
+    .online-page .topbar {
+      align-items: flex-start;
+      padding-bottom: 10px;
+    }
+
+    .brand strong {
+      font-size: 22px;
+      font-weight: 800;
+    }
+
+    .header-meta,
+    .daily-quote {
+      display: flex;
+      gap: 7px;
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .daily-quote {
+      display: block;
+      max-width: 286px;
+    }
+
+    .top-chip-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 9px;
+      margin-bottom: 14px;
+    }
+
+    .info-chip {
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      color: var(--ink);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .profile-chip {
+      justify-content: flex-end;
+    }
+
+    .avatar-mini,
+    .avatar {
+      width: 30px;
+      height: 30px;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      border-radius: 50%;
+      color: #fff;
+      background: linear-gradient(135deg, var(--primary-deep), var(--primary));
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .avatar {
+      width: 42px;
+      height: 42px;
+      font-size: 15px;
+    }
+
+    .wc-card {
+      padding: 14px;
+      margin-bottom: 14px;
+      border-radius: 16px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      animation: fd-enter 280ms ease both;
+    }
+
+    .card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .card-title {
+      color: var(--ink);
+      font-size: 16px;
+      line-height: 1.25;
+      font-weight: 800;
+    }
+
+    .card-link {
+      color: var(--primary-deep);
+      font-size: 12px;
+      line-height: 1.2;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .home-summary {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 9px;
+    }
+
+    .summary-box {
+      min-width: 0;
+      display: grid;
+      gap: 6px;
+      padding: 12px;
+      border-radius: 13px;
+      background: linear-gradient(180deg, rgba(248, 251, 255, 0.98), rgba(255, 255, 255, 0.98));
+      border: 1px solid rgba(210, 218, 230, 0.75);
+    }
+
+    .summary-box span,
+    .buddy-status,
+    .water-tip {
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.35;
+      font-weight: 650;
+    }
+
+    .summary-box strong {
+      color: var(--ink);
+      font-size: 23px;
+      line-height: 1.05;
+      font-weight: 800;
+    }
+
+    .summary-box small {
+      color: var(--muted);
+      font-size: 10px;
+      line-height: 1.35;
+    }
+
+    .state-good {
+      color: var(--success);
+    }
+
+    .state-warn {
+      color: #a76716;
+    }
+
+    .quick-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .quick-item {
+      display: grid;
+      justify-items: center;
+      gap: 7px;
+      min-height: 82px;
+      padding: 12px 6px;
+      border-radius: 14px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .quick-icon {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border-radius: 13px;
+      background: var(--primary-soft);
+      font-size: 19px;
+    }
+
+    .buddy-card .card-head {
+      margin-bottom: 10px;
+    }
+
+    .circle-switch {
+      display: inline-flex;
+      gap: 4px;
+      align-items: center;
+      min-height: 28px;
+      padding: 0 9px;
+      border-radius: 999px;
+      color: var(--primary-deep);
+      background: var(--primary-soft);
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .buddy-members {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 9px;
+    }
+
+    .buddy-member {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 9px;
+      align-items: center;
+      padding: 11px;
+      border-radius: 13px;
+      background: var(--primary-soft);
+    }
+
+    .buddy-member strong {
+      display: block;
+      font-size: 13px;
+      line-height: 1.25;
+      font-weight: 800;
+    }
+
+    .pk-board {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+      gap: 10px;
+      align-items: center;
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 13px;
+      background: #f8fbff;
+      border: 1px solid rgba(210, 218, 230, 0.7);
+      text-align: center;
+    }
+
+    .pk-board strong {
+      display: block;
+      font-size: 13px;
+      line-height: 1.25;
+      font-weight: 800;
+    }
+
+    .water-card {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      gap: 13px;
+      align-items: center;
+    }
+
+    .water-ring {
+      width: 64px;
+      height: 64px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: conic-gradient(from -90deg, var(--primary) 0deg 0deg, rgba(74, 144, 226, 0.16) 0deg 360deg);
+    }
+
+    .water-ring span {
+      width: 48px;
+      height: 48px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: #fff;
+      font-size: 21px;
+    }
+
+    .water-count {
+      margin-top: 2px;
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    .add-water {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--primary-deep);
+      box-shadow: 0 10px 20px rgba(46, 111, 200, 0.2);
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+  </style>
+</head>
+
+<body>
+  <main class="phone online-page">
+    <section class="app" aria-label="首页">
+      <header class="topbar">
+        <div class="brand">
+          <span>晨间简报</span>
+          <strong>早安，穗爸爸 👋</strong>
+          <div class="header-meta">
+            <span>6月9日 星期二</span>
+            <span>/</span>
+            <span>当前 80.1 kg</span>
+          </div>
+          <p class="daily-quote">今日一句：记录不是约束，是帮你看见真实的自己。</p>
+        </div>
+      </header>
+
+      <div class="top-chip-row">
+        <button class="info-chip" data-toast="打开消息中心"><span>🔔</span><span>有新提醒</span></button>
+        <button class="info-chip profile-chip" data-nav="profile_fd.html">
+          <span class="avatar-mini">穗</span>
+          <span>穗爸爸 · 目标 70 kg</span>
+        </button>
+      </div>
+
+      <section class="wc-card">
+        <div class="card-head">
+          <h2 class="card-title">今日概览</h2>
+          <button class="card-link" data-nav="analytics_fd.html">详情 ›</button>
+        </div>
+        <div class="home-summary">
+          <div class="summary-box">
+            <span>当前体重</span>
+            <strong>80.1 <small>kg</small></strong>
+            <small class="state-good">↓ 0.9kg 相比昨日</small>
+          </div>
+          <div class="summary-box">
+            <span>BMI指数 <small class="state-warn">超重</small></span>
+            <strong>25.9</strong>
+            <small>目标 70 kg · 缺口 1467 kcal/天</small>
+          </div>
+          <div class="summary-box">
+            <span>今日摄入</span>
+            <strong>0 <small>kcal</small></strong>
+            <small>还可摄入 1500 kcal</small>
+          </div>
+          <div class="summary-box">
+            <span>运动消耗</span>
+            <strong>0 <small>kcal</small></strong>
+            <small>0分钟运动</small>
+          </div>
+        </div>
+      </section>
+
+      <div class="section-head">
+        <h2 class="section-title">快速记录</h2>
+      </div>
+      <div class="quick-grid">
+        <button class="quick-item" data-nav="record_fd.html?tab=dinner"><span class="quick-icon">🥗</span><span>记饮食</span></button>
+        <button class="quick-item" data-nav="record_fd.html?tab=morning"><span class="quick-icon">⚖️</span><span>记体重</span></button>
+        <button class="quick-item" data-nav="record_fd.html?tab=move"><span class="quick-icon">🏃</span><span>记运动</span></button>
+        <button class="quick-item" data-nav="record_fd.html?tab=habit"><span class="quick-icon">✅</span><span>记习惯</span></button>
+      </div>
+
+      <section class="wc-card buddy-card">
+        <div class="card-head">
+          <h2 class="card-title">🔥 健身小分队</h2>
+          <button class="circle-switch" data-nav="circle_fd.html"><span>🔁</span><span>切换</span></button>
+        </div>
+        <div class="buddy-members">
+          <div class="buddy-member">
+            <span class="avatar">穗</span>
+            <span><strong>穗爸爸</strong><span class="buddy-status">管理员 · 连续 0 天</span></span>
+          </div>
+          <div class="buddy-member">
+            <span class="avatar">辉</span>
+            <span><strong>辉</strong><span class="buddy-status">成员 · 连续 0 天</span></span>
+          </div>
+        </div>
+        <div class="pk-board">
+          <span><strong>穗爸爸</strong><span class="buddy-status">等待首个打卡</span></span>
+          <span>⚔️</span>
+          <span><strong>辉</strong><span class="buddy-status">等待首个打卡</span></span>
+        </div>
+      </section>
+
+      <section class="wc-card water-card">
+        <div class="water-ring"><span>💧</span></div>
+        <div>
+          <h2 class="card-title">今日饮水</h2>
+          <div class="water-count">0 / 8 杯</div>
+          <div class="water-tip">保持水分充足有助于代谢</div>
+        </div>
+        <button class="add-water" data-toast="已记录 1 杯饮水">+</button>
+      </section>
+
+    </section>
+
+    <nav class="bottom-nav" aria-label="底部导航">
+      <button class="tab is-active">首页<span class="tab-dot"></span></button>
+      <button class="tab" data-nav="circle_fd.html">圈子<span class="tab-dot"></span></button>
+      <button class="tab tab-action" data-sheet-open="#quickRecordSheet"><span class="tab-plus">+</span><span>记录</span></button>
+      <button class="tab" data-nav="analytics_fd.html">分析<span class="tab-dot"></span></button>
+      <button class="tab" data-nav="profile_fd.html">我的<span class="tab-dot"></span></button>
+    </nav>
+
+    <section class="sheet" id="quickRecordSheet" aria-label="快捷记录">
+      <div class="sheet-panel">
+        <div class="sheet-head">
+          <strong class="sheet-title">快速记录</strong>
+          <button class="chip-btn" data-sheet-close>关闭</button>
+        </div>
+        <div class="sheet-grid">
+          <button class="sheet-item" data-nav="record_fd.html?tab=dinner"><span class="mark rose">食</span><span>饮食</span></button>
+          <button class="sheet-item" data-nav="record_fd.html?tab=morning"><span class="mark">重</span><span>体重</span></button>
+          <button class="sheet-item" data-nav="record_fd.html?tab=move"><span class="mark warning">动</span><span>运动</span></button>
+          <button class="sheet-item" data-nav="record_fd.html?tab=habit"><span class="mark success">惯</span><span>习惯</span></button>
+          <button class="sheet-item" data-nav="record_fd.html?tab=water"><span class="mark success">水</span><span>饮水</span></button>
+        </div>
+      </div>
+    </section>
+    <div class="toast" id="toast">已操作</div>
+  </main>
+  <script src="fd-interactions.js"></script>
+</body>
+
+</html>

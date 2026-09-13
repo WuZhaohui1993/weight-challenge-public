@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.weight.mapper.WeightDashboardMapper">
+
+    <select id="selectOverview" resultType="map">
+        select
+            (select count(1) from weight_user) as totalUsers,
+            (select count(1) from weight_circle where ifnull(del_flag, '0') != '2') as totalCircles,
+            (
+                select count(distinct user_id)
+                from weight_habit_checkin
+                where checked_at >= curdate()
+                  and checked_at &lt; date_add(curdate(), interval 1 day)
+            ) as todayCheckins,
+            (
+                (select count(1) from weight_record)
+                + (select count(1) from weight_food_record)
+                + (select count(1) from weight_exercise_record)
+                + (select count(1) from weight_water_record)
+                + (select count(1) from weight_habit_checkin)
+            ) as totalRecords,
+            (select count(1) from weight_record) as weightRecords,
+            (select count(1) from weight_food_record) as foodRecords,
+            (select count(1) from weight_exercise_record) as exerciseRecords,
+            (select count(1) from weight_water_record) as waterRecords,
+            (select count(1) from weight_habit_checkin) as habitCheckins,
+            (
+                select count(1)
+                from weight_circle_feed
+                where create_time >= curdate()
+                  and create_time &lt; date_add(curdate(), interval 1 day)
+                  and ifnull(del_flag, '0') != '2'
+            ) as todayFeeds,
+            (
+                select count(1)
+                from weight_feedback
+                where status in ('pending', 'processing')
+            ) as pendingFeedback,
+            (
+                (select count(1) from weight_circle_feed where status = '1' and ifnull(del_flag, '0') != '2')
+                + (select count(1) from weight_comment where status = '1' and ifnull(del_flag, '0') != '2')
+            ) as pendingContent,
+            (
+                (select count(1) from weight_circle_feed where status = '2' and ifnull(del_flag, '0') != '2')
+                + (select count(1) from weight_comment where status = '2' and ifnull(del_flag, '0') != '2')
+            ) as blockedContent,
+            (select count(1) from weight_notification where ifnull(is_read, 0) = 0) as unreadNotifications
+    </select>
+
+    <select id="selectContentStats" resultType="map">
+        select
+            (
+                select count(1)
+                from weight_circle_feed
+                where create_time >= curdate()
+                  and create_time &lt; date_add(curdate(), interval 1 day)
+                  and ifnull(del_flag, '0') != '2'
+            ) as todayFeeds,
+            (
+                select count(1)
+                from weight_comment
+                where create_time >= curdate()
+                  and create_time &lt; date_add(curdate(), interval 1 day)
+                  and ifnull(del_flag, '0') != '2'
+            ) as todayComments,
+            (
+                select count(1)
+                from weight_circle_feed
+                where visibility_scope = 'public'
+                  and ifnull(del_flag, '0') != '2'
+            ) as publicFeeds,
+            (
+                select count(1)
+                from weight_circle_feed
+                where ifnull(visibility_scope, 'circle') = 'circle'
+                  and ifnull(del_flag, '0') != '2'
+            ) as circleFeeds,
+            (
+                select count(1)
+                from weight_circle_feed
+                where status = '1'
+                  and ifnull(del_flag, '0') != '2'
+            ) as pendingFeeds,
+            (
+                select count(1)
+                from weight_circle_feed
+                where status = '2'
+                  and ifnull(del_flag, '0') != '2'
+            ) as blockedFeeds,
+            (
+                select count(1)
+                from weight_comment
+                where status = '1'
+                  and ifnull(del_flag, '0') != '2'
+            ) as pendingComments,
+            (
+                select count(1)
+                from weight_comment
+                where status = '2'
+                  and ifnull(del_flag, '0') != '2'
+            ) as blockedComments,
+            (select count(1) from weight_feedback where status = 'pending') as pendingFeedback,
+            (select count(1) from weight_feedback where status = 'processing') as processingFeedback,
+            (select count(1) from weight_feedback where status = 'resolved') as resolvedFeedback,
+            (select count(1) from weight_feedback where status = 'closed') as closedFeedback,
+            (select count(1) from weight_notification where ifnull(is_read, 0) = 0) as unreadNotifications
+    </select>
+
+    <select id="selectCheckinTrend" resultType="map">
+        select
+            date_format(checked_at, '%Y-%m-%d') as statDate,
+            count(distinct user_id) as count
+        from weight_habit_checkin
+        where checked_at >= #{startTime}
+          and checked_at &lt; #{endTime}
+        group by date_format(checked_at, '%Y-%m-%d')
+        order by statDate asc
+    </select>
+
+    <select id="selectTopCircles" resultType="map">
+        select
+            c.id as id,
+            c.name as name,
+            coalesce(nullif(c.icon, ''), '⚖️') as icon,
+            greatest(ifnull(max(c.member_count), 0), count(m.id)) as memberCount
+        from weight_circle c
+        left join weight_circle_member m
+            on m.circle_id = c.id
+           and m.status = '0'
+        where ifnull(c.del_flag, '0') != '2'
+          and ifnull(c.status, '0') = '0'
+        group by c.id, c.name, c.icon
+        order by memberCount desc, c.id asc
+        limit #{limit}
+    </select>
+</mapper>

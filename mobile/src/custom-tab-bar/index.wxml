@@ -1,0 +1,59 @@
+<view hidden="{{!visible}}" class="custom-tabbar">
+  <!-- 首页 -->
+  <view class="tab-item {{selected === 0 ? 'active' : ''}}" bindtap="switchTab" data-path="/pages/index/index" data-index="0">
+    <image class="tab-icon" src="{{selected === 0 ? '/static/tabbar/home_active.png' : '/static/tabbar/home.png'}}"></image>
+    <text class="tab-label">首页</text>
+  </view>
+
+  <!-- 圈子 -->
+  <view class="tab-item {{selected === 1 ? 'active' : ''}}" bindtap="switchTab" data-path="/pages/circle/index" data-index="1">
+    <image class="tab-icon" src="{{selected === 1 ? '/static/tabbar/circle_active.png' : '/static/tabbar/circle.png'}}"></image>
+    <text class="tab-label">圈子</text>
+  </view>
+
+  <!-- 中间 + 按钮 -->
+  <view class="tab-item tab-center">
+    <view class="center-btn" bindtap="goQuickRecord">
+      <text class="center-icon">+</text>
+    </view>
+  </view>
+
+  <!-- 分析 -->
+  <view class="tab-item {{selected === 2 ? 'active' : ''}}" bindtap="switchTab" data-path="/pages/analytics/index" data-index="2">
+    <image class="tab-icon" src="{{selected === 2 ? '/static/tabbar/record_active.png' : '/static/tabbar/record.png'}}"></image>
+    <text class="tab-label">分析</text>
+  </view>
+
+  <!-- 我的 -->
+  <view class="tab-item {{selected === 3 ? 'active' : ''}}" bindtap="switchTab" data-path="/pages/profile/index" data-index="3">
+    <image class="tab-icon" src="{{selected === 3 ? '/static/tabbar/profile_active.png' : '/static/tabbar/profile.png'}}"></image>
+    <text class="tab-label">我的</text>
+  </view>
+</view>
+
+<view hidden="{{!visible || !actionSheetVisible}}" class="action-sheet {{actionSheetVisible ? 'show' : ''}}" bindtap="closeActionSheet">
+  <view class="action-sheet-content" catchtap="stopPropagation">
+    <view class="action-sheet-header">记录一下今天的进展</view>
+
+    <view class="action-sub-grid">
+      <view class="action-item" bindtap="openRecord" data-tab="weight">
+        <view class="action-icon">⚖️</view>
+        <text class="action-name">记体重</text>
+      </view>
+      <view class="action-item" bindtap="openRecord" data-tab="diet">
+        <view class="action-icon">🥗</view>
+        <text class="action-name">记饮食</text>
+      </view>
+      <view class="action-item" bindtap="openRecord" data-tab="exercise">
+        <view class="action-icon">🏃</view>
+        <text class="action-name">记运动</text>
+      </view>
+      <view class="action-item" bindtap="openRecord" data-tab="habit">
+        <view class="action-icon">📋</view>
+        <text class="action-name">记习惯</text>
+      </view>
+    </view>
+
+    <view class="action-sheet-close" bindtap="closeActionSheet">✕</view>
+  </view>
+</view>

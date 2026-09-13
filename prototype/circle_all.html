@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Weight Challenge - 全部圈子</title>
+    <style>
+        :root {
+            --primary: #4A90E2;
+            --accent: #50E3C2;
+            --success: #4CAF50;
+            --warning: #FF9800;
+            --bg-page: #F7F8FA;
+            --card-bg: #FFFFFF;
+            --text-main: #333333;
+            --text-sub: #888888;
+            --radius-m: 16px;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            padding-bottom: 40px;
+        }
+
+        /* Header */
+        .header {
+            padding: 44px 20px 10px;
+            background: white;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05);
+            height: 88px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .header-icon {
+            font-size: 20px;
+        }
+
+        /* 搜索框 */
+        .search-box {
+            background: white;
+            padding: 12px 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .search-input {
+            width: 100%;
+            background: #F5F7FA;
+            border: none;
+            border-radius: 24px;
+            padding: 12px 20px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .search-input::placeholder {
+            color: #999;
+        }
+
+        /* 分类标签 */
+        .category-tabs {
+            background: white;
+            padding: 12px 20px;
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .category-tabs::-webkit-scrollbar {
+            display: none;
+        }
+
+        .category-tab {
+            flex-shrink: 0;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            background: #F5F7FA;
+            color: var(--text-sub);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .category-tab.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* 圈子列表 */
+        .circle-list {
+            padding: 16px 20px;
+        }
+
+        .circle-item {
+            background: white;
+            border-radius: var(--radius-m);
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        .circle-item:active {
+            transform: scale(0.98);
+        }
+
+        .circle-cover {
+            width: 60px;
+            height: 60px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin-right: 14px;
+            flex-shrink: 0;
+        }
+
+        .circle-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .circle-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .circle-tag {
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: #FFF3E0;
+            color: #FF9800;
+        }
+
+        .circle-desc {
+            font-size: 12px;
+            color: var(--text-sub);
+            margin-bottom: 6px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .circle-meta {
+            font-size: 11px;
+            color: #AAA;
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-join {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .btn-join.joined {
+            background: #F0F0F0;
+            color: #999;
+        }
+
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-sub);
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <div class="header-left" onclick="location.href='circle.html'">
+            <span class="header-icon">←</span>
+            <span>全部圈子</span>
+        </div>
+    </div>
+
+    <div class="search-box">
+        <input type="text" class="search-input" placeholder="🔍 搜索圈子名称..." oninput="filterCircles(this.value)">
+    </div>
+
+    <!--
+        [后端关联] 圈子分类与列表：
+        
+        1. 分类列表 API: GET /api/circles/categories
+        返回: [
+            { id: "all", name: "全部" },
+            { id: "weight", name: "减重" },
+            { id: "exercise", name: "运动" },
+            ...
+        ]
+        
+        2. 圈子列表 API: GET /api/circles?category={id}&keyword={search}
+        返回: [
+            { id, name, cover, description, member_count, category, is_hot, joined },
+            ...
+        ]
+    -->
+
+    <div class="category-tabs">
+        <div class="category-tab active" onclick="selectCategory(this, 'all')">全部</div>
+        <div class="category-tab" onclick="selectCategory(this, 'weight')">🏋️ 减重</div>
+        <div class="category-tab" onclick="selectCategory(this, 'exercise')">🏃 运动</div>
+        <div class="category-tab" onclick="selectCategory(this, 'morning')">🌅 早起</div>
+        <div class="category-tab" onclick="selectCategory(this, 'diet')">🥗 饮食</div>
+        <div class="category-tab" onclick="selectCategory(this, 'habit')">✅ 习惯</div>
+        <div class="category-tab" onclick="selectCategory(this, 'challenge')">🔥 挑战</div>
+    </div>
+
+    <div class="circle-list" id="circleList">
+        <!-- 减重类 -->
+        <div class="circle-item" data-category="weight" onclick="location.href='circle_private.html'">
+            <div class="circle-cover" style="background: linear-gradient(135deg, #e8f5e9, #c8e6c9);">⚖️</div>
+            <div class="circle-info">
+                <div class="circle-name">
+                    21天减脂挑战
+                    <span class="circle-tag">🔥 热门</span>
+                </div>
+                <div class="circle-desc">每天热量缺口500kcal，一起见证改变</div>
+                <div class="circle-meta">
+                    <span>👥 2.1万成员</span>
+                    <span>📝 今日126条动态</span>
+                </div>
+            </div>
+            <button class="btn-join">加入</button>
+        </div>
+
+        <div class="circle-item" data-category="weight" onclick="location.href='circle_private.html'">
+            <div class="circle-cover" style="background: linear-gradient(135deg, #fff3e0, #ffe0b2);">🎯</div>
+            <div class="circle-info">
+                <div class="circle-name">减脂三剑客</div>
+                <div class="circle-desc">3人小队，互相督促，不减不散</div>
+                <div class="circle-meta">
+                    <span>👥 3成员</span>
+                    <span>🔒 私密</span>
+                </div>
+            </div>
+            <button class="btn-join joined">已加入</button>
+        </div>
+
+        <!-- 运动类 -->
+        <div class="circle-item" data-category="exercise" onclick="location.href='circle_private.html'">
+            <div class="circle-cover" style="background: linear-gradient(135deg, #e3f2fd, #bbdefb);">🏃</div>
+            <div class="circle-info">
+                <div class="circle-name">每日万步打卡</div>
+                <div class="circle-desc">日行万步，健康一生</div>
+                <div class="circle-meta">
+                    <span>👥 5.3k成员</span>
+                    <span>📝 今日89条动态</span>
+                </div>
+            </div>
+            <button class="btn-join">加入</button>
+        </div>
+
+        <div class="circle-item" data-category="exercise" onclick="location.href='circle_private.html'">
+            <div class="circle-cover" style="background: linear-gradient(135deg, #fce4ec, #f8bbd9);">💪</div>
+            <div class="circle-info">
+                <div class="circle-name">健身打卡群</div>
+                <div class="circle-desc">记录每一次训练，分享健身心得</div>
+                <div class="circle-meta">
+                    <span>👥 8.7k成员</span>
+                    <span>📝 今日203条动态</span>
+                </div>
+            </div>
+            <button class="btn-join">加入</button>
+        </div>
+
+        <!-- 早起类 -->
+        <div class="circle-item" data-category="morning" onclick="location.href='circle_private.html'">
+            <div class="circle-cover" style="background: linear-gradient(135deg, #fff8e1, #ffecb3);">🌅</div>
+            <div class="circle-info">
+                <div class="circle-name">
+                    早起打卡
+                    <span class="circle-tag">🔥 热门</span>
+                </div>
+                <div class="circle-desc">每天6点前打卡，养成早起习惯</div>
+                <div class="circle-meta">
+                    <span>👥 1.2万成员</span>
+                    <span>📝 今日1.5k条动态</span>
+                </div>
+            </div>
+            <button class="btn-join">加入</button>
+        </div>
+
+        <!-- 饮食类 -->
+        <div class="circle-item" data-category="diet" onclick="location.href='circle_private.html'">
+            <div class="circle-cover" style="background: linear-gradient(135deg, #e8f5e9, #c8e6c9);">🥗</div>
+            <div class="circle-info">
+                <div class="circle-name">减脂餐分享</div>
+                <div class="circle-desc">低卡美味，吃出好身材</div>
+                <div class="circle-meta">
+                    <span>👥 8.5k成员</span>
+                    <span>📝 今日67条动态</span>
+                </div>
+            </div>
+            <button class="btn-join">加入</button>
+        </div>
+
+        <!-- 习惯类 -->
+        <div class="circle-item" data-category="habit" onclick="location.href='circle_private.html'">
+            <div class="circle-cover" style="background: linear-gradient(135deg, #e1f5fe, #b3e5fc);">📖</div>
+            <div class="circle-info">
+                <div class="circle-name">每日阅读30分钟</div>
+                <div class="circle-desc">用阅读充实每一天</div>
+                <div class="circle-meta">
+                    <span>👥 3.2k成员</span>
+                    <span>📝 今日45条动态</span>
+                </div>
+            </div>
+            <button class="btn-join">加入</button>
+        </div>
+
+        <!-- 挑战类 -->
+        <div class="circle-item" data-category="challenge" onclick="location.href='circle_private.html'">
+            <div class="circle-cover" style="background: linear-gradient(135deg, #ffebee, #ffcdd2);">🔥</div>
+            <div class="circle-info">
+                <div class="circle-name">
+                    30天戒糖挑战
+                    <span class="circle-tag">💰 押金</span>
+                </div>
+                <div class="circle-desc">30天不吃糖，完成退还押金</div>
+                <div class="circle-meta">
+                    <span>👥 892成员</span>
+                    <span>💰 押金50元</span>
+                </div>
+            </div>
+            <button class="btn-join">¥50 加入</button>
+        </div>
+    </div>
+
+    <script>
+        function selectCategory(el, category) {
+            document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+
+            const items = document.querySelectorAll('.circle-item');
+            items.forEach(item => {
+                if (category === 'all' || item.dataset.category === category) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        function filterCircles(keyword) {
+            const items = document.querySelectorAll('.circle-item');
+            const lower = keyword.toLowerCase();
+
+            items.forEach(item => {
+                const name = item.querySelector('.circle-name').textContent.toLowerCase();
+                const desc = item.querySelector('.circle-desc').textContent.toLowerCase();
+
+                if (name.includes(lower) || desc.includes(lower)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

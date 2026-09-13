@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.weight.mapper.WeightDailyTaskMapper">
+    
+    <resultMap type="WeightDailyTask" id="WeightDailyTaskResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="taskDate"    column="task_date"    />
+        <result property="taskType"    column="task_type"    />
+        <result property="taskName"    column="task_name"    />
+        <result property="sourceId"    column="source_id"    />
+        <result property="targetValue"    column="target_value"    />
+        <result property="currentValue"    column="current_value"    />
+        <result property="isCompleted"    column="is_completed"    />
+        <result property="completedAt"    column="completed_at"    />
+        <result property="pointsReward"    column="points_reward"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectWeightDailyTaskVo">
+        select id, user_id, task_date, task_type, task_name, source_id, target_value, current_value, is_completed, completed_at, points_reward, create_time, update_time from weight_daily_task
+    </sql>
+
+    <select id="selectWeightDailyTaskList" parameterType="WeightDailyTask" resultMap="WeightDailyTaskResult">
+        <include refid="selectWeightDailyTaskVo"/>
+        <where>  
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="taskDate != null "> and task_date = #{taskDate}</if>
+            <if test="taskType != null  and taskType != ''"> and task_type = #{taskType}</if>
+            <if test="taskName != null  and taskName != ''"> and task_name like concat('%', #{taskName}, '%')</if>
+            <if test="sourceId != null "> and source_id = #{sourceId}</if>
+            <if test="targetValue != null "> and target_value = #{targetValue}</if>
+            <if test="currentValue != null "> and current_value = #{currentValue}</if>
+            <if test="isCompleted != null "> and is_completed = #{isCompleted}</if>
+            <if test="completedAt != null "> and completed_at = #{completedAt}</if>
+            <if test="pointsReward != null "> and points_reward = #{pointsReward}</if>
+        </where>
+    </select>
+    
+    <select id="selectWeightDailyTaskById" parameterType="Long" resultMap="WeightDailyTaskResult">
+        <include refid="selectWeightDailyTaskVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertWeightDailyTask" parameterType="WeightDailyTask" useGeneratedKeys="true" keyProperty="id">
+        insert into weight_daily_task
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="taskDate != null">task_date,</if>
+            <if test="taskType != null and taskType != ''">task_type,</if>
+            <if test="taskName != null and taskName != ''">task_name,</if>
+            <if test="sourceId != null">source_id,</if>
+            <if test="targetValue != null">target_value,</if>
+            <if test="currentValue != null">current_value,</if>
+            <if test="isCompleted != null">is_completed,</if>
+            <if test="completedAt != null">completed_at,</if>
+            <if test="pointsReward != null">points_reward,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="taskDate != null">#{taskDate},</if>
+            <if test="taskType != null and taskType != ''">#{taskType},</if>
+            <if test="taskName != null and taskName != ''">#{taskName},</if>
+            <if test="sourceId != null">#{sourceId},</if>
+            <if test="targetValue != null">#{targetValue},</if>
+            <if test="currentValue != null">#{currentValue},</if>
+            <if test="isCompleted != null">#{isCompleted},</if>
+            <if test="completedAt != null">#{completedAt},</if>
+            <if test="pointsReward != null">#{pointsReward},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateWeightDailyTask" parameterType="WeightDailyTask">
+        update weight_daily_task
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="taskDate != null">task_date = #{taskDate},</if>
+            <if test="taskType != null and taskType != ''">task_type = #{taskType},</if>
+            <if test="taskName != null and taskName != ''">task_name = #{taskName},</if>
+            <if test="sourceId != null">source_id = #{sourceId},</if>
+            <if test="targetValue != null">target_value = #{targetValue},</if>
+            <if test="currentValue != null">current_value = #{currentValue},</if>
+            <if test="isCompleted != null">is_completed = #{isCompleted},</if>
+            <if test="completedAt != null">completed_at = #{completedAt},</if>
+            <if test="pointsReward != null">points_reward = #{pointsReward},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteWeightDailyTaskById" parameterType="Long">
+        delete from weight_daily_task where id = #{id}
+    </delete>
+
+    <delete id="deleteWeightDailyTaskByIds" parameterType="String">
+        delete from weight_daily_task where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

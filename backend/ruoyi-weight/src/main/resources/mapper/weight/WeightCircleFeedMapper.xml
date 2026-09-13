@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.weight.mapper.WeightCircleFeedMapper">
+    
+    <resultMap type="WeightCircleFeed" id="WeightCircleFeedResult">
+        <result property="id"    column="id"    />
+        <result property="circleId"    column="circle_id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="feedType"    column="feed_type"    />
+        <result property="visibilityScope"    column="visibility_scope"    />
+        <result property="originCircleId"    column="origin_circle_id"    />
+        <result property="content"    column="content"    />
+        <result property="images"    column="images"    />
+        <result property="sourceRecordId"    column="source_record_id"    />
+        <result property="sourceRecordType"    column="source_record_type"    />
+        <result property="likesCount"    column="likes_count"    />
+        <result property="commentsCount"    column="comments_count"    />
+        <result property="isFeatured"    column="is_featured"    />
+        <result property="status"    column="status"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectWeightCircleFeedVo">
+        select id, circle_id, user_id, feed_type, visibility_scope, origin_circle_id, content, images, source_record_id, source_record_type, likes_count, comments_count, is_featured, status, del_flag, create_by, create_time, update_by, update_time from weight_circle_feed
+    </sql>
+
+    <select id="selectWeightCircleFeedList" parameterType="WeightCircleFeed" resultMap="WeightCircleFeedResult">
+        <include refid="selectWeightCircleFeedVo"/>
+        <where>  
+            <if test="id != null "> and id = #{id}</if>
+            <if test="circleId != null "> and circle_id = #{circleId}</if>
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="feedType != null  and feedType != ''"> and feed_type = #{feedType}</if>
+            <if test="visibilityScope != null  and visibilityScope != ''"> and visibility_scope = #{visibilityScope}</if>
+            <if test="originCircleId != null "> and origin_circle_id = #{originCircleId}</if>
+            <if test="content != null  and content != ''"> and content = #{content}</if>
+            <if test="images != null  and images != ''"> and images = #{images}</if>
+            <if test="sourceRecordId != null "> and source_record_id = #{sourceRecordId}</if>
+            <if test="sourceRecordType != null  and sourceRecordType != ''"> and source_record_type = #{sourceRecordType}</if>
+            <if test="likesCount != null "> and likes_count = #{likesCount}</if>
+            <if test="commentsCount != null "> and comments_count = #{commentsCount}</if>
+            <if test="isFeatured != null "> and is_featured = #{isFeatured}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+        </where>
+        order by ifnull(is_featured, 0) desc, create_time desc, id desc
+    </select>
+
+    <select id="selectPublicFeedList" resultMap="WeightCircleFeedResult">
+        <include refid="selectWeightCircleFeedVo"/>
+        where visibility_scope = 'public'
+          and status = '0'
+          and ifnull(del_flag, '0') = '0'
+        order by ifnull(is_featured, 0) desc, create_time desc, id desc
+    </select>
+
+    <select id="selectCircleVisibleFeeds" resultMap="WeightCircleFeedResult">
+        select distinct
+            f.id,
+            f.circle_id,
+            f.user_id,
+            f.feed_type,
+            f.visibility_scope,
+            f.origin_circle_id,
+            f.content,
+            f.images,
+            f.source_record_id,
+            f.source_record_type,
+            f.likes_count,
+            f.comments_count,
+            f.is_featured,
+            f.status,
+            f.del_flag,
+            f.create_by,
+            f.create_time,
+            f.update_by,
+            f.update_time
+        from weight_circle_feed f
+        left join weight_feed_circle_sync s on s.feed_id = f.id
+        where f.status = '0'
+          and ifnull(f.del_flag, '0') = '0'
+          and (f.origin_circle_id = #{circleId} or s.circle_id = #{circleId})
+        order by ifnull(f.is_featured, 0) desc, f.create_time desc, f.id desc
+    </select>
+    
+    <select id="selectWeightCircleFeedById" parameterType="Long" resultMap="WeightCircleFeedResult">
+        <include refid="selectWeightCircleFeedVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertWeightCircleFeed" parameterType="WeightCircleFeed" useGeneratedKeys="true" keyProperty="id">
+        insert into weight_circle_feed
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="circleId != null">circle_id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="feedType != null and feedType != ''">feed_type,</if>
+            <if test="visibilityScope != null and visibilityScope != ''">visibility_scope,</if>
+            <if test="originCircleId != null">origin_circle_id,</if>
+            <if test="content != null">content,</if>
+            <if test="images != null">images,</if>
+            <if test="sourceRecordId != null">source_record_id,</if>
+            <if test="sourceRecordType != null">source_record_type,</if>
+            <if test="likesCount != null">likes_count,</if>
+            <if test="commentsCount != null">comments_count,</if>
+            <if test="isFeatured != null">is_featured,</if>
+            <if test="status != null">status,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="circleId != null">#{circleId},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="feedType != null and feedType != ''">#{feedType},</if>
+            <if test="visibilityScope != null and visibilityScope != ''">#{visibilityScope},</if>
+            <if test="originCircleId != null">#{originCircleId},</if>
+            <if test="content != null">#{content},</if>
+            <if test="images != null">#{images},</if>
+            <if test="sourceRecordId != null">#{sourceRecordId},</if>
+            <if test="sourceRecordType != null">#{sourceRecordType},</if>
+            <if test="likesCount != null">#{likesCount},</if>
+            <if test="commentsCount != null">#{commentsCount},</if>
+            <if test="isFeatured != null">#{isFeatured},</if>
+            <if test="status != null">#{status},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateWeightCircleFeed" parameterType="WeightCircleFeed">
+        update weight_circle_feed
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="circleId != null">circle_id = #{circleId},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="feedType != null and feedType != ''">feed_type = #{feedType},</if>
+            <if test="visibilityScope != null and visibilityScope != ''">visibility_scope = #{visibilityScope},</if>
+            <if test="originCircleId != null">origin_circle_id = #{originCircleId},</if>
+            <if test="content != null">content = #{content},</if>
+            <if test="images != null">images = #{images},</if>
+            <if test="sourceRecordId != null">source_record_id = #{sourceRecordId},</if>
+            <if test="sourceRecordType != null">source_record_type = #{sourceRecordType},</if>
+            <if test="likesCount != null">likes_count = #{likesCount},</if>
+            <if test="commentsCount != null">comments_count = #{commentsCount},</if>
+            <if test="isFeatured != null">is_featured = #{isFeatured},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteWeightCircleFeedById" parameterType="Long">
+        delete from weight_circle_feed where id = #{id}
+    </delete>
+
+    <delete id="deleteWeightCircleFeedByIds" parameterType="String">
+        delete from weight_circle_feed where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

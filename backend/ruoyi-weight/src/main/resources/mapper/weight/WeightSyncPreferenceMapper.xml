@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.weight.mapper.WeightSyncPreferenceMapper">
+    
+    <resultMap type="WeightSyncPreference" id="WeightSyncPreferenceResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="circleId"    column="circle_id"    />
+        <result property="autoSync"    column="auto_sync"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectWeightSyncPreferenceVo">
+        select id, user_id, circle_id, auto_sync, create_time, update_time from weight_sync_preference
+    </sql>
+
+    <select id="selectWeightSyncPreferenceList" parameterType="WeightSyncPreference" resultMap="WeightSyncPreferenceResult">
+        <include refid="selectWeightSyncPreferenceVo"/>
+        <where>  
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="circleId != null "> and circle_id = #{circleId}</if>
+            <if test="autoSync != null "> and auto_sync = #{autoSync}</if>
+        </where>
+    </select>
+    
+    <select id="selectWeightSyncPreferenceById" parameterType="Long" resultMap="WeightSyncPreferenceResult">
+        <include refid="selectWeightSyncPreferenceVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertWeightSyncPreference" parameterType="WeightSyncPreference" useGeneratedKeys="true" keyProperty="id">
+        insert into weight_sync_preference
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="circleId != null">circle_id,</if>
+            <if test="autoSync != null">auto_sync,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="circleId != null">#{circleId},</if>
+            <if test="autoSync != null">#{autoSync},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateWeightSyncPreference" parameterType="WeightSyncPreference">
+        update weight_sync_preference
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="circleId != null">circle_id = #{circleId},</if>
+            <if test="autoSync != null">auto_sync = #{autoSync},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteWeightSyncPreferenceById" parameterType="Long">
+        delete from weight_sync_preference where id = #{id}
+    </delete>
+
+    <delete id="deleteWeightSyncPreferenceByIds" parameterType="String">
+        delete from weight_sync_preference where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

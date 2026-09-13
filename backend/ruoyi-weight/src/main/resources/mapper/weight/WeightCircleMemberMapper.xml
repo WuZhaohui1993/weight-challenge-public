@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.weight.mapper.WeightCircleMemberMapper">
+    
+    <resultMap type="WeightCircleMember" id="WeightCircleMemberResult">
+        <result property="id"    column="id"    />
+        <result property="circleId"    column="circle_id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="role"    column="role"    />
+        <result property="joinedAt"    column="joined_at"    />
+        <result property="isPinned"    column="is_pinned"    />
+        <result property="streakDays"    column="streak_days"    />
+        <result property="depositStatus"    column="deposit_status"    />
+        <result property="totalCheckins"    column="total_checkins"    />
+        <result property="weightChange"    column="weight_change"    />
+        <result property="status"    column="status"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectWeightCircleMemberVo">
+        select id, circle_id, user_id, role, joined_at, is_pinned, streak_days, deposit_status, total_checkins, weight_change, status, create_time, update_time from weight_circle_member
+    </sql>
+
+    <select id="selectWeightCircleMemberList" parameterType="WeightCircleMember" resultMap="WeightCircleMemberResult">
+        <include refid="selectWeightCircleMemberVo"/>
+        <where>  
+            <if test="circleId != null "> and circle_id = #{circleId}</if>
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="role != null  and role != ''"> and role = #{role}</if>
+            <if test="joinedAt != null "> and joined_at = #{joinedAt}</if>
+            <if test="isPinned != null "> and is_pinned = #{isPinned}</if>
+            <if test="streakDays != null "> and streak_days = #{streakDays}</if>
+            <if test="depositStatus != null  and depositStatus != ''"> and deposit_status = #{depositStatus}</if>
+            <if test="totalCheckins != null "> and total_checkins = #{totalCheckins}</if>
+            <if test="weightChange != null "> and weight_change = #{weightChange}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+        </where>
+    </select>
+    
+    <select id="selectWeightCircleMemberById" parameterType="Long" resultMap="WeightCircleMemberResult">
+        <include refid="selectWeightCircleMemberVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertWeightCircleMember" parameterType="WeightCircleMember" useGeneratedKeys="true" keyProperty="id">
+        insert into weight_circle_member
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="circleId != null">circle_id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="role != null">role,</if>
+            <if test="joinedAt != null">joined_at,</if>
+            <if test="isPinned != null">is_pinned,</if>
+            <if test="streakDays != null">streak_days,</if>
+            <if test="depositStatus != null">deposit_status,</if>
+            <if test="totalCheckins != null">total_checkins,</if>
+            <if test="weightChange != null">weight_change,</if>
+            <if test="status != null">status,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="circleId != null">#{circleId},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="role != null">#{role},</if>
+            <if test="joinedAt != null">#{joinedAt},</if>
+            <if test="isPinned != null">#{isPinned},</if>
+            <if test="streakDays != null">#{streakDays},</if>
+            <if test="depositStatus != null">#{depositStatus},</if>
+            <if test="totalCheckins != null">#{totalCheckins},</if>
+            <if test="weightChange != null">#{weightChange},</if>
+            <if test="status != null">#{status},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateWeightCircleMember" parameterType="WeightCircleMember">
+        update weight_circle_member
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="circleId != null">circle_id = #{circleId},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="role != null">role = #{role},</if>
+            <if test="joinedAt != null">joined_at = #{joinedAt},</if>
+            <if test="isPinned != null">is_pinned = #{isPinned},</if>
+            <if test="streakDays != null">streak_days = #{streakDays},</if>
+            <if test="depositStatus != null">deposit_status = #{depositStatus},</if>
+            <if test="totalCheckins != null">total_checkins = #{totalCheckins},</if>
+            <if test="weightChange != null">weight_change = #{weightChange},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteWeightCircleMemberById" parameterType="Long">
+        delete from weight_circle_member where id = #{id}
+    </delete>
+
+    <delete id="deleteWeightCircleMemberByIds" parameterType="String">
+        delete from weight_circle_member where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

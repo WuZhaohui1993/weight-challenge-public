@@ -1,0 +1,99 @@
+.wc-pill-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+  min-width: 120rpx;
+  height: var(--wc-pill-height);
+  padding: 0 18rpx;
+  border-radius: 999rpx;
+  border: 1px solid transparent;
+  font-size: 22rpx;
+  font-weight: 600;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  box-sizing: border-box;
+  transition: background 160ms ease, color 160ms ease, border-color 160ms ease, box-shadow 160ms ease, opacity 160ms ease;
+}
+
+.wc-pill-action::after {
+  border: none;
+}
+
+.wc-pill-action[disabled] {
+  opacity: 0.56;
+  box-shadow: none;
+}
+
+.wc-pill-action--primary {
+  background: linear-gradient(135deg, var(--wc-primary-strong), var(--wc-primary));
+  color: #ffffff;
+  box-shadow: 0 8rpx 18rpx rgba(74, 144, 226, 0.18);
+}
+
+.wc-pill-action--secondary {
+  background: rgba(255, 255, 255, 0.94);
+  color: var(--wc-text);
+  border-color: var(--wc-line);
+  box-shadow: var(--wc-shadow-soft);
+}
+
+.wc-pill-action--soft {
+  background: var(--wc-surface-muted);
+  color: var(--wc-text-soft);
+  border-color: var(--wc-line);
+}
+
+.wc-pill-action--tool {
+  background: rgba(255, 255, 255, 0.82);
+  color: var(--wc-text);
+  border-color: rgba(23, 37, 84, 0.08);
+  box-shadow: none;
+}
+
+.wc-pill-action--danger {
+  background: rgba(229, 103, 103, 0.08);
+  color: var(--wc-danger);
+  border-color: rgba(229, 103, 103, 0.18);
+  box-shadow: none;
+}
+
+.wc-pill-action.active {
+  background: var(--wc-primary-soft);
+  color: var(--wc-primary);
+  border-color: rgba(74, 144, 226, 0.16);
+  box-shadow: none;
+}
+
+.wc-inline-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6rpx;
+  min-height: 40rpx;
+  padding: 0;
+  font-size: 24rpx;
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--wc-text-soft);
+  transition: color 160ms ease, opacity 160ms ease;
+}
+
+.wc-inline-link--action {
+  min-height: 48rpx;
+  padding: 0 4rpx;
+}
+
+.wc-inline-link--strong {
+  color: var(--wc-primary);
+  font-weight: 600;
+}
+
+.wc-inline-link--subtle {
+  color: var(--wc-text-faint);
+  font-weight: 500;
+}
+
+.wc-inline-link--danger {
+  color: var(--wc-danger);
+}

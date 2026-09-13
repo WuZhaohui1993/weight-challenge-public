@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Weight Challenge - 识别结果</title>
+    <style>
+        :root {
+            --primary: #4A90E2;
+            --accent: #50E3C2;
+            --danger: #FF6B6B;
+            --bg-page: #000000;
+            --card-bg: #FFFFFF;
+            --text-main: #333333;
+            --text-sub: #888888;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: var(--bg-page);
+            color: white;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* 图片区域 */
+        .image-container {
+            flex: 1;
+            position: relative;
+            background: #222;
+            overflow: hidden;
+        }
+
+        .captured-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        /* 识别框模拟 */
+        .bound-box {
+            position: absolute;
+            border: 2px solid var(--accent);
+            border-radius: 4px;
+            box-shadow: 0 0 10px rgba(80, 227, 194, 0.5);
+            display: flex;
+            align-items: flex-end;
+        }
+
+        .bound-label {
+            background: var(--accent);
+            color: #000;
+            font-size: 10px;
+            font-weight: bold;
+            padding: 2px 6px;
+        }
+
+        .box-1 {
+            top: 30%;
+            left: 20%;
+            width: 30%;
+            height: 25%;
+        }
+
+        .box-2 {
+            top: 40%;
+            left: 55%;
+            width: 25%;
+            height: 20%;
+        }
+
+        /* 底部结果面板 */
+        .result-panel {
+            background: var(--card-bg);
+            color: var(--text-main);
+            border-top-left-radius: 24px;
+            border-top-right-radius: 24px;
+            padding: 20px;
+            transition: transform 0.3s;
+            height: 60vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-handle {
+            width: 40px;
+            height: 4px;
+            background: #ddd;
+            border-radius: 2px;
+            margin: 0 auto 15px;
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 20px;
+        }
+
+        .total-calories {
+            font-size: 32px;
+            font-weight: bold;
+            color: var(--primary);
+            font-feature-settings: "tnum";
+        }
+
+        .total-label {
+            font-size: 12px;
+            color: var(--text-sub);
+        }
+
+        /* 食物列表 */
+        .food-list {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .food-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f5f5f5;
+        }
+
+        .food-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 12px;
+        }
+
+        .food-info {
+            flex: 1;
+        }
+
+        .food-name {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .food-detail {
+            font-size: 12px;
+            color: var(--text-sub);
+            margin-top: 2px;
+        }
+
+        .food-cal {
+            font-weight: bold;
+            margin-left: 10px;
+            font-size: 16px;
+        }
+
+        /* 营养分布环形图模拟 */
+        .nutrients-row {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .nutrient {
+            text-align: center;
+        }
+
+        .nutrient-val {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 2px;
+        }
+
+        .nutrient-label {
+            font-size: 10px;
+            color: var(--text-sub);
+        }
+
+        .progress-bar-bg {
+            width: 60px;
+            height: 4px;
+            background: #eee;
+            border-radius: 2px;
+            margin-top: 4px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            border-radius: 2px;
+        }
+
+        /* 底部按钮 */
+        .action-row {
+            margin-top: 20px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 14px;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-outline {
+            background: #F5F7FA;
+            color: var(--text-sub);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 10px rgba(74, 144, 226, 0.3);
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="image-container">
+        <!-- 模拟拍摄的照片 -->
+        <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+            class="captured-image" alt="Food">
+
+        <!-- 识别框 -->
+        <div class="bound-box box-1">
+            <span class="bound-label">健康沙拉 85%</span>
+        </div>
+        <div class="bound-box box-2" style="border-color: #FFB74D; box-shadow: 0 0 10px rgba(255, 183, 77, 0.5);">
+            <span class="bound-label" style="background: #FFB74D;">鸡蛋 98%</span>
+        </div>
+
+        <!-- 返回按钮 -->
+        <div style="position: absolute; top: 40px; left: 20px; width: 32px; height: 32px; background: rgba(0,0,0,0.5); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white;"
+            onclick="history.back()">✕</div>
+    </div>
+
+    <!-- Loading 状态 -->
+    <div id="loadingPanel" style="position: absolute; top: 50%; left: 0; right: 0; text-align: center; color: white;">
+        <div style="font-size: 40px; margin-bottom: 20px; animation: pulse 1s infinite;">🤖</div>
+        <div style="font-size: 18px; font-weight: bold;">AI 正在分析食物...</div>
+        <div style="font-size: 14px; opacity: 0.7; margin-top: 8px;">正在匹配卡路里库</div>
+        <div class="scan-line"></div>
+    </div>
+
+    <!-- 结果面板 (初始隐藏) -->
+    <div id="resultPanel" class="result-panel" style="transform: translateY(100%);">
+        <div class="panel-handle"></div>
+
+        <div class="result-header">
+            <div>
+                <div class="total-label">总热量估算</div>
+                <div class="total-calories">342 <span
+                        style="font-size:16px; font-weight:normal; color:#666;">kcal</span></div>
+            </div>
+            <div style="text-align: right;">
+                <div class="total-label">可信度</div>
+                <div style="color: var(--accent); font-weight: bold;">高 🔥</div>
+            </div>
+        </div>
+
+        <div class="food-list">
+            <!-- ...列表保持不变... -->
+            <div class="food-item">
+                <div class="food-dot" style="background: var(--accent);"></div>
+                <div class="food-info">
+                    <div class="food-name">混合蔬菜沙拉</div>
+                    <div class="food-detail">约 150g · 低卡低脂</div>
+                </div>
+                <div class="food-cal">65</div>
+                <div style="margin-left:10px; color:#ccc;">✏️</div>
+            </div>
+            <div class="food-item">
+                <div class="food-dot" style="background: #FFB74D;"></div>
+                <div class="food-info">
+                    <div class="food-name">煮鸡蛋</div>
+                    <div class="food-detail">1 个 · 优质蛋白</div>
+                </div>
+                <div class="food-cal">78</div>
+                <div style="margin-left:10px; color:#ccc;">✏️</div>
+            </div>
+            <div class="food-item">
+                <div class="food-dot" style="background: #FF8A65;"></div>
+                <div class="food-info">
+                    <div class="food-name">鳄梨/牛油果</div>
+                    <div class="food-detail">0.5 个 (约80g) · 优质脂肪</div>
+                </div>
+                <div class="food-cal">130</div>
+                <div style="margin-left:10px; color:#ccc;">✏️</div>
+            </div>
+            <div class="food-item">
+                <div class="food-dot" style="background: #90A4AE;"></div>
+                <div class="food-info">
+                    <div class="food-name">小番茄</div>
+                    <div class="food-detail">5 颗 · 维生素C</div>
+                </div>
+                <div class="food-cal">25</div>
+                <div style="margin-left:10px; color:#ccc;">✏️</div>
+            </div>
+        </div>
+
+        <div class="nutrients-row">
+            <!-- ...营养成分保持不变... -->
+            <div class="nutrient">
+                <div class="nutrient-label">碳水</div>
+                <div class="nutrient-val">12g</div>
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" style="width: 30%; background: #4DB6AC;"></div>
+                </div>
+            </div>
+            <div class="nutrient">
+                <div class="nutrient-label">蛋白质</div>
+                <div class="nutrient-val">18g</div>
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" style="width: 50%; background: #FFD54F;"></div>
+                </div>
+            </div>
+            <div class="nutrient">
+                <div class="nutrient-label">脂肪</div>
+                <div class="nutrient-val">22g</div>
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" style="width: 40%; background: #E57373;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-row">
+            <button class="btn btn-outline" onclick="history.back()">重拍</button>
+            <button class="btn btn-primary" onclick="confirmRecord()">确认记录</button>
+        </div>
+    </div>
+
+    <style>
+        /* 扫描线动画 */
+        .scan-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--accent);
+            box-shadow: 0 0 10px var(--accent);
+            animation: scan 2s infinite ease-in-out;
+            opacity: 0.5;
+        }
+
+        @keyframes scan {
+            0% {
+                transform: translateY(20vh);
+            }
+
+            50% {
+                transform: translateY(50vh);
+            }
+
+            100% {
+                transform: translateY(20vh);
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+    </style>
+
+    <script>
+        // 初始化模拟Loading
+        window.onload = function () {
+            setTimeout(() => {
+                // 隐藏Loading，上滑展示结果
+                const loadingPanel = document.getElementById('loadingPanel');
+                if (loadingPanel) loadingPanel.style.display = 'none';
+
+                const scanLine = document.querySelector('.scan-line');
+                if (scanLine) scanLine.style.display = 'none';
+
+                const resultPanel = document.getElementById('resultPanel');
+                if (resultPanel) resultPanel.style.transform = 'translateY(0)';
+            }, 1800); // 模拟1.8秒识别时间
+        };
+
+        // 模拟食物列表点击编辑
+        document.querySelectorAll('.food-item').forEach(item => {
+            item.addEventListener('click', function () {
+                const name = this.querySelector('.food-name').innerText;
+                const cal = this.querySelector('.food-cal').innerText;
+                const newCal = prompt(`修改 "${name}" 的卡路里:`, cal);
+                if (newCal && newCal !== cal) {
+                    this.querySelector('.food-cal').innerText = newCal;
+                    recalcTotal();
+                }
+            });
+        });
+
+        function recalcTotal() {
+            let total = 0;
+            document.querySelectorAll('.food-cal').forEach(el => {
+                total += parseInt(el.innerText);
+            });
+            document.querySelector('.total-calories').innerHTML = total + ' <span style="font-size:16px; font-weight:normal; color:#666;">kcal</span>';
+        }
+
+        function confirmRecord() {
+            // 1. 获取识别结果
+            const totalCal = parseInt(document.querySelector('.total-calories').innerText);
+            const foodItems = [];
+            document.querySelectorAll('.food-item').forEach(item => {
+                foodItems.push(item.querySelector('.food-name').innerText);
+            });
+
+            // 2. 存入 SessionStorage 供记录页读取
+            const aiData = {
+                calories: totalCal,
+                foodDescription: foodItems.join(' + '), // 拼接食物名作为描述
+                imageSrc: document.querySelector('.captured-image').src, // 传递图片地址
+                timestamp: new Date().getTime()
+            };
+            sessionStorage.setItem('ai_food_data', JSON.stringify(aiData));
+
+            // 3. 跳转到记录页的饮食Tab
+            // 按钮简单的反馈动画
+            const btn = document.querySelector('.btn-primary');
+            btn.innerHTML = '正在导入...';
+            setTimeout(() => {
+                location.href = 'record.html?tab=diet&from=ai';
+            }, 500);
+        }
+    </script>
+</body>
+
+</html>

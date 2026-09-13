@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Weight Challenge - 动态详情</title>
+    <style>
+        :root {
+            --primary: #4A90E2;
+            --accent: #50E3C2;
+            --success: #4CAF50;
+            --warning: #FF9800;
+            --bg-page: #F7F8FA;
+            --card-bg: #FFFFFF;
+            --text-main: #333333;
+            --text-sub: #888888;
+            --radius-m: 16px;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            padding-bottom: 80px;
+        }
+
+        /* Header */
+        .header {
+            padding: 44px 20px 10px;
+            background: white;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05);
+            height: 88px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .header-icon {
+            font-size: 20px;
+        }
+
+        .header-right {
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        /* 动态内容区 */
+        .feed-detail {
+            background: white;
+            padding: 20px;
+            margin-bottom: 10px;
+        }
+
+        .feed-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+
+        .avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            margin-right: 12px;
+            object-fit: cover;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .feed-meta {
+            font-size: 12px;
+            color: var(--text-sub);
+        }
+
+        .btn-follow {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 14px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .feed-content {
+            font-size: 15px;
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+
+        .feed-images {
+            display: grid;
+            gap: 6px;
+            margin-bottom: 16px;
+        }
+
+        .feed-images.grid-1 {
+            grid-template-columns: 1fr;
+        }
+
+        .feed-images.grid-2 {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .feed-img {
+            width: 100%;
+            border-radius: 12px;
+            object-fit: cover;
+            max-height: 300px;
+        }
+
+        .feed-actions {
+            display: flex;
+            gap: 24px;
+            padding-top: 12px;
+            border-top: 1px solid #F0F0F0;
+        }
+
+        .action-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            color: var(--text-sub);
+            cursor: pointer;
+        }
+
+        .action-item.liked {
+            color: #E91E63;
+        }
+
+        .action-icon {
+            font-size: 18px;
+        }
+
+        /* 评论区 */
+        .comment-section {
+            background: white;
+            padding: 16px 20px;
+        }
+
+        .comment-header {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .comment-sort {
+            font-size: 12px;
+            color: var(--text-sub);
+            font-weight: normal;
+        }
+
+        .comment-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .comment-item {
+            display: flex;
+            gap: 12px;
+        }
+
+        .comment-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .comment-body {
+            flex: 1;
+        }
+
+        .comment-user {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .author-tag {
+            font-size: 10px;
+            background: #E3F2FD;
+            color: var(--primary);
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-weight: normal;
+        }
+
+        .comment-text {
+            font-size: 14px;
+            line-height: 1.5;
+            color: var(--text-main);
+            margin-bottom: 6px;
+        }
+
+        .comment-meta {
+            font-size: 11px;
+            color: #AAA;
+            display: flex;
+            gap: 16px;
+        }
+
+        .comment-action {
+            cursor: pointer;
+        }
+
+        .comment-action:hover {
+            color: var(--primary);
+        }
+
+        /* 回复样式 */
+        .reply-list {
+            margin-top: 10px;
+            padding-left: 48px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .reply-item {
+            background: #F9FAFC;
+            padding: 10px 12px;
+            border-radius: 10px;
+        }
+
+        .reply-user {
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .reply-text {
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        /* 底部评论输入框 */
+        .comment-input-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 12px 20px 30px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+            z-index: 100;
+        }
+
+        .comment-input {
+            flex: 1;
+            background: #F5F7FA;
+            border: none;
+            border-radius: 20px;
+            padding: 10px 16px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .btn-send {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .btn-send:disabled {
+            background: #CCC;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <div class="header-left" onclick="history.back()">
+            <span class="header-icon">←</span>
+            <span>动态详情</span>
+        </div>
+        <div class="header-right">⋯</div>
+    </div>
+
+    <!--
+        [后端关联] 动态详情与评论：
+        
+        1. 动态详情 API: GET /api/feeds/{id}
+        返回: {
+            id, user_id, user_name, user_avatar,
+            content, images[], circle_name,
+            likes_count, comments_count, created_at,
+            is_liked, is_following_author
+        }
+        
+        2. 评论列表 API: GET /api/feeds/{id}/comments?sort=hot|new
+        返回: [
+            { id, user_id, user_name, avatar, content, created_at, likes, is_author,
+              replies: [{ id, user_name, content, created_at }]
+            },
+            ...
+        ]
+        
+        3. 发布评论 API: POST /api/feeds/{id}/comments
+        Body: { content, reply_to_comment_id? }
+        
+        4. 点赞评论 API: POST /api/comments/{id}/like
+    -->
+
+    <!-- 动态内容 -->
+    <div class="feed-detail">
+        <div class="feed-header">
+            <img src="https://i.pravatar.cc/100?img=5" class="avatar" onclick="location.href='user_profile.html'"
+                style="cursor: pointer;">
+            <div class="user-info" onclick="location.href='user_profile.html'" style="cursor: pointer;">
+                <div class="user-name">减脂小达人</div>
+                <div class="feed-meta">1小时前 · 来自「减脂餐分享」</div>
+            </div>
+            <button class="btn-follow">+ 关注</button>
+        </div>
+
+        <div class="feed-content">
+            自制鸡胸肉沙拉，低卡又饱腹！🥗
+
+            今天分享一个我最爱的减脂餐搭配：
+            - 鸡胸肉 150g（水煮后切片）
+            - 生菜、番茄、黄瓜适量
+            - 橄榄油+柠檬汁调味
+
+            热量大约 350kcal，蛋白质 40g！
+            做法非常简单，大家可以试试👇
+        </div>
+
+        <div class="feed-images grid-1">
+            <img src="https://picsum.photos/seed/salad/800/450" class="feed-img">
+        </div>
+
+        <!-- 关联打卡数据 -->
+        <div class="checkin-grid cols-2">
+            <div class="checkin-item food">
+                <div class="checkin-icon">🍽️</div>
+                <div class="checkin-data">
+                    <div class="checkin-value">350<span class="unit">kcal</span></div>
+                    <div class="checkin-meta-row">
+                        <span class="checkin-change">早餐</span>
+                        <span class="checkin-label">合理热量</span>
+                    </div>
+                </div>
+            </div>
+            <div class="checkin-item weight">
+                <div class="checkin-icon">⚖️</div>
+                <div class="checkin-data">
+                    <div class="checkin-value">54.2<span class="unit">kg</span></div>
+                    <div class="checkin-meta-row">
+                        <span class="checkin-change">↓ 0.2</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <style>
+            /* 打卡数据 Grid 样式（复用优化版） */
+            .checkin-grid {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+                margin: 12px 0;
+            }
+
+            .checkin-grid.cols-2 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .checkin-item {
+                background: #F8FAFC;
+                border-radius: 12px;
+                padding: 10px 12px;
+                text-align: left;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                min-height: 56px;
+            }
+
+            .checkin-item.exercise {
+                background: linear-gradient(135deg, #FFF3E0, #F5F5F5);
+            }
+
+            .checkin-item.weight {
+                background: linear-gradient(135deg, #E3F2FD, #F5F5F5);
+            }
+
+            .checkin-item.food {
+                background: linear-gradient(135deg, #E8F5E9, #F5F5F5);
+            }
+
+            .checkin-item.habit {
+                background: linear-gradient(135deg, #F3E5F5, #F5F5F5);
+            }
+
+            /* 图标样式调整 */
+            .checkin-icon {}
+
+            .checkin-label {
+                font-size: 10px;
+                color: #888;
+                margin-top: 2px;
+            }
+        </style>
+
+        <div class="feed-actions">
+            <div class="action-item liked" onclick="toggleLike(this)">
+                <span class="action-icon">❤️</span>
+                <span>156</span>
+            </div>
+            <div class="action-item">
+                <span class="action-icon">💬</span>
+                <span>42</span>
+            </div>
+            <div class="action-item">
+                <span class="action-icon">↗️</span>
+                <span>分享</span>
+            </div>
+            <div class="action-item">
+                <span class="action-icon">⭐</span>
+                <span>收藏</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 评论区 -->
+    <div class="comment-section">
+        <div class="comment-header">
+            <span>全部评论 (42)</span>
+            <span class="comment-sort">按热度 ▾</span>
+        </div>
+
+        <div class="comment-list">
+            <!-- 评论 1: 作者回复 -->
+            <div class="comment-item">
+                <img src="https://i.pravatar.cc/100?img=12" class="comment-avatar">
+                <div class="comment-body">
+                    <div class="comment-user">
+                        健身小白
+                    </div>
+                    <div class="comment-text">请问鸡胸肉怎么做才不会柴？每次我做出来都很干😭</div>
+                    <div class="comment-meta">
+                        <span>10分钟前</span>
+                        <span class="comment-action" onclick="likeComment(this)">👍 28</span>
+                        <span class="comment-action" onclick="replyTo('健身小白')">回复</span>
+                    </div>
+
+                    <!-- 回复列表 -->
+                    <div class="reply-list">
+                        <div class="reply-item">
+                            <div class="reply-user">减脂小达人 <span class="author-tag">作者</span></div>
+                            <div class="reply-text">建议用冷水下锅，水开后关火焖15分钟，这样鸡胸肉会很嫩！</div>
+                        </div>
+                        <div class="reply-item">
+                            <div class="reply-user">健身小白</div>
+                            <div class="reply-text">@减脂小达人 谢谢！我今天就试试</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 评论 2 -->
+            <div class="comment-item">
+                <img src="https://i.pravatar.cc/100?img=8" class="comment-avatar">
+                <div class="comment-body">
+                    <div class="comment-user">早起跑步</div>
+                    <div class="comment-text">看起来好好吃！收藏了，这周末试着做一下 💪</div>
+                    <div class="comment-meta">
+                        <span>30分钟前</span>
+                        <span class="comment-action" onclick="likeComment(this)">👍 15</span>
+                        <span class="comment-action" onclick="replyTo('早起跑步')">回复</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 评论 3 -->
+            <div class="comment-item">
+                <img src="https://i.pravatar.cc/100?img=3" class="comment-avatar">
+                <div class="comment-body">
+                    <div class="comment-user">营养师小王</div>
+                    <div class="comment-text">营养搭配很棒！蛋白质和纤维都有了，如果加点牛油果会更完美～</div>
+                    <div class="comment-meta">
+                        <span>1小时前</span>
+                        <span class="comment-action" onclick="likeComment(this)">👍 32</span>
+                        <span class="comment-action" onclick="replyTo('营养师小王')">回复</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 评论 4 -->
+            <div class="comment-item">
+                <img src="https://i.pravatar.cc/100?img=15" class="comment-avatar">
+                <div class="comment-body">
+                    <div class="comment-user">减肥ing</div>
+                    <div class="comment-text">连续吃了一周，瘦了1kg！</div>
+                    <div class="comment-meta">
+                        <span>2小时前</span>
+                        <span class="comment-action" onclick="likeComment(this)">👍 8</span>
+                        <span class="comment-action" onclick="replyTo('减肥ing')">回复</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 加载更多 -->
+            <div style="text-align: center; padding: 16px; color: #999; font-size: 13px;">
+                点击加载更多评论...
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部评论输入框 -->
+    <div class="comment-input-bar">
+        <input type="text" class="comment-input" id="commentInput" placeholder="写评论..." oninput="checkInput()">
+        <button class="btn-send" id="btnSend" disabled onclick="sendComment()">发送</button>
+    </div>
+
+    <script>
+        function toggleLike(el) {
+            if (el.classList.contains('liked')) {
+                el.classList.remove('liked');
+                el.querySelector('.action-icon').textContent = '🤍';
+            } else {
+                el.classList.add('liked');
+                el.querySelector('.action-icon').textContent = '❤️';
+            }
+        }
+
+        function likeComment(el) {
+            const text = el.textContent;
+            const num = parseInt(text.match(/\d+/)[0]);
+            el.textContent = `👍 ${num + 1}`;
+            el.style.color = 'var(--primary)';
+        }
+
+        function replyTo(userName) {
+            const input = document.getElementById('commentInput');
+            input.placeholder = `回复 @${userName}...`;
+            input.focus();
+        }
+
+        function checkInput() {
+            const input = document.getElementById('commentInput');
+            const btn = document.getElementById('btnSend');
+            btn.disabled = input.value.trim() === '';
+        }
+
+        function sendComment() {
+            const input = document.getElementById('commentInput');
+            if (input.value.trim()) {
+                alert(`✅ 评论已发送：${input.value}`);
+                input.value = '';
+                input.placeholder = '写评论...';
+                document.getElementById('btnSend').disabled = true;
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,2757 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>健康数据分析 - 复盘日历 Frontend Design</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="fd-system.css">
+  <style>
+    body {
+      background: #e8edf5;
+    }
+
+    .analytics-page {
+      --wc-bg: #f5f7fb;
+      --wc-bg-soft: #fafbfd;
+      --wc-surface: rgba(255, 255, 255, 0.94);
+      --wc-surface-strong: #ffffff;
+      --wc-surface-muted: #eef3f9;
+      --wc-line: rgba(23, 37, 84, 0.08);
+      --wc-line-strong: rgba(23, 37, 84, 0.12);
+      --wc-text: #18202d;
+      --wc-text-soft: #5f6b7a;
+      --wc-text-faint: #8b95a4;
+      --wc-primary: #4a90e2;
+      --wc-primary-soft: #edf5ff;
+      --wc-primary-strong: #2e6fc8;
+      --wc-success: #2ba779;
+      --wc-warning: #f29b38;
+      --wc-danger: #e56767;
+      --wc-success-soft: #e9f8f2;
+      --wc-warning-soft: #fff3df;
+      --wc-danger-soft: #ffefef;
+      --wc-radius-s: 9px;
+      --wc-radius-m: 12px;
+      --wc-radius-l: 16px;
+      --wc-radius-xl: 20px;
+      --wc-shadow-soft: 0 6px 18px rgba(16, 24, 40, 0.04);
+      --wc-shadow-panel: 0 12px 32px rgba(16, 24, 40, 0.07);
+      --wc-shadow-float: 0 16px 40px rgba(16, 24, 40, 0.12);
+      --bg: var(--wc-bg);
+      --shell: #e8edf5;
+      --paper: var(--wc-surface-strong);
+      --paper-soft: rgba(255, 255, 255, 0.88);
+      --ink: var(--wc-text);
+      --ink-2: #344255;
+      --muted: var(--wc-text-soft);
+      --faint: var(--wc-text-faint);
+      --line: var(--wc-line);
+      --primary: var(--wc-primary);
+      --primary-deep: var(--wc-primary-strong);
+      --primary-soft: var(--wc-primary-soft);
+      --success: var(--wc-success);
+      --success-soft: var(--wc-success-soft);
+      --warning: var(--wc-warning);
+      --warning-soft: var(--wc-warning-soft);
+      --danger: var(--wc-danger);
+      --danger-soft: var(--wc-danger-soft);
+      --shadow: var(--wc-shadow-soft);
+      --shadow-strong: var(--wc-shadow-panel);
+      --radius: var(--wc-radius-l);
+      background: linear-gradient(180deg, #f7f9fc 0%, #f3f6fb 100%);
+      color: var(--wc-text);
+    }
+
+    .analytics-page .app {
+      padding: 18px 16px 112px;
+    }
+
+    .analytics-page .topbar {
+      min-height: 58px;
+      padding: 4px 0 10px;
+    }
+
+    .analytics-page .brand strong {
+      font-size: 22px;
+      line-height: 1.12;
+      font-weight: 700;
+      letter-spacing: 0;
+    }
+
+    .analytics-page .brand span,
+    .analytics-page .top-sub {
+      color: var(--wc-text-soft);
+      font-size: 12px;
+    }
+
+    .analytics-page .icon-btn {
+      min-height: 38px;
+      border-radius: 999px;
+      color: var(--wc-primary-strong);
+      background: rgba(237, 245, 255, 0.98);
+      border: 1px solid rgba(210, 218, 230, 0.82);
+      box-shadow: none;
+      font-weight: 700;
+    }
+
+    .analytics-page .chip-btn {
+      min-height: 38px;
+      border-radius: 999px;
+      color: var(--wc-primary-strong);
+      background: rgba(237, 245, 255, 0.98);
+      border: 1px solid rgba(210, 218, 230, 0.82);
+      box-shadow: none;
+      font-weight: 700;
+    }
+
+    .analytics-page .icon-btn {
+      width: 38px;
+      min-width: 38px;
+      padding: 0;
+      color: var(--wc-text-soft);
+      background: rgba(255, 255, 255, 0.92);
+    }
+
+    .refresh-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+      padding: 0 3px;
+      color: var(--wc-text-soft);
+      font-size: 11px;
+      line-height: 1.4;
+    }
+
+    .refresh-meta span {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .top-sync {
+      display: grid;
+      gap: 2px;
+      justify-items: end;
+      color: var(--wc-text-soft);
+      font-size: 11px;
+      line-height: 1.3;
+      font-weight: 600;
+    }
+
+    .top-sync strong {
+      color: var(--wc-primary-strong);
+      font-size: 12px;
+      line-height: 1.2;
+      font-weight: 700;
+    }
+
+    .section-kicker {
+      color: var(--wc-primary-strong);
+      font-size: 10px;
+      line-height: 1.2;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+    }
+
+    .status-tag {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 20px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: var(--wc-text);
+      font-size: 11px;
+      line-height: 1.2;
+      font-weight: 700;
+      white-space: nowrap;
+      pointer-events: none;
+      box-shadow: none;
+    }
+
+    .status-tag.good {
+      color: var(--wc-success);
+    }
+
+    .status-tag.warn {
+      color: #a76716;
+    }
+
+    .status-tag.missing {
+      color: var(--wc-text-soft);
+    }
+
+    .wc-badge {
+      width: fit-content;
+      min-height: 22px;
+      display: inline-flex;
+      align-items: center;
+      padding: 0 8px;
+      border-radius: 999px;
+      color: var(--wc-text-soft);
+      background: var(--wc-surface-muted);
+      font-size: 10px;
+      line-height: 1;
+      font-weight: 700;
+    }
+
+    .wc-badge--success {
+      color: var(--wc-success);
+      background: var(--wc-success-soft);
+    }
+
+    .wc-badge--warning {
+      color: #a76716;
+      background: var(--wc-warning-soft);
+    }
+
+    .wc-badge--danger {
+      color: var(--wc-danger);
+      background: var(--wc-danger-soft);
+    }
+
+    .calendar-hero {
+      display: grid;
+      gap: 9px;
+      margin-bottom: 14px;
+      animation: fd-enter 280ms ease both;
+    }
+
+    .calendar-hero__head {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: start;
+      padding: 0 2px;
+    }
+
+    .calendar-hero__title {
+      margin-top: 4px;
+      color: var(--wc-text);
+      font-size: 21px;
+      line-height: 1.18;
+      font-weight: 700;
+      letter-spacing: 0;
+    }
+
+    .calendar-hero__desc {
+      margin: 4px 0 0;
+      color: var(--wc-text-soft);
+      font-size: 11px;
+      line-height: 1.45;
+    }
+
+    .calendar-hero__date {
+      color: var(--wc-primary-strong);
+      font-size: 12px;
+      line-height: 1.2;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .calendar-panel--hero {
+      margin-bottom: 0;
+      background:
+        radial-gradient(circle at top right, rgba(74, 144, 226, 0.12), transparent 34%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(247, 250, 255, 0.98));
+    }
+
+    .day-context {
+      display: grid;
+      gap: 10px;
+      padding: 12px;
+      border-radius: 16px;
+      border: 1px solid rgba(210, 218, 230, 0.82);
+      background: var(--wc-surface-strong);
+      box-shadow: var(--wc-shadow-soft);
+    }
+
+    .day-context__main {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .day-context__eyebrow {
+      color: var(--wc-primary-strong);
+      font-size: 10px;
+      line-height: 1.2;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+    }
+
+    .day-context__title {
+      display: block;
+      margin-top: 5px;
+      color: var(--wc-text);
+      font-size: 16px;
+      line-height: 1.28;
+      font-weight: 700;
+    }
+
+    .day-context__desc {
+      margin-top: 6px;
+      color: var(--wc-text-soft);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .day-context__status {
+      min-width: 58px;
+      color: var(--wc-success);
+      font-size: 12px;
+      line-height: 1.25;
+      font-weight: 700;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .day-context__status.is-wave {
+      color: #a76716;
+    }
+
+    .day-context__status.is-missing,
+    .day-context__status.is-future {
+      color: var(--wc-text-soft);
+    }
+
+    .day-context__metrics {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .day-context__metric {
+      min-width: 0;
+      display: grid;
+      gap: 5px;
+      padding: 8px 9px;
+      border-radius: 12px;
+      background: linear-gradient(180deg, rgba(248, 251, 255, 0.98), rgba(255, 255, 255, 0.98));
+      border: 1px solid rgba(210, 218, 230, 0.75);
+    }
+
+    .day-context__metric span {
+      color: var(--wc-text-faint);
+      font-size: 10px;
+      line-height: 1.2;
+      font-weight: 600;
+    }
+
+    .day-context__metric strong {
+      overflow: hidden;
+      color: var(--wc-text);
+      font-size: 13px;
+      line-height: 1.2;
+      font-weight: 700;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .analytics-tabs {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px;
+      margin-bottom: 14px;
+      border-radius: 999px;
+      background: rgba(244, 247, 251, 0.98);
+      border: 1px solid rgba(210, 218, 230, 0.9);
+      box-shadow: 0 10px 24px rgba(30, 41, 59, 0.06);
+      animation: fd-enter 300ms 35ms ease both;
+    }
+
+    .analytics-tab {
+      flex: 1;
+      min-width: 0;
+      min-height: 36px;
+      border-radius: 999px;
+      color: var(--wc-text-soft);
+      font-size: 12px;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .analytics-tab.is-active,
+    .analytics-tab.active {
+      color: var(--wc-primary-strong);
+      background: #fff;
+      box-shadow: 0 8px 18px rgba(30, 41, 59, 0.08);
+    }
+
+    .section {
+      animation: fd-enter 320ms 55ms ease both;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+      padding: 0 2px;
+    }
+
+    .section-title {
+      margin-top: 5px;
+      color: var(--wc-text);
+      font-size: 17px;
+      line-height: 1.25;
+      font-weight: 700;
+    }
+
+    .section-note {
+      flex-shrink: 0;
+      color: var(--wc-text-soft);
+      font-size: 11px;
+      line-height: 1.35;
+      font-weight: 600;
+    }
+
+    .panel,
+    .day-review,
+    .insight-card,
+    .quality-card,
+    .signal-card {
+      border-radius: 16px;
+      border: 1px solid var(--wc-line);
+      background: var(--wc-surface-strong);
+      box-shadow: var(--wc-shadow-soft);
+    }
+
+    .calendar-toolbar {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 9px;
+    }
+
+    .calendar-month {
+      min-width: 0;
+      display: grid;
+      gap: 3px;
+      text-align: center;
+    }
+
+    .calendar-month strong {
+      color: var(--wc-text);
+      font-size: 15px;
+      line-height: 1.2;
+      font-weight: 700;
+    }
+
+    .calendar-month span {
+      color: var(--wc-text-soft);
+      font-size: 11px;
+      line-height: 1.3;
+    }
+
+    .calendar-panel {
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+
+    .calendar-week,
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 5px;
+    }
+
+    .calendar-week {
+      margin-bottom: 6px;
+      color: var(--wc-text-faint);
+      font-size: 10px;
+      line-height: 1.2;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .calendar-day {
+      position: relative;
+      height: 42px;
+      display: grid;
+      gap: 3px;
+      place-items: center;
+      align-content: center;
+      border-radius: 11px;
+      color: var(--wc-text-soft);
+      background: var(--wc-surface-muted);
+      font-size: 12px;
+      line-height: 1;
+      font-weight: 700;
+      transition: transform 150ms ease, background 150ms ease, color 150ms ease, box-shadow 150ms ease;
+    }
+
+    .calendar-day.is-outside {
+      color: rgba(139, 149, 164, 0.44);
+      background: transparent;
+      pointer-events: none;
+    }
+
+    .calendar-day.is-stable {
+      color: var(--wc-success);
+      background: var(--wc-success-soft);
+    }
+
+    .calendar-day.is-wave {
+      color: #a76716;
+      background: var(--wc-warning-soft);
+    }
+
+    .calendar-day.is-missing {
+      color: var(--wc-text-faint);
+      background: var(--wc-surface-muted);
+    }
+
+    .calendar-day.is-future {
+      color: var(--wc-text-faint);
+      background: rgba(238, 243, 249, 0.52);
+    }
+
+    .calendar-day.is-today {
+      box-shadow: inset 0 0 0 1px rgba(46, 111, 200, 0.28);
+    }
+
+    .calendar-day.is-active {
+      color: #fff;
+      background: var(--wc-primary-strong);
+      box-shadow: 0 10px 20px rgba(46, 111, 200, 0.18);
+    }
+
+    .calendar-day.is-stable.is-active {
+      background: var(--wc-success);
+      box-shadow: 0 10px 20px rgba(43, 167, 121, 0.18);
+    }
+
+    .calendar-day.is-wave.is-active {
+      background: var(--wc-warning);
+      box-shadow: 0 10px 20px rgba(242, 155, 56, 0.18);
+    }
+
+    .calendar-day.is-missing.is-active,
+    .calendar-day.is-future.is-active {
+      background: var(--wc-text-faint);
+      box-shadow: 0 10px 20px rgba(95, 107, 122, 0.14);
+    }
+
+    .calendar-day__date {
+      display: block;
+      line-height: 1;
+    }
+
+    .calendar-day__weight {
+      display: block;
+      min-height: 10px;
+      color: currentColor;
+      font-size: 9px;
+      line-height: 1;
+      font-weight: 700;
+      opacity: 0.72;
+      transform: scale(0.92);
+      transform-origin: center;
+    }
+
+    .calendar-day.is-active .calendar-day__weight {
+      color: #fff;
+      opacity: 0.9;
+    }
+
+    .calendar-day:active {
+      transform: scale(0.96);
+    }
+
+    .calendar-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+      color: var(--wc-text-soft);
+      font-size: 11px;
+      line-height: 1.2;
+      font-weight: 600;
+    }
+
+    .calendar-legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .month-stats {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--wc-line);
+    }
+
+    .month-stats__row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--wc-text-soft);
+      font-size: 11px;
+      line-height: 1.35;
+      font-weight: 600;
+    }
+
+    .month-stats__row strong {
+      color: var(--wc-text);
+      font-size: 13px;
+      line-height: 1.2;
+      font-weight: 700;
+    }
+
+    .month-stats__bar {
+      display: flex;
+      gap: 3px;
+      height: 8px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: var(--wc-surface-muted);
+    }
+
+    .month-stats__bar span {
+      min-width: 0;
+    }
+
+    .month-stats__bar .stable {
+      background: var(--wc-success);
+    }
+
+    .month-stats__bar .wave {
+      background: var(--wc-warning);
+    }
+
+    .month-stats__bar .missing {
+      background: #cbd5e1;
+    }
+
+    .legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--wc-success);
+    }
+
+    .legend-dot.wave {
+      background: var(--wc-warning);
+    }
+
+    .legend-dot.missing {
+      background: #cbd5e1;
+    }
+
+    .legend-dot.future {
+      background: #e2e8f0;
+    }
+
+    .day-review {
+      display: grid;
+      gap: 12px;
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+
+    .day-review-head {
+      display: block;
+    }
+
+    .day-review h3 {
+      margin: 0;
+      color: var(--wc-text);
+      font-size: 18px;
+      line-height: 1.28;
+      font-weight: 700;
+    }
+
+    .day-review p {
+      margin: 6px 0 0;
+      color: var(--wc-text-soft);
+      font-size: 12px;
+      line-height: 1.65;
+    }
+
+    .review-reasons {
+      display: grid;
+      gap: 8px;
+    }
+
+    .review-reason {
+      display: grid;
+      grid-template-columns: 22px minmax(0, 1fr);
+      gap: 8px;
+      align-items: start;
+      padding: 10px;
+      border-radius: 12px;
+      background: rgba(248, 251, 255, 0.92);
+      border: 1px solid rgba(210, 218, 230, 0.68);
+    }
+
+    .review-reason__mark {
+      width: 22px;
+      height: 22px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: var(--wc-primary-strong);
+      background: var(--wc-primary-soft);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .review-reason strong {
+      display: block;
+      color: var(--wc-text);
+      font-size: 13px;
+      line-height: 1.35;
+      font-weight: 700;
+    }
+
+    .review-reason span {
+      display: block;
+      margin-top: 2px;
+      color: var(--wc-text-soft);
+      font-size: 11px;
+      line-height: 1.45;
+    }
+
+    .review-next {
+      margin: 0;
+      padding: 10px 12px;
+      border-radius: 12px;
+      color: var(--wc-primary-strong);
+      background: var(--wc-success-soft);
+      font-size: 12px;
+      line-height: 1.55;
+      font-weight: 700;
+    }
+
+    .signal-list,
+    .quality-list,
+    .insight-list {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .insight-card,
+    .quality-card,
+    .signal-card {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 42px minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+      padding: 12px;
+      text-align: left;
+    }
+
+    .signal-card,
+    .quality-card {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .mark {
+      min-width: 40px;
+      height: 40px;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      color: var(--wc-primary-strong);
+      background: var(--wc-primary-soft);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .mark.success {
+      color: var(--wc-success);
+      background: var(--wc-success-soft);
+    }
+
+    .mark.warning {
+      color: #a76716;
+      background: var(--wc-warning-soft);
+    }
+
+    .mark.danger {
+      color: var(--wc-danger);
+      background: var(--wc-danger-soft);
+    }
+
+    .insight-card strong,
+    .quality-card strong,
+    .signal-card strong {
+      display: block;
+      color: var(--wc-text);
+      font-size: 14px;
+      line-height: 1.35;
+      font-weight: 700;
+    }
+
+    .insight-card > span:nth-child(2) > span,
+    .quality-card > span:first-child > span,
+    .signal-card > span:first-child > span {
+      display: block;
+      margin-top: 4px;
+      color: var(--wc-text-soft);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .arrow {
+      color: var(--wc-text-faint);
+      font-size: 11px;
+      line-height: 1.2;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .quality-score {
+      min-width: 64px;
+      text-align: right;
+      color: var(--wc-primary-strong);
+      font-size: 20px;
+      line-height: 1.2;
+      font-weight: 700;
+    }
+
+    .quality-score small {
+      display: block;
+      color: var(--wc-text-faint);
+      font-size: 10px;
+      font-weight: 600;
+    }
+
+    .mini-trend {
+      height: 122px;
+      padding: 16px 12px 10px;
+      margin-bottom: 14px;
+      border-radius: 16px;
+      border: 1px solid var(--wc-line);
+      background:
+        linear-gradient(rgba(226, 232, 240, 0.42) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(248, 251, 255, 0.98), rgba(255, 255, 255, 0.98));
+      background-size: 100% 34px, auto;
+      box-shadow: var(--wc-shadow-soft);
+      position: relative;
+    }
+
+    .mini-trend svg {
+      width: 100%;
+      height: 88px;
+      display: block;
+      overflow: visible;
+    }
+
+    .mini-trend-labels {
+      display: flex;
+      justify-content: space-between;
+      color: var(--wc-text-faint);
+      font-size: 10px;
+      line-height: 1.2;
+      font-weight: 600;
+    }
+
+    .chart-section {
+      padding: 14px;
+      margin-bottom: 14px;
+      border-radius: 16px;
+      border: 1px solid var(--wc-line);
+      background: var(--wc-surface-strong);
+      box-shadow: var(--wc-shadow-soft);
+    }
+
+    .chart-section--priority {
+      background:
+        radial-gradient(circle at top right, rgba(74, 144, 226, 0.12), transparent 30%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(247, 250, 255, 0.98));
+    }
+
+    .chart-section--composition {
+      background:
+        radial-gradient(circle at top right, rgba(43, 167, 121, 0.12), transparent 30%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(246, 252, 249, 0.98));
+    }
+
+    .section-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .section-title-group {
+      display: grid;
+      gap: 5px;
+      min-width: 0;
+    }
+
+    .section-desc,
+    .section-header__summary {
+      color: var(--wc-text-soft);
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .section-header__action {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .flow-btn {
+      min-height: 34px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 13px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .flow-btn--primary {
+      color: #fff;
+      background: var(--wc-primary-strong);
+      box-shadow: 0 10px 18px rgba(46, 111, 200, 0.18);
+    }
+
+    .flow-btn--secondary {
+      color: var(--wc-primary-strong);
+      background: var(--wc-primary-soft);
+      border: 1px solid rgba(74, 144, 226, 0.14);
+    }
+
+    .flow-btn--wide {
+      width: 100%;
+      min-height: 42px;
+      margin-top: 10px;
+    }
+
+    .trend-range-rail {
+      display: inline-flex;
+      gap: 5px;
+      padding: 4px;
+      border-radius: 999px;
+      background: var(--wc-surface-muted);
+      border: 1px solid var(--wc-line);
+    }
+
+    .trend-range-chip {
+      min-width: 34px;
+      height: 28px;
+      display: inline-grid;
+      place-items: center;
+      border-radius: 999px;
+      color: var(--wc-text-soft);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .trend-range-chip.is-active {
+      color: var(--wc-primary-strong);
+      background: #fff;
+      box-shadow: 0 8px 16px rgba(30, 41, 59, 0.08);
+    }
+
+    .trend-card-copy {
+      display: grid;
+      gap: 4px;
+      margin-bottom: 10px;
+    }
+
+    .trend-card-copy strong {
+      color: var(--wc-text);
+      font-size: 15px;
+      line-height: 1.35;
+    }
+
+    .trend-card-copy span {
+      color: var(--wc-text-soft);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .body-signal-strip,
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 9px;
+      margin-bottom: 12px;
+    }
+
+    .summary-card,
+    .body-signal-chip,
+    .composition-insight,
+    .habit-analysis-hero,
+    .recent-record-hub {
+      border-radius: 14px;
+      border: 1px solid rgba(210, 218, 230, 0.75);
+      background: linear-gradient(180deg, rgba(248, 251, 255, 0.98), rgba(255, 255, 255, 0.98));
+    }
+
+    .summary-card,
+    .body-signal-chip {
+      display: grid;
+      gap: 6px;
+      padding: 12px;
+    }
+
+    .summary-card span,
+    .body-signal-chip span {
+      color: var(--wc-text-soft);
+      font-size: 11px;
+      line-height: 1.25;
+      font-weight: 600;
+    }
+
+    .summary-card strong,
+    .body-signal-chip strong {
+      color: var(--wc-text);
+      font-size: 18px;
+      line-height: 1.15;
+      font-weight: 700;
+    }
+
+    .summary-card small {
+      color: var(--wc-text-faint);
+      font-size: 10px;
+      line-height: 1.35;
+    }
+
+    .body-signal-chip--positive {
+      background: var(--wc-success-soft);
+    }
+
+    .body-signal-chip--warning {
+      background: var(--wc-warning-soft);
+    }
+
+    .composition-insights,
+    .recent-record-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .composition-insights + .recent-record-list {
+      margin-top: 12px;
+    }
+
+    .composition-insight {
+      padding: 12px;
+    }
+
+    .composition-insight__top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 5px;
+    }
+
+    .composition-insight strong {
+      color: var(--wc-text);
+      font-size: 14px;
+      line-height: 1.35;
+    }
+
+    .composition-insight p,
+    .habit-analysis-hero p,
+    .recent-record-hub p {
+      margin: 0;
+      color: var(--wc-text-soft);
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .recent-record-hub {
+      display: grid;
+      gap: 10px;
+      padding: 12px;
+    }
+
+    .recent-record-hub__summary,
+    .habit-analysis-hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .recent-record-hub__eyebrow,
+    .habit-analysis-hero__eyebrow {
+      color: var(--wc-primary-strong);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+    }
+
+    .recent-record-hub strong,
+    .habit-analysis-hero strong {
+      color: var(--wc-text);
+      font-size: 15px;
+      line-height: 1.35;
+      font-weight: 700;
+    }
+
+    .recent-record-hub__meta,
+    .habit-analysis-hero__rate {
+      min-width: 62px;
+      display: grid;
+      gap: 3px;
+      justify-items: center;
+      padding: 10px 8px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.86);
+      border: 1px solid rgba(210, 218, 230, 0.78);
+    }
+
+    .recent-record-hub__meta strong,
+    .habit-analysis-hero__rate strong {
+      font-size: 19px;
+      line-height: 1;
+    }
+
+    .recent-record-hub__meta span,
+    .habit-analysis-hero__rate span {
+      color: var(--wc-text-soft);
+      font-size: 10px;
+      white-space: nowrap;
+    }
+
+    .recent-record-hub__chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .recent-record-hub__chip {
+      min-height: 24px;
+      display: inline-flex;
+      align-items: center;
+      padding: 0 9px;
+      border-radius: 999px;
+      color: var(--wc-primary-strong);
+      background: var(--wc-primary-soft);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .recent-record-entry {
+      display: grid;
+      grid-template-columns: 38px minmax(0, 1fr);
+      gap: 10px;
+      align-items: center;
+      padding: 10px 0;
+      border-top: 1px solid var(--wc-line);
+    }
+
+    .recent-record__icon {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      background: var(--wc-primary-soft);
+      font-size: 18px;
+    }
+
+    .recent-record__body {
+      min-width: 0;
+      display: grid;
+      gap: 3px;
+    }
+
+    .recent-record-entry__meta,
+    .recent-record__title-row {
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .recent-record-entry__type,
+    .recent-record__time,
+    .recent-record__note {
+      color: var(--wc-text-soft);
+      font-size: 11px;
+      line-height: 1.25;
+    }
+
+    .recent-record-entry__type {
+      color: var(--wc-primary-strong);
+      font-weight: 700;
+    }
+
+    .recent-record-entry__arrow {
+      flex-shrink: 0;
+      color: var(--wc-text-faint);
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .recent-record__body strong {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 14px;
+    }
+
+    .recent-record__body span {
+      color: var(--wc-text-soft);
+      font-size: 11px;
+    }
+
+    .recent-record-empty {
+      padding: 12px;
+      border-radius: 12px;
+      color: var(--wc-text-soft);
+      background: var(--wc-surface-muted);
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .habit-analysis-hero {
+      padding: 13px;
+      margin-bottom: 12px;
+    }
+
+    .habit-analysis-hero--done {
+      background: linear-gradient(180deg, rgba(236, 253, 245, 0.96), rgba(255, 255, 255, 0.98));
+    }
+
+    .habit-analysis-hero--progress {
+      background: linear-gradient(180deg, rgba(255, 247, 237, 0.96), rgba(255, 255, 255, 0.98));
+    }
+
+    .habit-analysis-hero--idle {
+      background: linear-gradient(180deg, rgba(248, 251, 255, 0.98), rgba(255, 255, 255, 0.98));
+    }
+
+    .habit-analysis-footnote {
+      display: block;
+      margin-top: 12px;
+      color: var(--wc-text-soft);
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .detail-mask {
+      position: fixed;
+      inset: 0;
+      z-index: 80;
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+      background: rgba(15, 23, 42, 0.28);
+    }
+
+    .detail-mask.is-show {
+      display: flex;
+    }
+
+    .detail-modal {
+      width: min(100%, 430px);
+      max-height: 72vh;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      padding: 16px;
+      border-radius: 20px 20px 0 0;
+      background: #fff;
+      box-shadow: 0 -18px 46px rgba(15, 23, 42, 0.16);
+    }
+
+    .detail-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .detail-title {
+      display: block;
+      color: var(--wc-text);
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .detail-subtitle,
+    .detail-row__label {
+      color: var(--wc-text-soft);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .detail-body {
+      display: grid;
+      gap: 8px;
+      overflow-y: auto;
+    }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 12px;
+      border-radius: 12px;
+      background: var(--wc-bg-soft);
+    }
+
+    .detail-row__value {
+      color: var(--wc-text);
+      font-size: 12px;
+      font-weight: 700;
+      text-align: right;
+    }
+
+    .bottom-nav {
+      background: rgba(255, 255, 255, 0.94);
+      border: 1px solid rgba(255, 255, 255, 0.96);
+      box-shadow: var(--wc-shadow-float);
+    }
+
+    .tab {
+      color: var(--wc-text-soft);
+      font-weight: 700;
+    }
+
+    .tab.is-active,
+    .tab-action {
+      color: var(--wc-primary-strong);
+    }
+
+    .tab-plus {
+      background: linear-gradient(135deg, var(--wc-primary-strong), var(--wc-primary));
+      box-shadow: 0 14px 24px rgba(46, 111, 200, 0.26);
+    }
+
+    .sheet-panel {
+      border-radius: 20px 20px 0 0;
+      background: #fff;
+      border: 1px solid rgba(210, 218, 230, 0.82);
+    }
+
+    @media (max-width: 360px) {
+      .calendar-hero__title {
+        font-size: 22px;
+      }
+
+      .day-context__metrics {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .calendar-day {
+        height: 40px;
+        border-radius: 10px;
+      }
+
+    }
+  </style>
+</head>
+
+<body>
+  <main class="phone analytics-page">
+    <section class="app" aria-label="健康数据分析">
+      <header class="topbar">
+        <div class="brand">
+          <strong>健康数据分析</strong>
+          <span>按天看清楚，哪里稳、哪里要补</span>
+        </div>
+        <div class="top-sync">
+          <span>更新到</span>
+          <strong id="syncTime">08:59</strong>
+        </div>
+      </header>
+
+      <div class="refresh-meta">
+        <span id="refreshMeta">今天先看 6月8日</span>
+        <span id="monthMeta">2026年6月</span>
+      </div>
+
+      <section class="calendar-hero" aria-label="复盘日历">
+        <div class="calendar-hero__head">
+          <div>
+            <div class="section-kicker">复盘日历</div>
+            <h1 class="calendar-hero__title">2026年6月复盘</h1>
+            <p class="calendar-hero__desc">点一天看一天：轻了没、吃得怎样、还差什么，一眼过。</p>
+          </div>
+          <span class="calendar-hero__date" id="selectedDateLabel">6月8日</span>
+        </div>
+
+        <div class="panel calendar-panel calendar-panel--hero">
+          <div class="calendar-toolbar">
+            <button class="icon-btn" id="prevMonthBtn" aria-label="上个月">‹</button>
+            <div class="calendar-month">
+              <strong id="calendarTitle">2026年6月</strong>
+              <span id="calendarSubtitle">稳了 5天 · 波动 2天 · 待补 1天</span>
+            </div>
+            <button class="icon-btn" id="nextMonthBtn" aria-label="下个月">›</button>
+          </div>
+          <div class="calendar-week" aria-hidden="true">
+            <span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span>
+          </div>
+          <div class="calendar-grid" id="calendarGrid" aria-label="复盘日历"></div>
+          <div class="calendar-legend">
+            <span><i class="legend-dot"></i>稳了</span>
+            <span><i class="legend-dot wave"></i>波动</span>
+            <span><i class="legend-dot missing"></i>待补</span>
+            <span><i class="legend-dot future"></i>还没到</span>
+          </div>
+          <div class="month-stats" aria-label="本月统计">
+            <div class="month-stats__row">
+              <strong id="monthWeightSummary">本月少了 0.9kg</strong>
+              <span id="monthRecordSummary">已看 8 天：5 天稳了，1 天待补</span>
+            </div>
+            <div class="month-stats__bar" aria-hidden="true">
+              <span class="stable"></span>
+              <span class="wave"></span>
+              <span class="missing"></span>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <div class="analytics-tabs" aria-label="分析维度">
+        <button class="analytics-tab is-active" data-tab-group="analysis" data-tab-target="reviewPanel">这天解释</button>
+        <button class="analytics-tab" data-tab-group="analysis" data-tab-target="bodyPanel">身体数据</button>
+        <button class="analytics-tab" data-tab-group="analysis" data-tab-target="lifestylePanel">生活执行</button>
+        <button class="analytics-tab" data-tab-group="analysis" data-tab-target="habitPanel">习惯复盘</button>
+      </div>
+
+      <section id="reviewPanel" data-panel-group="analysis">
+        <article class="day-context" aria-label="日期摘要">
+          <div class="day-context__main">
+            <div>
+              <div class="day-context__eyebrow">这天状态</div>
+              <strong class="day-context__title" id="dayContextTitle">这天挺稳的</strong>
+              <p class="day-context__desc" id="dayContextText">体重没乱跳，晚餐和喝水也都有记录，可以放心参考。</p>
+            </div>
+            <span class="day-context__status" id="dayContextStatus">稳了</span>
+          </div>
+          <div class="day-context__metrics">
+            <div class="day-context__metric"><span>体重变化</span><strong id="dayContextWeight">-0.1 kg</strong></div>
+            <div class="day-context__metric"><span>晚餐预算</span><strong id="dayContextDinner">89%</strong></div>
+            <div class="day-context__metric"><span>饮水完成</span><strong id="dayContextWater">95%</strong></div>
+            <div class="day-context__metric"><span>这天能看吗</span><strong id="dayContextConfidence">够看</strong></div>
+          </div>
+        </article>
+
+        <section class="section">
+          <div class="section-head">
+            <div>
+              <div class="section-kicker">这天解释</div>
+              <h2 class="section-title">这天解释</h2>
+            </div>
+            <span class="section-note" id="reviewDate">6月8日</span>
+          </div>
+          <article class="day-review">
+            <div class="day-review-head">
+              <div>
+                <h3 id="reviewTitle">这天挺稳的</h3>
+                <p id="reviewText">体重没乱跳，晚餐和喝水也都有记录，可以放心参考。</p>
+              </div>
+            </div>
+            <div class="review-reasons" id="reviewReasons">
+              <div class="review-reason">
+                <span class="review-reason__mark">1</span>
+                <span><strong>吃得没超太多</strong><span>晚餐还在可控范围，体重变化有参考价值。</span></span>
+              </div>
+              <div class="review-reason">
+                <span class="review-reason__mark">2</span>
+                <span><strong>饭后有活动</strong><span>饭后动了动，能抵掉一部分晚餐压力。</span></span>
+              </div>
+            </div>
+            <p class="review-next" id="reviewNext">今天不用大改，继续按这个节奏走。</p>
+          </article>
+        </section>
+
+        <section class="section">
+          <div class="section-head">
+            <div>
+              <div class="section-kicker">这天要点</div>
+              <h2 class="section-title">这天关键点</h2>
+            </div>
+            <span class="section-note" id="actionDate">6月8日</span>
+          </div>
+          <div class="insight-list">
+            <button class="insight-card" id="actionCardPrimary" data-toast="这天主要看晚餐和喝水">
+              <span class="mark success" id="actionMarkPrimary">稳</span>
+              <span><strong id="actionTitlePrimary">晚餐和喝水都在线</strong><span id="actionTextPrimary">这天的数据可以放心看。</span></span>
+              <span class="arrow" id="actionArrowPrimary">主要原因</span>
+            </button>
+            <button class="insight-card" id="actionCardSecond" data-toast="先看这天原因，不急着改计划">
+              <span class="mark warning" id="actionMarkSecond">看</span>
+              <span><strong id="actionTitleSecond">继续按这个节奏走</strong><span id="actionTextSecond">不用因为一天数据做大调整。</span></span>
+              <span class="arrow" id="actionArrowSecond">建议</span>
+            </button>
+            <button class="insight-card" id="actionCardThird" data-nav="record_fd.html?tab=dinner">
+              <span class="mark danger" id="actionMarkThird">补</span>
+              <span><strong id="actionTitleThird">明天再看一次</strong><span id="actionTextThird">这天先不用大改，明天再单独复盘一次。</span></span>
+              <span class="arrow" id="actionArrowThird">建议</span>
+            </button>
+          </div>
+        </section>
+      </section>
+
+      <section id="bodyPanel" data-panel-group="analysis" hidden>
+        <section class="chart-section chart-section--priority">
+          <div class="section-header">
+            <div class="section-title-group">
+              <div class="section-kicker">身体焦点</div>
+              <h2 class="section-title" id="bodyFocusTitle">6月8日体重挺稳</h2>
+              <p class="section-desc" id="bodyFocusDesc">这天轻了 0.1kg，晚餐和喝水都有记录，可以放心参考。</p>
+            </div>
+          </div>
+          <div class="summary-grid">
+            <div class="summary-card">
+              <span>体重变化</span>
+              <strong id="bodyWeightChange">-0.1 kg</strong>
+              <small id="bodyWeightNote">这天可参考</small>
+            </div>
+            <div class="summary-card">
+              <span>BMI状态</span>
+              <strong id="bodyBmiStatus">超重</strong>
+              <small id="bodyBmiNote">当前 BMI 25.9</small>
+            </div>
+          </div>
+        </section>
+
+        <section class="chart-section chart-section--composition">
+          <div class="section-header">
+            <div class="section-title-group">
+              <div class="section-kicker">这天依据</div>
+              <h2 class="section-title">这天身体怎么判断</h2>
+              <p class="section-desc" id="bodyReasonDesc">这里只看这一天的体重记录和 BMI。</p>
+            </div>
+          </div>
+          <div class="composition-insights" id="bodyReasonList">
+            <article class="composition-insight">
+              <div class="composition-insight__top">
+                <strong>体重有记录</strong>
+                <span class="status-tag good">可参考</span>
+              </div>
+              <p>这天体重变化不大，先看这天是否和吃喝记录对得上。</p>
+            </article>
+            <article class="composition-insight">
+              <div class="composition-insight__top">
+                <strong>BMI只做背景参考</strong>
+                <span class="status-tag warn">超重</span>
+              </div>
+              <p>BMI不需要每天反复判断，这里只用来提醒当前大区间。</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="chart-section">
+          <div class="section-header">
+            <div class="section-title-group">
+              <div class="section-kicker">记录</div>
+              <h2 class="section-title" id="bodyRecordTitle">这天身体记录</h2>
+              <p class="section-desc" id="bodyRecordDesc">只展示这一天的身体记录。</p>
+            </div>
+          </div>
+          <div class="recent-record-list" id="bodyRecordList">
+            <div class="recent-record-hub">
+              <div class="recent-record-hub__summary">
+                <div>
+                  <div class="recent-record-hub__eyebrow">这天记录</div>
+                  <strong>6月8日有 1 条体重记录</strong>
+                  <p>只看这一天，不混入其他日期。</p>
+                </div>
+                <div class="recent-record-hub__meta">
+                  <strong>1</strong>
+                  <span>条记录</span>
+                </div>
+              </div>
+              <button class="recent-record-entry" data-record-open="bodyWeight">
+                <span class="recent-record__icon">秤</span>
+                <span class="recent-record__body">
+                  <span class="recent-record-entry__meta">
+                    <span class="recent-record-entry__type">体重</span>
+                    <span class="recent-record__time">06-08 07:42</span>
+                  </span>
+                  <span class="recent-record__title-row">
+                    <strong>体重 -0.1 kg</strong>
+                    <span class="recent-record-entry__arrow">›</span>
+                  </span>
+                  <span class="recent-record__note">BMI 25.9</span>
+                </span>
+              </button>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <section id="lifestylePanel" data-panel-group="analysis" hidden>
+        <section class="chart-section">
+          <div class="section-header">
+            <div class="section-title-group">
+              <div class="section-kicker">生活执行</div>
+              <h2 class="section-title" id="lifestyleTitle">6月8日生活执行</h2>
+              <p class="section-desc" id="lifestyleDesc">先看这一天吃得怎样、动没动、喝水够不够。</p>
+              <p class="section-header__summary" id="lifestyleSummary">晚餐 89% · 饮水 95% · 这天够看。</p>
+            </div>
+          </div>
+          <article class="habit-analysis-hero habit-analysis-hero--done" id="lifestyleHero">
+            <div>
+              <div class="habit-analysis-hero__eyebrow" id="lifestyleEyebrow">这天生活执行</div>
+              <strong id="lifestyleHeadline">这天记录够看</strong>
+              <p id="lifestyleNote">晚餐和喝水都记了，体重变化更好解释。</p>
+            </div>
+            <div class="habit-analysis-hero__rate">
+              <strong id="lifestyleRate">92%</strong>
+              <span>这天得分</span>
+            </div>
+          </article>
+          <div class="summary-grid">
+            <div class="summary-card"><span>晚餐预算</span><strong id="lifestyleDinnerMetric">89%</strong><small id="lifestyleDinnerNote">在目标内</small></div>
+            <div class="summary-card"><span>饮水完成</span><strong id="lifestyleWaterMetric">95%</strong><small id="lifestyleWaterNote">补水节奏稳</small></div>
+            <div class="summary-card"><span>运动记录</span><strong id="lifestyleMoveMetric">已记录</strong><small id="lifestyleMoveNote">轻活动已覆盖</small></div>
+            <div class="summary-card"><span>记录够不够</span><strong id="lifestyleQualityMetric">够看</strong><small id="lifestyleQualityNote">不用纠结</small></div>
+          </div>
+          <div class="composition-insights" id="lifestyleReasonList">
+            <article class="composition-insight">
+              <div class="composition-insight__top">
+                <strong>晚餐在目标内</strong>
+                <span class="status-tag good">可参考</span>
+              </div>
+              <p>这天晚餐没有明显超出，先和体重变化一起看。</p>
+            </article>
+            <article class="composition-insight">
+              <div class="composition-insight__top">
+                <strong>喝水跟上了</strong>
+                <span class="status-tag good">够看</span>
+              </div>
+              <p>喝水记录完整，这天不用额外放大短期波动。</p>
+            </article>
+          </div>
+          <div class="recent-record-list" id="lifestyleRecordList">
+            <div class="recent-record-hub">
+              <div class="recent-record-hub__summary">
+                <div>
+                  <div class="recent-record-hub__eyebrow">这天记录</div>
+                  <strong>6月8日有 3 条生活记录</strong>
+                  <p>只看这一天的晚餐、饮水和运动。</p>
+                </div>
+                <div class="recent-record-hub__meta">
+                  <strong>3</strong>
+                  <span>条记录</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <section id="habitPanel" data-panel-group="analysis" hidden>
+        <section class="chart-section">
+          <div class="section-header">
+            <div class="section-title-group">
+              <div class="section-kicker">习惯</div>
+              <h2 class="section-title" id="habitTitle">6月8日习惯复盘</h2>
+              <p class="section-desc" id="habitDesc">看这天习惯有没有跟上，不和体重混在一起。</p>
+              <p class="section-header__summary" id="habitSummary">这天 1 项要做，完成 1 项。</p>
+            </div>
+          </div>
+          <article class="habit-analysis-hero habit-analysis-hero--done" id="habitHero">
+            <div>
+              <div class="habit-analysis-hero__eyebrow" id="habitEyebrow">这天要做 1 项</div>
+              <strong id="habitHeadline">这天习惯完成了</strong>
+              <p id="habitNote">该做的已经打卡，可以和这天生活记录一起看。</p>
+            </div>
+            <div class="habit-analysis-hero__rate">
+              <strong id="habitRate">100%</strong>
+              <span>完成情况</span>
+            </div>
+          </article>
+          <div class="summary-grid">
+            <div class="summary-card"><span>这天要做</span><strong id="habitDueMetric">1</strong><small>这天要做的习惯</small></div>
+            <div class="summary-card"><span>这天完成</span><strong id="habitDoneMetric">1</strong><small id="habitDoneNote">已完成</small></div>
+          </div>
+          <div class="composition-insights" id="habitReasonList">
+            <article class="composition-insight">
+              <div class="composition-insight__top">
+                <strong>这天习惯完成了</strong>
+                <span class="status-tag good">完成</span>
+              </div>
+              <p>只看 6月8日这一天，不把其他日期混进来。</p>
+            </article>
+          </div>
+          <div class="recent-record-list" id="habitRecordList">
+            <div class="recent-record-hub">
+              <div class="recent-record-hub__summary">
+                <div>
+                  <div class="recent-record-hub__eyebrow">这天清单</div>
+                  <strong>6月8日完成 1 项习惯</strong>
+                  <p>只展示这一天要做和完成的习惯。</p>
+                </div>
+                <div class="recent-record-hub__meta">
+                  <strong>1/1</strong>
+                  <span>完成</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </section>
+    </section>
+
+    <nav class="bottom-nav" aria-label="底部导航">
+      <button class="tab" data-nav="index_simplified.html">首页<span class="tab-dot"></span></button>
+      <button class="tab" data-nav="circle_fd.html">圈子<span class="tab-dot"></span></button>
+      <button class="tab tab-action" data-sheet-open="#quickRecordSheet"><span class="tab-plus">+</span><span>记录</span></button>
+      <button class="tab is-active">分析<span class="tab-dot"></span></button>
+      <button class="tab" data-nav="profile_fd.html">我的<span class="tab-dot"></span></button>
+    </nav>
+
+    <section class="sheet" id="quickRecordSheet" aria-label="快捷记录">
+      <div class="sheet-panel">
+        <div class="sheet-head">
+          <strong class="sheet-title">补一条今天要看的记录</strong>
+          <button class="chip-btn" data-sheet-close>关闭</button>
+        </div>
+        <div class="sheet-grid">
+          <button class="sheet-item" data-nav="record_fd.html?tab=morning"><span class="mark">早</span><span>早餐</span></button>
+          <button class="sheet-item" data-nav="record_fd.html?tab=dinner"><span class="mark danger">晚</span><span>晚餐</span></button>
+          <button class="sheet-item" data-nav="record_fd.html?tab=move"><span class="mark warning">动</span><span>运动</span></button>
+          <button class="sheet-item" data-nav="record_fd.html?tab=water"><span class="mark success">水</span><span>饮水</span></button>
+          <button class="sheet-item" data-nav="record_fd.html?tab=mood"><span class="mark">感</span><span>状态</span></button>
+        </div>
+      </div>
+    </section>
+    <section class="detail-mask" id="recordDetailMask" aria-label="记录详情">
+      <article class="detail-modal">
+        <div class="detail-header">
+          <div>
+            <strong class="detail-title" id="detailTitle">体重记录</strong>
+            <span class="detail-subtitle" id="detailSubtitle">05-10 22:03</span>
+          </div>
+          <button class="chip-btn" id="detailCloseBtn">关闭</button>
+        </div>
+        <div class="detail-body" id="detailBody"></div>
+      </article>
+    </section>
+    <div class="toast" id="toast">已更新</div>
+  </main>
+
+  <script src="fd-interactions.js"></script>
+  <script>
+    const calendarMonths = [
+      {
+        key: '2026-05',
+        title: '2026年5月',
+        meta: '2026年5月',
+        refresh: '5月31日已更新',
+        stable: 21,
+        wave: 5,
+        missing: 6,
+        pendingText: '6天',
+        weightChange: '-2.4kg',
+        selectedDay: 31,
+        dayStatus: {
+          1: 'stable', 2: 'stable', 3: 'wave', 4: 'stable', 5: 'stable', 6: 'stable', 7: 'missing',
+          8: 'stable', 9: 'wave', 10: 'stable', 11: 'stable', 12: 'stable', 13: 'stable', 14: 'stable',
+          15: 'missing', 16: 'stable', 17: 'wave', 18: 'stable', 19: 'stable', 20: 'stable', 21: 'stable',
+          22: 'missing', 23: 'stable', 24: 'stable', 25: 'wave', 26: 'stable', 27: 'stable', 28: 'missing',
+          29: 'stable', 30: 'wave', 31: 'stable'
+        },
+        details: {
+          31: {
+            title: '上月最后一天还不错',
+            text: '晚餐和喝水都有记，5月最后一天可以放心参考。',
+            badge: '稳了',
+            status: 'stable',
+            weight: '-0.2 kg',
+            dinner: 84,
+            water: 91,
+            confidence: '高',
+            missing: []
+          }
+        }
+      },
+      {
+        key: '2026-06',
+        title: '2026年6月',
+        meta: '2026年6月',
+        refresh: '今天 08:59 已更新',
+        stable: 5,
+        wave: 2,
+        missing: 1,
+        pendingText: '1天',
+        weightChange: '-0.9kg',
+        selectedDay: 8,
+        dayStatus: {
+          1: 'stable',
+          2: 'stable',
+          3: 'wave',
+          4: 'stable',
+          5: 'stable',
+          6: 'missing',
+          7: 'wave',
+          8: 'stable'
+        },
+        details: {
+          1: {
+            title: '这天轻得很稳',
+            text: '晚餐和喝水都在节奏里，早上体重也没乱跳。',
+            badge: '稳了',
+            status: 'stable',
+            weight: '-0.2 kg',
+            dinner: 86,
+            water: 100,
+            confidence: '高',
+            missing: []
+          },
+          2: {
+            title: '继续保持原计划',
+            text: '记录挺完整，活动量也不错，不用临时改计划。',
+            badge: '稳了',
+            status: 'stable',
+            weight: '-0.1 kg',
+            dinner: 88,
+            water: 94,
+            confidence: '高',
+            missing: []
+          },
+          3: {
+            title: '外食后有点波动',
+            text: '晚餐偏咸，第二天早上可能会重一点，先别慌。',
+            badge: '波动',
+            status: 'wave',
+            weight: '+0.3 kg',
+            dinner: 118,
+            water: 70,
+            confidence: '中',
+            missing: ['运动']
+          },
+          4: {
+            title: '吃和动都还稳',
+            text: '晚餐没超太多，饭后也动了动，这天可以参考。',
+            badge: '稳了',
+            status: 'stable',
+            weight: '-0.2 kg',
+            dinner: 91,
+            water: 86,
+            confidence: '高',
+            missing: []
+          },
+          5: {
+            title: '节奏继续在线',
+            text: '该记的基本都有，体重变化也能说得通。',
+            badge: '稳了',
+            status: 'stable',
+            weight: '-0.1 kg',
+            dinner: 84,
+            water: 88,
+            confidence: '高',
+            missing: []
+          },
+          6: {
+            title: '这天还要补记录',
+            text: '晚餐和喝水没记全，先补一下再看更准。',
+            badge: '待补',
+            status: 'missing',
+            weight: '--',
+            dinner: 40,
+            water: 42,
+            confidence: '低',
+            missing: ['晚餐', '饮水']
+          },
+          7: {
+            title: '外食日先别慌',
+            text: '晚间外食加上睡得晚，早上体重容易浮一下，先观察就好。',
+            badge: '波动',
+            status: 'wave',
+            weight: '+0.2 kg',
+            dinner: 112,
+            water: 76,
+            confidence: '中',
+            missing: []
+          },
+          8: {
+            title: '这天挺稳的',
+            text: '体重没乱跳，晚餐和喝水也都有记录，可以放心参考。',
+            badge: '稳了',
+            status: 'stable',
+            weight: '-0.1 kg',
+            dinner: 89,
+            water: 95,
+            confidence: '高',
+            missing: []
+          }
+        }
+      }
+    ];
+
+    const statusClassMap = {
+      stable: 'is-stable',
+      wave: 'is-wave',
+      missing: 'is-missing',
+      future: 'is-future'
+    };
+
+    const statusTagClassMap = {
+      stable: 'good',
+      wave: 'warn',
+      missing: 'missing',
+      future: 'missing'
+    };
+
+    const statusLabelMap = {
+      stable: '稳了',
+      wave: '波动',
+      missing: '待补',
+      future: '还没到'
+    };
+
+    const heroToneClassMap = {
+      stable: 'habit-analysis-hero--done',
+      wave: 'habit-analysis-hero--progress',
+      missing: 'habit-analysis-hero--idle',
+      future: 'habit-analysis-hero--idle'
+    };
+
+    const recordDetails = {
+      exercise1: {
+        title: '运动记录',
+        subtitle: '05-24 21:41',
+        rows: [
+          ['运动类型', '动感单车'],
+          ['时长', '30 分钟'],
+          ['消耗热量', '300 kcal'],
+          ['距离', '未填写'],
+          ['备注', '无']
+        ]
+      },
+      exercise2: {
+        title: '运动记录',
+        subtitle: '05-23 22:19',
+        rows: [
+          ['运动类型', '动感单车'],
+          ['时长', '30 分钟'],
+          ['消耗热量', '220 kcal'],
+          ['距离', '未填写'],
+          ['备注', '无']
+        ]
+      },
+      water: {
+        title: '饮水记录',
+        subtitle: '05-21 19:09',
+        rows: [
+          ['杯数', '1 杯'],
+          ['毫升', '250 ml']
+        ]
+      }
+    };
+
+    let currentMonthIndex = 1;
+    let selectedDay = calendarMonths[currentMonthIndex].selectedDay;
+
+    function getCurrentMonth() {
+      return calendarMonths[currentMonthIndex];
+    }
+
+    function daysInMonth(monthKey) {
+      const [year, month] = monthKey.split('-').map(Number);
+      return new Date(year, month, 0).getDate();
+    }
+
+    function mondayFirstOffset(monthKey) {
+      const [year, month] = monthKey.split('-').map(Number);
+      const day = new Date(year, month - 1, 1).getDay();
+      return (day + 6) % 7;
+    }
+
+    function previousMonthKey(monthKey) {
+      const [year, month] = monthKey.split('-').map(Number);
+      const date = new Date(year, month - 2, 1);
+      return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+    }
+
+    function getDayDetail(month, day) {
+      const explicit = month.details[day];
+      if (explicit) return explicit;
+      const status = month.dayStatus[day] || 'future';
+      if (status === 'future') {
+        return {
+          title: '这天还没到',
+          text: '到了这天再记，数据会自己出现在这里。',
+          badge: '还没到',
+          status,
+          weight: '--',
+          dinner: 0,
+          water: 0,
+          confidence: '--',
+          missing: []
+        };
+      }
+      if (status === 'missing') {
+        return {
+          title: '这天还要补记录',
+          text: '关键记录还不够，先补一下再看更准。',
+          badge: '待补',
+          status,
+          weight: '--',
+          dinner: 35,
+          water: 48,
+          confidence: '低',
+          missing: ['晚餐', '饮水']
+        };
+      }
+      if (status === 'wave') {
+        return {
+          title: '这天有点波动',
+          text: '吃饭或作息有变化，体重浮一下很正常，先观察。',
+          badge: '波动',
+          status,
+          weight: '+0.2 kg',
+          dinner: 108,
+          water: 74,
+          confidence: '中',
+          missing: []
+        };
+      }
+      return {
+        title: '这天挺稳的',
+        text: '该记的基本都有，体重变化也说得通。',
+        badge: '稳了',
+        status,
+        weight: '-0.1 kg',
+        dinner: 88,
+        water: 92,
+        confidence: '高',
+        missing: []
+      };
+    }
+
+    function updateOverview(month) {
+      const countedDays = month.stable + month.wave + month.missing;
+      const stableShare = countedDays ? Math.max(month.stable, 0) : 1;
+      const waveShare = countedDays ? Math.max(month.wave, 0) : 0;
+      const missingShare = countedDays ? Math.max(month.missing, 0) : 0;
+      document.getElementById('refreshMeta').textContent = month.refresh;
+      document.getElementById('monthMeta').textContent = month.meta;
+      document.getElementById('calendarTitle').textContent = month.title;
+      document.getElementById('calendarSubtitle').textContent = `稳了 ${month.stable}天 · 波动 ${month.wave}天 · 待补 ${month.pendingText}`;
+      setText('monthWeightSummary', formatWeightChangeText(month.weightChange));
+      setText('monthRecordSummary', `已看 ${countedDays} 天：${month.stable} 天稳了，${month.missing} 天待补`);
+      document.querySelector('.month-stats__bar .stable').style.flex = `${stableShare} 1 0`;
+      document.querySelector('.month-stats__bar .wave').style.flex = `${waveShare} 1 0`;
+      document.querySelector('.month-stats__bar .missing').style.flex = `${missingShare} 1 0`;
+    }
+
+    function setText(id, text) {
+      const node = document.getElementById(id);
+      if (node) node.textContent = text;
+    }
+
+    function formatPercent(value) {
+      return value ? `${value}%` : '--';
+    }
+
+    function formatCalendarWeight(weight) {
+      return weight && weight !== '--' ? weight.replace(/\s+/g, '') : '';
+    }
+
+    function getDayLabel(month, day) {
+      return `${Number(month.key.slice(5))}月${day}日`;
+    }
+
+    function formatWeightChangeText(weightChange) {
+      if (!weightChange || weightChange === '--') return '本月还在记录';
+      if (weightChange.startsWith('-')) return `本月少了 ${weightChange.slice(1)}`;
+      if (weightChange.startsWith('+')) return `本月多了 ${weightChange.slice(1)}`;
+      return `本月 ${weightChange}`;
+    }
+
+    function readableConfidence(confidence) {
+      if (confidence === '高') return '够看';
+      if (confidence === '中') return '先观察';
+      if (confidence === '低') return '先补记录';
+      return '还没到';
+    }
+
+    function getBodyView(detail, dateLabel) {
+      if (detail.status === 'future') {
+        return {
+          title: `${dateLabel}还没到`,
+          desc: '这天还没到，身体数据先不用提前看。',
+          weightNote: '等这天',
+          bmiStatus: '--',
+          bmiNote: '记体重后再看',
+          reasonDesc: '未来日期先不做身体判断。',
+          reasons: [
+            ['等', '这天还没有身体记录', '等到这天记录体重后，这里再显示依据。', '还没到', 'future'],
+            ['BMI', 'BMI先不看', '没有这天体重，就不做 BMI 参考。', '待记录', 'future']
+          ],
+          recordState: 'future',
+          recordNote: '等这天到了再记录。'
+        };
+      }
+      if (detail.status === 'missing') {
+        return {
+          title: `${dateLabel}还要补体重`,
+          desc: '这天没有可用体重，先补一条再看身体数据。',
+          weightNote: '少了对照',
+          bmiStatus: '--',
+          bmiNote: '补体重后再看',
+          reasonDesc: '这天没有体重记录时，先显示待补状态。',
+          reasons: [
+            ['补', '缺体重记录', '没有体重，就没法判断这天身体变化。', '待补', 'missing'],
+            ['BMI', 'BMI先不看', '补完体重后，BMI区间再作为背景参考。', '待补', 'missing']
+          ],
+          recordState: 'missing',
+          recordNote: '这天还没看到体重记录。'
+        };
+      }
+      if (detail.status === 'wave') {
+        return {
+          title: `${dateLabel}有波动，但能解释`,
+          desc: '这天体重有短期波动，先和这天吃喝一起看。',
+          weightNote: '短期波动',
+          bmiStatus: '超重',
+          bmiNote: '当前 BMI 25.9',
+          reasonDesc: '这里只解释这一天的身体数据。',
+          reasons: [
+            ['重', '体重短期浮动', `这天 ${detail.weight}，更像吃饭、喝水或作息带来的波动。`, '可解释', 'wave'],
+            ['BMI', 'BMI只做背景', 'BMI不需要每天反复判断，知道当前区间即可。', '超重', 'wave']
+          ],
+          recordState: 'recorded',
+          recordNote: '这天有体重记录，可以点开看详情。'
+        };
+      }
+      return {
+        title: `${dateLabel}体重挺稳`,
+        desc: `这天 ${detail.weight}，晚餐和喝水都有记，可以放心参考。`,
+        weightNote: '这天可参考',
+        bmiStatus: '超重',
+        bmiNote: '当前 BMI 25.9',
+        reasonDesc: '这里只解释这一天的身体数据。',
+        reasons: [
+          ['重', '体重变化不大', `这天 ${detail.weight}，先和这天吃喝记录对一下。`, '可参考', 'stable'],
+          ['BMI', 'BMI只做背景', 'BMI不需要每天反复判断，知道当前区间即可。', '超重', 'stable']
+        ],
+        recordState: 'recorded',
+        recordNote: '这天有体重记录，可以点开看详情。'
+      };
+    }
+
+    function getLifestyleView(detail, dateLabel) {
+      const rate = detail.status === 'future' ? 0 : Math.round(((Math.min(detail.dinner, 100) || 0) + (Math.min(detail.water, 100) || 0)) / 2);
+      const hasMissing = detail.status === 'missing';
+      const isWave = detail.status === 'wave';
+      return {
+        title: `${dateLabel}生活执行`,
+        desc: hasMissing ? '这天少了几条记录，先补完再看。' : '先看这一天吃得怎样、动没动、喝水够不够。',
+        summary: hasMissing ? `晚餐 ${formatPercent(detail.dinner)} · 喝水 ${formatPercent(detail.water)} · 还要补。` : `晚餐 ${formatPercent(detail.dinner)} · 喝水 ${formatPercent(detail.water)} · ${readableConfidence(detail.confidence)}。`,
+        headline: detail.status === 'future' ? '这天还没到' : hasMissing ? '这天还要补记录' : isWave ? '这天波动有原因' : '这天记录够看',
+        note: detail.status === 'future' ? '到了这天补一条记录后，这里就会有内容。' : hasMissing ? '晚餐和喝水少了记录，先补齐更有用。' : isWave ? '晚餐偏高或喝水不够，是这天波动的主要原因。' : '晚餐和喝水都记了，体重变化更好解释。',
+        rate,
+        dinnerNote: detail.dinner > 100 ? '吃多了点' : detail.dinner ? '还在范围内' : '没记',
+        waterNote: detail.water >= 90 ? '喝水不错' : detail.water ? '还能再喝点' : '没记',
+        moveMetric: detail.status === 'future' ? '--' : hasMissing ? '不确定' : isWave ? '偏少' : '已记',
+        moveNote: detail.status === 'future' ? '等这天' : hasMissing ? '还差记录' : isWave ? '动得少了点' : '有轻活动',
+        qualityMetric: readableConfidence(detail.confidence),
+        qualityNote: detail.confidence === '高' ? '不用纠结' : detail.confidence === '中' ? '再看一天' : detail.confidence === '低' ? '补完再看' : '等这天'
+      };
+    }
+
+    function getHabitView(detail, dateLabel) {
+      const done = detail.status === 'stable';
+      const pending = detail.status === 'wave';
+      const due = detail.status === 'future' ? 0 : 1;
+      const completed = done ? 1 : 0;
+      return {
+        title: `${dateLabel}习惯复盘`,
+        desc: '看这天习惯有没有跟上，不和体重混在一起。',
+        summary: detail.status === 'future' ? '这天还没到。' : `这天 ${due} 项要做，完成 ${completed} 项。`,
+        eyebrow: detail.status === 'future' ? '这天还没到' : `这天要做 ${due} 项`,
+        headline: done ? '这天习惯完成了' : pending ? '这天习惯差一点' : detail.status === 'missing' ? '这天习惯也要补' : '这天还没到',
+        note: done ? '该做的已经打卡，可以和这天生活记录一起看。' : pending ? '习惯没完全跟上，先看它有没有影响这天记录。' : detail.status === 'missing' ? '习惯记录也偏少，和生活记录一起补更清楚。' : '到了这天完成习惯后，这里会自动更新。',
+        rate: due ? `${Math.round((completed / due) * 100)}%` : '--',
+        due,
+        completed,
+        doneNote: done ? '完成了' : due ? `还差 ${due - completed} 项` : '还没到'
+      };
+    }
+
+    function getActionView(detail) {
+      if (detail.status === 'future') {
+        return [
+          ['等', '这天还没到', '到了这天记完，内容会自动出来。', '等一等', 'mark'],
+          ['看', '先不用提前看', '这天还没到，不放进现在的复盘里。', '还没到', 'mark'],
+          ['记', '到时候先记三件事', '体重、晚餐、喝水最影响这页。', '到时记', 'mark danger']
+        ];
+      }
+      if (detail.status === 'missing') {
+        return [
+          ['补', '先补关键记录', `少了 ${detail.missing.join('、')}，现在看容易不准。`, '去补', 'mark danger'],
+          ['看', '这天先别下结论', '记录不够，先放进待补里。', '待补', 'mark warning'],
+          ['稳', '补完再看', '补齐后再看这天对本月有没有影响。', '建议', 'mark']
+        ];
+      }
+      if (detail.status === 'wave') {
+        return [
+          ['波', '波动有原因', '晚餐或作息变化，能解释这天重了一点。', '能解释', 'mark warning'],
+          ['看', '先观察下一天', '不用因为一天回弹就马上调计划。', '建议', 'mark'],
+          ['水', '喝水也要看', `这天喝水 ${formatPercent(detail.water)}，会影响短期体重。`, '参考', 'mark success']
+        ];
+      }
+      return [
+        ['稳', '晚餐和喝水都在线', '这天的数据可以放心看。', '主要原因', 'mark success'],
+        ['看', '继续按这个节奏走', '不用因为一天数据做大调整。', '建议', 'mark'],
+        ['看', '明天再看一次', '这天先不用大改，明天再单独复盘一次。', '建议', 'mark success']
+      ];
+    }
+
+    function updateHeroTone(id, status) {
+      const node = document.getElementById(id);
+      if (!node) return;
+      node.classList.remove('habit-analysis-hero--done', 'habit-analysis-hero--progress', 'habit-analysis-hero--idle');
+      node.classList.add(heroToneClassMap[status] || 'habit-analysis-hero--idle');
+    }
+
+    function updateActionCards(detail, dateLabel) {
+      setText('actionDate', dateLabel);
+      getActionView(detail).forEach(([mark, title, text, arrow, className], index) => {
+        const suffix = ['Primary', 'Second', 'Third'][index];
+        setText(`actionMark${suffix}`, mark);
+        setText(`actionTitle${suffix}`, title);
+        setText(`actionText${suffix}`, text);
+        setText(`actionArrow${suffix}`, arrow);
+        document.getElementById(`actionMark${suffix}`).className = className;
+      });
+    }
+
+    function formatRecordDate(month, day) {
+      return `${month.key.slice(5)}-${String(day).padStart(2, '0')}`;
+    }
+
+    function renderBodyReasons(bodyView) {
+      setText('bodyReasonDesc', bodyView.reasonDesc);
+      document.getElementById('bodyReasonList').innerHTML = bodyView.reasons.map(([mark, title, text, badge, status]) => `
+        <article class="composition-insight">
+          <div class="composition-insight__top">
+            <strong>${mark} · ${title}</strong>
+            <span class="status-tag ${statusTagClassMap[status] || ''}">${badge}</span>
+          </div>
+          <p>${text}</p>
+        </article>
+      `).join('');
+    }
+
+    function renderBodyRecords(detail, dateLabel, month, day, bodyView) {
+      const recordDate = formatRecordDate(month, day);
+      const hasWeightRecord = bodyView.recordState === 'recorded' && detail.weight !== '--';
+      setText('bodyRecordTitle', `${dateLabel}身体记录`);
+      setText('bodyRecordDesc', '只展示这一天的身体记录。');
+
+      if (!hasWeightRecord) {
+        document.getElementById('bodyRecordList').innerHTML = `
+          <div class="recent-record-hub">
+            <div class="recent-record-hub__summary">
+              <div>
+                <div class="recent-record-hub__eyebrow">这天记录</div>
+                <strong>${dateLabel}暂无体重记录</strong>
+                <p>${bodyView.recordNote}</p>
+              </div>
+              <div class="recent-record-hub__meta">
+                <strong>0</strong>
+                <span>条记录</span>
+              </div>
+            </div>
+            <div class="recent-record-empty">这里不再混入其他日期的记录。补完这天体重后，这里会显示对应记录。</div>
+            <button class="flow-btn flow-btn--primary flow-btn--wide" data-nav="record_fd.html?tab=weight">补体重记录</button>
+          </div>
+        `;
+        return;
+      }
+
+      recordDetails.bodyWeight = {
+        title: '体重记录',
+        subtitle: `${recordDate} 07:42`,
+        rows: [
+          ['记录日期', dateLabel],
+          ['体重变化', detail.weight],
+          ['BMI', bodyView.bmiStatus],
+          ['备注', bodyView.recordNote]
+        ]
+      };
+
+      document.getElementById('bodyRecordList').innerHTML = `
+        <div class="recent-record-hub">
+          <div class="recent-record-hub__summary">
+            <div>
+              <div class="recent-record-hub__eyebrow">这天记录</div>
+              <strong>${dateLabel}有 1 条体重记录</strong>
+              <p>只看这一天，不混入其他日期。</p>
+            </div>
+            <div class="recent-record-hub__meta">
+              <strong>1</strong>
+              <span>条记录</span>
+            </div>
+          </div>
+          <button class="recent-record-entry" data-record-open="bodyWeight">
+            <span class="recent-record__icon">秤</span>
+            <span class="recent-record__body">
+              <span class="recent-record-entry__meta">
+                <span class="recent-record-entry__type">体重</span>
+                <span class="recent-record__time">${recordDate} 07:42</span>
+              </span>
+              <span class="recent-record__title-row">
+                <strong>体重 ${detail.weight}</strong>
+                <span class="recent-record-entry__arrow">›</span>
+              </span>
+              <span class="recent-record__note">BMI ${bodyView.bmiStatus}</span>
+            </span>
+          </button>
+        </div>
+      `;
+    }
+
+    function renderLifestyleReasons(detail, lifestyleView) {
+      const isFuture = detail.status === 'future';
+      const hasMissing = detail.status === 'missing';
+      const isWave = detail.status === 'wave';
+      const reasons = isFuture ? [
+        ['等', '这天还没到', '等这天记录晚餐、饮水和运动后再看。', '还没到', 'future'],
+        ['记', '先不用提前判断', '未来日期不参与现在的复盘。', '待记录', 'future']
+      ] : hasMissing ? [
+        ['补', '生活记录还不够', `少了 ${detail.missing.join('、')}，先补完再看。`, '待补', 'missing'],
+        ['看', '先别下结论', '记录不够时，生活执行先只作为待补项。', '待补', 'missing']
+      ] : isWave ? [
+        ['吃', detail.dinner > 100 ? '晚餐偏高' : '晚餐接近上限', `晚餐 ${formatPercent(detail.dinner)}，这天波动先看吃得是否偏多。`, '注意', 'wave'],
+        ['水', detail.water < 85 ? '喝水偏少' : '喝水基本跟上', `喝水 ${formatPercent(detail.water)}，会影响短期体重。`, '参考', 'wave']
+      ] : [
+        ['吃', '晚餐在范围内', `晚餐 ${formatPercent(detail.dinner)}，这天吃得比较稳。`, '可参考', 'stable'],
+        ['水', '喝水跟上了', `喝水 ${formatPercent(detail.water)}，这天记录够看。`, '够看', 'stable']
+      ];
+
+      document.getElementById('lifestyleReasonList').innerHTML = reasons.map(([mark, title, text, badge, status]) => `
+        <article class="composition-insight">
+          <div class="composition-insight__top">
+            <strong>${mark} · ${title}</strong>
+            <span class="status-tag ${statusTagClassMap[status] || ''}">${badge}</span>
+          </div>
+          <p>${text}</p>
+        </article>
+      `).join('');
+    }
+
+    function renderLifestyleRecords(detail, dateLabel, month, day) {
+      const recordDate = formatRecordDate(month, day);
+      const hasRecords = detail.status !== 'future' && detail.status !== 'missing';
+      if (!hasRecords) {
+        document.getElementById('lifestyleRecordList').innerHTML = `
+          <div class="recent-record-hub">
+            <div class="recent-record-hub__summary">
+              <div>
+                <div class="recent-record-hub__eyebrow">这天记录</div>
+                <strong>${dateLabel}生活记录待补</strong>
+                <p>只看这一天，不混入其他日期。</p>
+              </div>
+              <div class="recent-record-hub__meta">
+                <strong>0</strong>
+                <span>条记录</span>
+              </div>
+            </div>
+            <div class="recent-record-empty">补完这天晚餐、饮水或运动后，这里会显示对应记录。</div>
+            <button class="flow-btn flow-btn--primary flow-btn--wide" data-nav="record_fd.html?source=lifestyle">补生活记录</button>
+          </div>
+        `;
+        return;
+      }
+
+      recordDetails.lifestyleDinner = {
+        title: '晚餐记录',
+        subtitle: `${recordDate} 19:20`,
+        rows: [
+          ['记录日期', dateLabel],
+          ['晚餐预算', formatPercent(detail.dinner)],
+          ['备注', detail.dinner > 100 ? '这天吃多了点' : '这天还在范围内']
+        ]
+      };
+      recordDetails.lifestyleWater = {
+        title: '饮水记录',
+        subtitle: `${recordDate} 21:10`,
+        rows: [
+          ['记录日期', dateLabel],
+          ['饮水完成', formatPercent(detail.water)],
+          ['备注', detail.water >= 90 ? '喝水不错' : '还能再喝点']
+        ]
+      };
+      recordDetails.lifestyleMove = {
+        title: '运动记录',
+        subtitle: `${recordDate} 20:35`,
+        rows: [
+          ['记录日期', dateLabel],
+          ['运动状态', detail.status === 'wave' ? '偏少' : '轻活动'],
+          ['备注', detail.status === 'wave' ? '这天活动少了点' : '饭后动了动']
+        ]
+      };
+
+      document.getElementById('lifestyleRecordList').innerHTML = `
+        <div class="recent-record-hub">
+          <div class="recent-record-hub__summary">
+            <div>
+              <div class="recent-record-hub__eyebrow">这天记录</div>
+              <strong>${dateLabel}有 3 条生活记录</strong>
+              <p>只看这一天的晚餐、饮水和运动。</p>
+            </div>
+            <div class="recent-record-hub__meta">
+              <strong>3</strong>
+              <span>条记录</span>
+            </div>
+          </div>
+          <button class="recent-record-entry" data-record-open="lifestyleDinner">
+            <span class="recent-record__icon">晚</span>
+            <span class="recent-record__body">
+              <span class="recent-record-entry__meta"><span class="recent-record-entry__type">晚餐</span><span class="recent-record__time">${recordDate} 19:20</span></span>
+              <span class="recent-record__title-row"><strong>晚餐 ${formatPercent(detail.dinner)}</strong><span class="recent-record-entry__arrow">›</span></span>
+              <span class="recent-record__note">${detail.dinner > 100 ? '吃多了点' : '还在范围内'}</span>
+            </span>
+          </button>
+          <button class="recent-record-entry" data-record-open="lifestyleWater">
+            <span class="recent-record__icon">水</span>
+            <span class="recent-record__body">
+              <span class="recent-record-entry__meta"><span class="recent-record-entry__type">饮水</span><span class="recent-record__time">${recordDate} 21:10</span></span>
+              <span class="recent-record__title-row"><strong>饮水 ${formatPercent(detail.water)}</strong><span class="recent-record-entry__arrow">›</span></span>
+              <span class="recent-record__note">${detail.water >= 90 ? '喝水不错' : '还能再喝点'}</span>
+            </span>
+          </button>
+          <button class="recent-record-entry" data-record-open="lifestyleMove">
+            <span class="recent-record__icon">动</span>
+            <span class="recent-record__body">
+              <span class="recent-record-entry__meta"><span class="recent-record-entry__type">运动</span><span class="recent-record__time">${recordDate} 20:35</span></span>
+              <span class="recent-record__title-row"><strong>${detail.status === 'wave' ? '活动偏少' : '轻活动'}</strong><span class="recent-record-entry__arrow">›</span></span>
+              <span class="recent-record__note">按这一天记录展示</span>
+            </span>
+          </button>
+        </div>
+      `;
+    }
+
+    function renderHabitReasons(habitView, detail) {
+      const done = habitView.completed === habitView.due && habitView.due > 0;
+      const reasons = detail.status === 'future' ? [
+        ['等', '这天还没到', '未来日期不提前算习惯完成。', '还没到', 'future']
+      ] : habitView.due === 0 ? [
+        ['看', '这天没有要做项', '没有要做的习惯时，这天不显示完成情况。', '无任务', 'future']
+      ] : done ? [
+        ['完', '这天习惯完成了', '这里只看这一天，不把其他日期混进来。', '完成', 'stable']
+      ] : [
+        ['补', '这天习惯还差一点', '先看这天哪些习惯没打卡。', '待补', 'missing']
+      ];
+
+      document.getElementById('habitReasonList').innerHTML = reasons.map(([mark, title, text, badge, status]) => `
+        <article class="composition-insight">
+          <div class="composition-insight__top">
+            <strong>${mark} · ${title}</strong>
+            <span class="status-tag ${statusTagClassMap[status] || ''}">${badge}</span>
+          </div>
+          <p>${text}</p>
+        </article>
+      `).join('');
+    }
+
+    function renderHabitRecords(habitView, dateLabel) {
+      const done = habitView.completed === habitView.due && habitView.due > 0;
+      recordDetails.habitCheck = {
+        title: '习惯打卡',
+        subtitle: dateLabel,
+        rows: [
+          ['记录日期', dateLabel],
+          ['这天要做', `${habitView.due} 项`],
+          ['这天完成', `${habitView.completed} 项`],
+          ['状态', habitView.doneNote]
+        ]
+      };
+
+      document.getElementById('habitRecordList').innerHTML = `
+        <div class="recent-record-hub">
+          <div class="recent-record-hub__summary">
+            <div>
+              <div class="recent-record-hub__eyebrow">这天清单</div>
+              <strong>${dateLabel}${habitView.due ? `完成 ${habitView.completed}/${habitView.due} 项习惯` : '暂无要做习惯'}</strong>
+              <p>只展示这一天要做和完成的习惯。</p>
+            </div>
+            <div class="recent-record-hub__meta">
+              <strong>${habitView.due ? `${habitView.completed}/${habitView.due}` : '0'}</strong>
+              <span>${done ? '完成' : habitView.due ? '待补' : '无任务'}</span>
+            </div>
+          </div>
+          ${habitView.due ? `
+            <button class="recent-record-entry" data-record-open="habitCheck">
+              <span class="recent-record__icon">${done ? '完' : '习'}</span>
+              <span class="recent-record__body">
+                <span class="recent-record-entry__meta"><span class="recent-record-entry__type">习惯</span><span class="recent-record__time">${dateLabel}</span></span>
+                <span class="recent-record__title-row"><strong>${done ? '喝水提醒已完成' : '喝水提醒待完成'}</strong><span class="recent-record-entry__arrow">›</span></span>
+                <span class="recent-record__note">${habitView.doneNote}</span>
+              </span>
+            </button>
+          ` : '<div class="recent-record-empty">这天没有要做的习惯。</div>'}
+        </div>
+      `;
+    }
+
+    function renderCalendar() {
+      const month = getCurrentMonth();
+      const grid = document.getElementById('calendarGrid');
+      const totalDays = daysInMonth(month.key);
+      const offset = mondayFirstOffset(month.key);
+      const previousMonthDays = daysInMonth(previousMonthKey(month.key));
+      grid.innerHTML = '';
+
+      for (let index = 0; index < offset; index += 1) {
+        const day = previousMonthDays - offset + index + 1;
+        const placeholder = document.createElement('span');
+        placeholder.className = 'calendar-day is-outside';
+        placeholder.textContent = day;
+        grid.appendChild(placeholder);
+      }
+
+      for (let day = 1; day <= totalDays; day += 1) {
+        const status = month.dayStatus[day] || 'future';
+        const detail = getDayDetail(month, day);
+        const dateText = month.key === '2026-06' && day === 8 ? '今' : String(day);
+        const weightText = formatCalendarWeight(detail.weight);
+        const button = document.createElement('button');
+        button.className = `calendar-day ${statusClassMap[status]}`;
+        if (month.key === '2026-06' && day === 8) {
+          button.classList.add('is-today');
+        }
+        if (day === selectedDay) {
+          button.classList.add('is-active');
+        }
+        button.type = 'button';
+        button.innerHTML = `<span class="calendar-day__date">${dateText}</span><span class="calendar-day__weight">${weightText}</span>`;
+        button.setAttribute('aria-label', `${getDayLabel(month, day)}${weightText ? ` 体重变化${weightText}` : ''}`);
+        button.dataset.day = String(day);
+        button.addEventListener('click', () => selectDay(day));
+        grid.appendChild(button);
+      }
+
+      const usedCells = offset + totalDays;
+      const nextCells = usedCells % 7 === 0 ? 0 : 7 - (usedCells % 7);
+      for (let day = 1; day <= nextCells; day += 1) {
+        const placeholder = document.createElement('span');
+        placeholder.className = 'calendar-day is-outside';
+        placeholder.textContent = day;
+        grid.appendChild(placeholder);
+      }
+    }
+
+    function getReviewView(detail) {
+      if (detail.status === 'future') {
+        return {
+          title: '这天还没到',
+          text: '现在先不用看这天，等记录出现后再复盘。',
+          reasons: [
+            ['等', '还没有这天记录', '体重、吃饭和喝水都还没产生，不参与现在判断。'],
+            ['记', '到时候先记三件事', '体重、晚餐、喝水会优先影响这页。']
+          ],
+          next: '等这天到了再看，不需要提前处理。'
+        };
+      }
+      if (detail.status === 'missing') {
+        return {
+          title: '先把记录补齐',
+          text: `少了${detail.missing.join('、')}，现在看容易跑偏。`,
+          reasons: [
+            ['补', `还差${detail.missing.join('、')}`, '缺了这些记录，就不好解释体重为什么变。'],
+            ['缓', '先别急着下结论', '补完后再看，才知道是吃喝影响还是正常波动。']
+          ],
+          next: `先去补${detail.missing.join('、')}，再回来复盘这天。`
+        };
+      }
+      if (detail.status === 'wave') {
+        return {
+          title: '这次波动有原因',
+          text: '更像吃饭、喝水或作息带来的短期变化，不用马上改计划。',
+          reasons: [
+            ['吃', detail.dinner > 100 ? '晚餐有点超' : '晚餐接近上限', '外食、盐分或吃得偏晚，都可能让第二天数字高一点。'],
+            ['水', detail.water < 85 ? '喝水还差一点' : '喝水基本跟上', '喝水和作息会影响短期体重，不代表真的胖了。']
+          ],
+          next: '先观察下一天，不用因为一天回弹就大改。'
+        };
+      }
+      return {
+        title: '这天能放心参考',
+        text: '吃、喝和活动都能对上，所以这天的数据比较有用。',
+        reasons: [
+          ['吃', detail.dinner > 95 ? '晚餐略贴近上限' : '晚餐控制住了', '吃得没有明显超出，这天结果更好解释。'],
+          ['动', detail.water >= 85 ? '喝水和活动都在线' : '活动还可以', '日常节奏没有明显掉线，先保持就好。']
+        ],
+        next: '今天不用大改，继续按这个节奏走。'
+      };
+    }
+
+    function renderReviewView(detail) {
+      const view = getReviewView(detail);
+      setText('reviewTitle', view.title);
+      setText('reviewText', view.text);
+      setText('reviewNext', view.next);
+      document.getElementById('reviewReasons').innerHTML = view.reasons.map(([mark, title, text]) => `
+        <div class="review-reason">
+          <span class="review-reason__mark">${mark}</span>
+          <span><strong>${title}</strong><span>${text}</span></span>
+        </div>
+      `).join('');
+    }
+
+    function updateDayDetail(day) {
+      const month = getCurrentMonth();
+      const detail = getDayDetail(month, day);
+      const dateLabel = getDayLabel(month, day);
+      const bodyView = getBodyView(detail, dateLabel);
+      const lifestyleView = getLifestyleView(detail, dateLabel);
+      const habitView = getHabitView(detail, dateLabel);
+
+      setText('selectedDateLabel', dateLabel);
+      setText('reviewDate', dateLabel);
+      renderReviewView(detail);
+
+      setText('dayContextTitle', detail.title);
+      setText('dayContextText', detail.text);
+      setText('dayContextStatus', statusLabelMap[detail.status]);
+      document.getElementById('dayContextStatus').className = `day-context__status is-${detail.status}`;
+      setText('dayContextWeight', detail.weight);
+      setText('dayContextDinner', formatPercent(detail.dinner));
+      setText('dayContextWater', formatPercent(detail.water));
+      setText('dayContextConfidence', readableConfidence(detail.confidence));
+
+      setText('bodyFocusTitle', bodyView.title);
+      setText('bodyFocusDesc', bodyView.desc);
+      setText('bodyWeightChange', detail.weight);
+      setText('bodyWeightNote', bodyView.weightNote);
+      setText('bodyBmiStatus', bodyView.bmiStatus);
+      setText('bodyBmiNote', bodyView.bmiNote);
+      renderBodyReasons(bodyView);
+      renderBodyRecords(detail, dateLabel, month, day, bodyView);
+
+      setText('lifestyleTitle', lifestyleView.title);
+      setText('lifestyleDesc', lifestyleView.desc);
+      setText('lifestyleSummary', lifestyleView.summary);
+      setText('lifestyleHeadline', lifestyleView.headline);
+      setText('lifestyleNote', lifestyleView.note);
+      setText('lifestyleRate', `${lifestyleView.rate}%`);
+      setText('lifestyleDinnerMetric', formatPercent(detail.dinner));
+      setText('lifestyleDinnerNote', lifestyleView.dinnerNote);
+      setText('lifestyleWaterMetric', formatPercent(detail.water));
+      setText('lifestyleWaterNote', lifestyleView.waterNote);
+      setText('lifestyleMoveMetric', lifestyleView.moveMetric);
+      setText('lifestyleMoveNote', lifestyleView.moveNote);
+      setText('lifestyleQualityMetric', lifestyleView.qualityMetric);
+      setText('lifestyleQualityNote', lifestyleView.qualityNote);
+      renderLifestyleReasons(detail, lifestyleView);
+      renderLifestyleRecords(detail, dateLabel, month, day);
+      updateHeroTone('lifestyleHero', detail.status);
+
+      setText('habitTitle', habitView.title);
+      setText('habitDesc', habitView.desc);
+      setText('habitSummary', habitView.summary);
+      setText('habitEyebrow', habitView.eyebrow);
+      setText('habitHeadline', habitView.headline);
+      setText('habitNote', habitView.note);
+      setText('habitRate', habitView.rate);
+      setText('habitDueMetric', String(habitView.due));
+      setText('habitDoneMetric', String(habitView.completed));
+      setText('habitDoneNote', habitView.doneNote);
+      renderHabitReasons(habitView, detail);
+      renderHabitRecords(habitView, dateLabel);
+      updateHeroTone('habitHero', detail.status);
+      updateActionCards(detail, dateLabel);
+    }
+
+    function selectDay(day) {
+      selectedDay = day;
+      renderCalendar();
+      updateDayDetail(day);
+      const month = getCurrentMonth();
+      const detail = getDayDetail(month, day);
+      window.fdShowToast(`${Number(month.key.slice(5))}月${day}日 · ${statusLabelMap[detail.status]}`);
+    }
+
+    function switchMonth(offset) {
+      const nextIndex = currentMonthIndex + offset;
+      if (nextIndex < 0 || nextIndex >= calendarMonths.length) {
+        window.fdShowToast(offset > 0 ? '暂未生成下月日历' : '已经是最早日历');
+        return;
+      }
+      currentMonthIndex = nextIndex;
+      selectedDay = getCurrentMonth().selectedDay;
+      updateOverview(getCurrentMonth());
+      renderCalendar();
+      updateDayDetail(selectedDay);
+      window.fdShowToast(`已切换到${getCurrentMonth().title}`);
+    }
+
+    function updateTabMeta(panelId) {
+      const month = getCurrentMonth();
+      const detail = getDayDetail(month, selectedDay);
+      const scopeLabel = {
+        reviewPanel: '解释',
+        bodyPanel: '身体',
+        lifestylePanel: '生活',
+        habitPanel: '习惯'
+      }[panelId] || '解释';
+      setText('refreshMeta', `正在看 ${getDayLabel(month, selectedDay)} · ${scopeLabel}`);
+      setText('monthMeta', statusLabelMap[detail.status]);
+    }
+
+    document.getElementById('prevMonthBtn').addEventListener('click', () => switchMonth(-1));
+    document.getElementById('nextMonthBtn').addEventListener('click', () => switchMonth(1));
+    document.querySelectorAll('[data-tab-target]').forEach((item) => {
+      item.addEventListener('click', () => updateTabMeta(item.dataset.tabTarget));
+    });
+
+    function openRecordDetail(key) {
+      const detail = recordDetails[key];
+      if (!detail) return;
+      document.getElementById('detailTitle').textContent = detail.title;
+      document.getElementById('detailSubtitle').textContent = detail.subtitle;
+      document.getElementById('detailBody').innerHTML = detail.rows.map(([label, value]) => `
+        <div class="detail-row">
+          <span class="detail-row__label">${label}</span>
+          <strong class="detail-row__value">${value}</strong>
+        </div>
+      `).join('');
+      document.getElementById('recordDetailMask').classList.add('is-show');
+    }
+
+    function closeRecordDetail() {
+      document.getElementById('recordDetailMask').classList.remove('is-show');
+    }
+
+    document.addEventListener('click', (event) => {
+      const trigger = event.target.closest('[data-record-open]');
+      if (!trigger) return;
+      openRecordDetail(trigger.dataset.recordOpen);
+    });
+    document.getElementById('recordDetailMask').addEventListener('click', closeRecordDetail);
+    document.querySelector('.detail-modal').addEventListener('click', (event) => event.stopPropagation());
+    document.getElementById('detailCloseBtn').addEventListener('click', closeRecordDetail);
+
+    updateOverview(getCurrentMonth());
+    renderCalendar();
+    updateDayDetail(selectedDay);
+  </script>
+</body>
+
+</html>

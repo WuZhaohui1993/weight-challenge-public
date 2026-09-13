@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.weight.mapper.WeightCertificateMapper">
+
+    <resultMap type="WeightCertificate" id="WeightCertificateResult">
+        <result property="id" column="id" />
+        <result property="name" column="name" />
+        <result property="primaryDomain" column="primary_domain" />
+        <result property="domains" column="domains" />
+        <result property="provider" column="provider" />
+        <result property="caDirectoryUrl" column="ca_directory_url" />
+        <result property="acmeMode" column="acme_mode" />
+        <result property="challengeType" column="challenge_type" />
+        <result property="dnsProvider" column="dns_provider" />
+        <result property="webrootPath" column="webroot_path" />
+        <result property="email" column="email" />
+        <result property="certPath" column="cert_path" />
+        <result property="keyPath" column="key_path" />
+        <result property="fullchainPath" column="fullchain_path" />
+        <result property="issuer" column="issuer" />
+        <result property="serialNumber" column="serial_number" />
+        <result property="notBefore" column="not_before" />
+        <result property="notAfter" column="not_after" />
+        <result property="daysRemaining" column="days_remaining" />
+        <result property="renewBeforeDays" column="renew_before_days" />
+        <result property="autoRenew" column="auto_renew" />
+        <result property="deployCommand" column="deploy_command" />
+        <result property="issueCommand" column="issue_command" />
+        <result property="renewCommand" column="renew_command" />
+        <result property="status" column="status" />
+        <result property="lastCheckedAt" column="last_checked_at" />
+        <result property="lastRenewedAt" column="last_renewed_at" />
+        <result property="lastError" column="last_error" />
+        <result property="lastLog" column="last_log" />
+        <result property="enabled" column="enabled" />
+        <result property="createBy" column="create_by" />
+        <result property="createTime" column="create_time" />
+        <result property="updateBy" column="update_by" />
+        <result property="updateTime" column="update_time" />
+        <result property="remark" column="remark" />
+    </resultMap>
+
+    <sql id="selectWeightCertificateVo">
+        select id, name, primary_domain, domains, provider, ca_directory_url, acme_mode, challenge_type, dns_provider,
+               webroot_path, email, cert_path, key_path, fullchain_path, issuer, serial_number,
+               not_before, not_after, days_remaining, renew_before_days, auto_renew,
+               deploy_command, issue_command, renew_command, status, last_checked_at, last_renewed_at,
+               last_error, last_log, enabled, create_by, create_time, update_by, update_time, remark
+        from weight_certificate
+    </sql>
+
+    <select id="selectWeightCertificateList" parameterType="WeightCertificate" resultMap="WeightCertificateResult">
+        <include refid="selectWeightCertificateVo"/>
+        <where>
+            <if test="name != null and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="primaryDomain != null and primaryDomain != ''"> and primary_domain like concat('%', #{primaryDomain}, '%')</if>
+            <if test="provider != null and provider != ''"> and provider = #{provider}</if>
+            <if test="acmeMode != null and acmeMode != ''"> and acme_mode = #{acmeMode}</if>
+            <if test="challengeType != null and challengeType != ''"> and challenge_type = #{challengeType}</if>
+            <if test="status != null and status != ''"> and status = #{status}</if>
+            <if test="enabled != null and enabled != ''"> and enabled = #{enabled}</if>
+        </where>
+        order by
+            case
+                when status = 'expired' then 1
+                when status = 'expiring' then 2
+                when status = 'failed' then 3
+                when status = 'unknown' then 4
+                else 5
+            end,
+            days_remaining asc,
+            id desc
+    </select>
+
+    <select id="selectEnabledAutoRenewCertificates" resultMap="WeightCertificateResult">
+        <include refid="selectWeightCertificateVo"/>
+        where enabled = '0'
+          and auto_renew = 1
+        order by days_remaining asc, id asc
+    </select>
+
+    <select id="selectWeightCertificateById" parameterType="Long" resultMap="WeightCertificateResult">
+        <include refid="selectWeightCertificateVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertWeightCertificate" parameterType="WeightCertificate" useGeneratedKeys="true" keyProperty="id">
+        insert into weight_certificate
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">name,</if>
+            <if test="primaryDomain != null and primaryDomain != ''">primary_domain,</if>
+            <if test="domains != null">domains,</if>
+            <if test="provider != null and provider != ''">provider,</if>
+            <if test="caDirectoryUrl != null">ca_directory_url,</if>
+            <if test="acmeMode != null and acmeMode != ''">acme_mode,</if>
+            <if test="challengeType != null and challengeType != ''">challenge_type,</if>
+            <if test="dnsProvider != null">dns_provider,</if>
+            <if test="webrootPath != null">webroot_path,</if>
+            <if test="email != null">email,</if>
+            <if test="certPath != null">cert_path,</if>
+            <if test="keyPath != null">key_path,</if>
+            <if test="fullchainPath != null">fullchain_path,</if>
+            <if test="issuer != null">issuer,</if>
+            <if test="serialNumber != null">serial_number,</if>
+            <if test="notBefore != null">not_before,</if>
+            <if test="notAfter != null">not_after,</if>
+            <if test="daysRemaining != null">days_remaining,</if>
+            <if test="renewBeforeDays != null">renew_before_days,</if>
+            <if test="autoRenew != null">auto_renew,</if>
+            <if test="deployCommand != null">deploy_command,</if>
+            <if test="issueCommand != null">issue_command,</if>
+            <if test="renewCommand != null">renew_command,</if>
+            <if test="status != null and status != ''">status,</if>
+            <if test="lastCheckedAt != null">last_checked_at,</if>
+            <if test="lastRenewedAt != null">last_renewed_at,</if>
+            <if test="lastError != null">last_error,</if>
+            <if test="lastLog != null">last_log,</if>
+            <if test="enabled != null and enabled != ''">enabled,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="primaryDomain != null and primaryDomain != ''">#{primaryDomain},</if>
+            <if test="domains != null">#{domains},</if>
+            <if test="provider != null and provider != ''">#{provider},</if>
+            <if test="caDirectoryUrl != null">#{caDirectoryUrl},</if>
+            <if test="acmeMode != null and acmeMode != ''">#{acmeMode},</if>
+            <if test="challengeType != null and challengeType != ''">#{challengeType},</if>
+            <if test="dnsProvider != null">#{dnsProvider},</if>
+            <if test="webrootPath != null">#{webrootPath},</if>
+            <if test="email != null">#{email},</if>
+            <if test="certPath != null">#{certPath},</if>
+            <if test="keyPath != null">#{keyPath},</if>
+            <if test="fullchainPath != null">#{fullchainPath},</if>
+            <if test="issuer != null">#{issuer},</if>
+            <if test="serialNumber != null">#{serialNumber},</if>
+            <if test="notBefore != null">#{notBefore},</if>
+            <if test="notAfter != null">#{notAfter},</if>
+            <if test="daysRemaining != null">#{daysRemaining},</if>
+            <if test="renewBeforeDays != null">#{renewBeforeDays},</if>
+            <if test="autoRenew != null">#{autoRenew},</if>
+            <if test="deployCommand != null">#{deployCommand},</if>
+            <if test="issueCommand != null">#{issueCommand},</if>
+            <if test="renewCommand != null">#{renewCommand},</if>
+            <if test="status != null and status != ''">#{status},</if>
+            <if test="lastCheckedAt != null">#{lastCheckedAt},</if>
+            <if test="lastRenewedAt != null">#{lastRenewedAt},</if>
+            <if test="lastError != null">#{lastError},</if>
+            <if test="lastLog != null">#{lastLog},</if>
+            <if test="enabled != null and enabled != ''">#{enabled},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+        </trim>
+    </insert>
+
+    <update id="updateWeightCertificate" parameterType="WeightCertificate">
+        update weight_certificate
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="primaryDomain != null and primaryDomain != ''">primary_domain = #{primaryDomain},</if>
+            <if test="domains != null">domains = #{domains},</if>
+            <if test="provider != null and provider != ''">provider = #{provider},</if>
+            <if test="caDirectoryUrl != null">ca_directory_url = #{caDirectoryUrl},</if>
+            <if test="acmeMode != null and acmeMode != ''">acme_mode = #{acmeMode},</if>
+            <if test="challengeType != null and challengeType != ''">challenge_type = #{challengeType},</if>
+            <if test="dnsProvider != null">dns_provider = #{dnsProvider},</if>
+            <if test="webrootPath != null">webroot_path = #{webrootPath},</if>
+            <if test="email != null">email = #{email},</if>
+            <if test="certPath != null">cert_path = #{certPath},</if>
+            <if test="keyPath != null">key_path = #{keyPath},</if>
+            <if test="fullchainPath != null">fullchain_path = #{fullchainPath},</if>
+            <if test="issuer != null">issuer = #{issuer},</if>
+            <if test="serialNumber != null">serial_number = #{serialNumber},</if>
+            <if test="notBefore != null">not_before = #{notBefore},</if>
+            <if test="notAfter != null">not_after = #{notAfter},</if>
+            <if test="daysRemaining != null">days_remaining = #{daysRemaining},</if>
+            <if test="renewBeforeDays != null">renew_before_days = #{renewBeforeDays},</if>
+            <if test="autoRenew != null">auto_renew = #{autoRenew},</if>
+            <if test="deployCommand != null">deploy_command = #{deployCommand},</if>
+            <if test="issueCommand != null">issue_command = #{issueCommand},</if>
+            <if test="renewCommand != null">renew_command = #{renewCommand},</if>
+            <if test="status != null and status != ''">status = #{status},</if>
+            <if test="lastCheckedAt != null">last_checked_at = #{lastCheckedAt},</if>
+            <if test="lastRenewedAt != null">last_renewed_at = #{lastRenewedAt},</if>
+            <if test="lastError != null">last_error = nullif(#{lastError}, ''),</if>
+            <if test="lastLog != null">last_log = nullif(#{lastLog}, ''),</if>
+            <if test="enabled != null and enabled != ''">enabled = #{enabled},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteWeightCertificateById" parameterType="Long">
+        delete from weight_certificate where id = #{id}
+    </delete>
+
+    <delete id="deleteWeightCertificateByIds" parameterType="String">
+        delete from weight_certificate where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

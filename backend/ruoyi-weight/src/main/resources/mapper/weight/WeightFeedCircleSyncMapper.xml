@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.weight.mapper.WeightFeedCircleSyncMapper">
+
+    <resultMap type="WeightFeedCircleSync" id="WeightFeedCircleSyncResult">
+        <result property="id" column="id" />
+        <result property="feedId" column="feed_id" />
+        <result property="circleId" column="circle_id" />
+        <result property="createTime" column="create_time" />
+    </resultMap>
+
+    <sql id="selectWeightFeedCircleSyncVo">
+        select id, feed_id, circle_id, create_time from weight_feed_circle_sync
+    </sql>
+
+    <select id="selectWeightFeedCircleSyncList" parameterType="WeightFeedCircleSync" resultMap="WeightFeedCircleSyncResult">
+        <include refid="selectWeightFeedCircleSyncVo"/>
+        <where>
+            <if test="feedId != null"> and feed_id = #{feedId}</if>
+            <if test="circleId != null"> and circle_id = #{circleId}</if>
+        </where>
+        order by id asc
+    </select>
+
+    <select id="selectWeightFeedCircleSyncByFeedIds" resultMap="WeightFeedCircleSyncResult">
+        <include refid="selectWeightFeedCircleSyncVo"/>
+        where feed_id in
+        <foreach item="feedId" collection="feedIds" open="(" separator="," close=")">
+            #{feedId}
+        </foreach>
+        order by id asc
+    </select>
+
+    <insert id="insertWeightFeedCircleSync" parameterType="WeightFeedCircleSync" useGeneratedKeys="true" keyProperty="id">
+        insert into weight_feed_circle_sync
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="feedId != null">feed_id,</if>
+            <if test="circleId != null">circle_id,</if>
+            <if test="createTime != null">create_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="feedId != null">#{feedId},</if>
+            <if test="circleId != null">#{circleId},</if>
+            <if test="createTime != null">#{createTime},</if>
+        </trim>
+    </insert>
+
+    <delete id="deleteWeightFeedCircleSyncByFeedId" parameterType="Long">
+        delete from weight_feed_circle_sync where feed_id = #{feedId}
+    </delete>
+</mapper>

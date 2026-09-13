@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.weight.mapper.WeightUserFollowMapper">
+    
+    <resultMap type="WeightUserFollow" id="WeightUserFollowResult">
+        <result property="id"    column="id"    />
+        <result property="followerId"    column="follower_id"    />
+        <result property="followingId"    column="following_id"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+    <sql id="selectWeightUserFollowVo">
+        select id, follower_id, following_id, create_time from weight_user_follow
+    </sql>
+
+    <select id="selectWeightUserFollowList" parameterType="WeightUserFollow" resultMap="WeightUserFollowResult">
+        <include refid="selectWeightUserFollowVo"/>
+        <where>  
+            <if test="followerId != null "> and follower_id = #{followerId}</if>
+            <if test="followingId != null "> and following_id = #{followingId}</if>
+        </where>
+    </select>
+    
+    <select id="selectWeightUserFollowById" parameterType="Long" resultMap="WeightUserFollowResult">
+        <include refid="selectWeightUserFollowVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertWeightUserFollow" parameterType="WeightUserFollow" useGeneratedKeys="true" keyProperty="id">
+        insert into weight_user_follow
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="followerId != null">follower_id,</if>
+            <if test="followingId != null">following_id,</if>
+            <if test="createTime != null">create_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="followerId != null">#{followerId},</if>
+            <if test="followingId != null">#{followingId},</if>
+            <if test="createTime != null">#{createTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateWeightUserFollow" parameterType="WeightUserFollow">
+        update weight_user_follow
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="followerId != null">follower_id = #{followerId},</if>
+            <if test="followingId != null">following_id = #{followingId},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteWeightUserFollowById" parameterType="Long">
+        delete from weight_user_follow where id = #{id}
+    </delete>
+
+    <delete id="deleteWeightUserFollowByIds" parameterType="String">
+        delete from weight_user_follow where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

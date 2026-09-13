@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>星绾同行 - 快速采集 Frontend Design</title>
+  <link rel="stylesheet" href="fd-system.css">
+</head>
+
+<body>
+  <main class="phone">
+    <section class="app flow-page" aria-label="快速采集">
+      <header class="topbar">
+        <button class="back-btn" aria-label="返回" data-nav="index_simplified.html">‹</button>
+        <div class="top-title">
+          <strong>快速采集</strong>
+          <span>少填表，先把事实留下</span>
+        </div>
+        <button class="chip-btn" data-toast="草稿已自动保存">草稿</button>
+      </header>
+
+      <section class="hero decision">
+        <div class="decision-copy">
+          <div class="kicker">当前任务</div>
+          <h1 class="decision-title">补一条事实，系统帮你归类。</h1>
+          <p class="decision-sub">不用先选体重、饮食还是运动。描述你刚发生的事，原型会在保存前给出判断和去向。</p>
+        </div>
+        <div class="segmented">
+          <button class="segment is-active" data-tab-group="record" data-tab-target="record-capture" data-initial-tab="dinner">采集</button>
+          <button class="segment" data-tab-group="record" data-tab-target="record-adjust" data-initial-tab="morning">校准</button>
+          <button class="segment" data-tab-group="record" data-tab-target="record-share" data-initial-tab="mood">去向</button>
+        </div>
+      </section>
+
+      <section class="section tab-panel" id="record-capture" data-panel-group="record">
+        <div class="section-head">
+          <h2 class="section-title">这次补什么</h2>
+          <span class="section-note">按场景选，不按分类选</span>
+        </div>
+        <div class="intent-grid">
+          <button class="intent-card is-active" data-intent="dinner">
+            <span class="mark rose">晚</span>
+            <span><strong>刚吃完</strong><span>拍照或写一句，自动估算热量。</span></span>
+          </button>
+          <button class="intent-card" data-intent="morning">
+            <span class="mark">早</span>
+            <span><strong>早上状态</strong><span>体重、睡眠、水肿放在一起记。</span></span>
+          </button>
+          <button class="intent-card" data-intent="move">
+            <span class="mark warning">动</span>
+            <span><strong>刚活动完</strong><span>只填时长，消耗可稍后校准。</span></span>
+          </button>
+          <button class="intent-card" data-intent="water">
+            <span class="mark success">水</span>
+            <span><strong>补水/习惯</strong><span>一键补进度，不打断当前判断。</span></span>
+          </button>
+        </div>
+
+        <div class="section-head" style="margin-top:18px;">
+          <h2 class="section-title">一句话或一张图</h2>
+          <button class="section-action" id="usePhotoBtn">用照片</button>
+        </div>
+        <div class="capture-box">
+          <textarea class="capture-input" id="captureInput">晚餐：鸡胸肉沙拉，加了半份米饭，没喝饮料。</textarea>
+          <div class="capture-preview">
+            <div class="photo-tile">照片</div>
+            <div class="smart-result">
+              <strong>系统预判：晚餐约 430 kcal</strong>
+              <span>比今天建议值高 10 kcal，不需要补运动；睡前别再加餐。</span>
+            </div>
+          </div>
+          <button class="primary-action" id="saveBtn">保存并更新今日判断</button>
+        </div>
+      </section>
+
+      <section class="section tab-panel" id="record-adjust" data-panel-group="record" hidden>
+        <div class="section-head">
+          <h2 class="section-title">只校准会影响判断的值</h2>
+          <span class="section-note">其余保持默认</span>
+        </div>
+        <div class="panel">
+          <div class="field">
+            <span class="label">今天早上的体重</span>
+            <div class="input-row">
+              <input class="input-big" value="67.8" inputmode="decimal">
+              <span class="unit">kg</span>
+            </div>
+          </div>
+          <div class="field">
+            <span class="label">状态标签</span>
+            <div class="choice-row">
+              <button class="choice is-active">睡得一般</button>
+              <button class="choice">有点水肿</button>
+              <button class="choice">生理期</button>
+              <button class="choice">训练后酸痛</button>
+            </div>
+          </div>
+          <div class="field">
+            <span class="label">系统解释</span>
+            <p class="row-sub">这些标签会影响明天的体重解读，但不会直接降低你的热量预算。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section tab-panel" id="record-share" data-panel-group="record" hidden>
+        <div class="section-head">
+          <h2 class="section-title">保存到哪里</h2>
+          <span class="section-note">默认私密</span>
+        </div>
+        <div class="privacy-row">
+          <button class="switch-line is-on" data-toggle>
+            <span><strong>更新个人判断</strong><span>首页会立刻刷新“今天还要不要调整”。</span></span>
+            <span class="toggle" aria-hidden="true"></span>
+          </button>
+          <button class="switch-line" data-toggle>
+            <span><strong>同步给陪跑圈</strong><span>只同步结论，不公开具体体重和热量。</span></span>
+            <span class="toggle" aria-hidden="true"></span>
+          </button>
+          <button class="switch-line" data-toggle>
+            <span><strong>生成公开动态</strong><span>需要你二次确认文案和可见范围。</span></span>
+            <span class="toggle" aria-hidden="true"></span>
+          </button>
+        </div>
+        <button class="primary-action" id="shareSaveBtn">按当前去向保存</button>
+      </section>
+    </section>
+    <div class="toast flow-toast" id="toast">已保存</div>
+  </main>
+  <script src="fd-interactions.js"></script>
+  <script>
+    document.querySelectorAll('.intent-card').forEach((item) => {
+      item.addEventListener('click', () => {
+        document.querySelectorAll('.intent-card').forEach((card) => card.classList.remove('is-active'));
+        item.classList.add('is-active');
+        const copy = {
+          dinner: '晚餐：鸡胸肉沙拉，加了半份米饭，没喝饮料。',
+          morning: '早上：67.8kg，昨晚睡得一般，起床有点水肿。',
+          move: '饭后快走 35 分钟，强度轻松，出汗不多。',
+          water: '刚补了一杯水，今天还差一杯。'
+        };
+        document.getElementById('captureInput').value = copy[item.dataset.intent] || copy.dinner;
+        window.fdShowToast(`已切换到${item.textContent.trim().slice(0, 4)}`);
+      });
+    });
+
+    document.querySelectorAll('.choice').forEach((item) => {
+      item.addEventListener('click', () => {
+        item.parentElement.querySelectorAll('.choice').forEach((choice) => choice.classList.remove('is-active'));
+        item.classList.add('is-active');
+        window.fdShowToast(`已标记：${item.textContent.trim()}`);
+      });
+    });
+
+    document.querySelectorAll('[data-toggle]').forEach((item) => {
+      item.addEventListener('click', () => item.classList.toggle('is-on'));
+    });
+
+    document.getElementById('usePhotoBtn').addEventListener('click', () => {
+      window.fdShowToast('已进入拍照识别流程');
+    });
+
+    document.getElementById('saveBtn').addEventListener('click', () => {
+      window.fdShowToast('今日判断已更新：晚餐已守住');
+    });
+
+    document.getElementById('shareSaveBtn').addEventListener('click', () => {
+      window.fdShowToast('已按当前去向保存');
+    });
+  </script>
+</body>
+
+</html>

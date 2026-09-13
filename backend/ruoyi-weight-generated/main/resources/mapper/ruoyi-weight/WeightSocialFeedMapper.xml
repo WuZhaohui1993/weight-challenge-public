@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.weight.mapper.WeightSocialFeedMapper">
+    
+    <resultMap type="WeightSocialFeed" id="WeightSocialFeedResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="feedId"    column="feed_id"    />
+        <result property="fromUserId"    column="from_user_id"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+    <sql id="selectWeightSocialFeedVo">
+        select id, user_id, feed_id, from_user_id, create_time from weight_social_feed
+    </sql>
+
+    <select id="selectWeightSocialFeedList" parameterType="WeightSocialFeed" resultMap="WeightSocialFeedResult">
+        <include refid="selectWeightSocialFeedVo"/>
+        <where>  
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="feedId != null "> and feed_id = #{feedId}</if>
+            <if test="fromUserId != null "> and from_user_id = #{fromUserId}</if>
+        </where>
+    </select>
+    
+    <select id="selectWeightSocialFeedById" parameterType="Long" resultMap="WeightSocialFeedResult">
+        <include refid="selectWeightSocialFeedVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertWeightSocialFeed" parameterType="WeightSocialFeed" useGeneratedKeys="true" keyProperty="id">
+        insert into weight_social_feed
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="feedId != null">feed_id,</if>
+            <if test="fromUserId != null">from_user_id,</if>
+            <if test="createTime != null">create_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="feedId != null">#{feedId},</if>
+            <if test="fromUserId != null">#{fromUserId},</if>
+            <if test="createTime != null">#{createTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateWeightSocialFeed" parameterType="WeightSocialFeed">
+        update weight_social_feed
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="feedId != null">feed_id = #{feedId},</if>
+            <if test="fromUserId != null">from_user_id = #{fromUserId},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteWeightSocialFeedById" parameterType="Long">
+        delete from weight_social_feed where id = #{id}
+    </delete>
+
+    <delete id="deleteWeightSocialFeedByIds" parameterType="String">
+        delete from weight_social_feed where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

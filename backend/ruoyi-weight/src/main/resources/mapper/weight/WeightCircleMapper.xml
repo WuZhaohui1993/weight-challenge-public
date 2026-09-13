@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.weight.mapper.WeightCircleMapper">
+    
+    <resultMap type="WeightCircle" id="WeightCircleResult">
+        <result property="id"    column="id"    />
+        <result property="name"    column="name"    />
+        <result property="type"    column="type"    />
+        <result property="categoryId"    column="category_id"    />
+        <result property="icon"    column="icon"    />
+        <result property="coverUrl"    column="cover_url"    />
+        <result property="description"    column="description"    />
+        <result property="creatorId"    column="creator_id"    />
+        <result property="memberCount"    column="member_count"    />
+        <result property="depositRequired"    column="deposit_required"    />
+        <result property="penaltyRule"    column="penalty_rule"    />
+        <result property="durationDays"    column="duration_days"    />
+        <result property="startDate"    column="start_date"    />
+        <result property="endDate"    column="end_date"    />
+        <result property="status"    column="status"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectWeightCircleVo">
+        select id, name, type, category_id, icon, cover_url, description, creator_id, member_count, deposit_required, penalty_rule, duration_days, start_date, end_date, status, del_flag, create_by, create_time, update_by, update_time, remark from weight_circle
+    </sql>
+
+    <select id="selectWeightCircleList" parameterType="WeightCircle" resultMap="WeightCircleResult">
+        <include refid="selectWeightCircleVo"/>
+        <where>  
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="type != null  and type != ''"> and type = #{type}</if>
+            <if test="categoryId != null "> and category_id = #{categoryId}</if>
+            <if test="icon != null  and icon != ''"> and icon = #{icon}</if>
+            <if test="coverUrl != null  and coverUrl != ''"> and cover_url = #{coverUrl}</if>
+            <if test="description != null  and description != ''"> and description = #{description}</if>
+            <if test="creatorId != null "> and creator_id = #{creatorId}</if>
+            <if test="memberCount != null "> and member_count = #{memberCount}</if>
+            <if test="depositRequired != null "> and deposit_required = #{depositRequired}</if>
+            <if test="penaltyRule != null  and penaltyRule != ''"> and penalty_rule = #{penaltyRule}</if>
+            <if test="durationDays != null "> and duration_days = #{durationDays}</if>
+            <if test="startDate != null "> and start_date = #{startDate}</if>
+            <if test="endDate != null "> and end_date = #{endDate}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+        </where>
+    </select>
+    
+    <select id="selectWeightCircleById" parameterType="Long" resultMap="WeightCircleResult">
+        <include refid="selectWeightCircleVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertWeightCircle" parameterType="WeightCircle" useGeneratedKeys="true" keyProperty="id">
+        insert into weight_circle
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">name,</if>
+            <if test="type != null">type,</if>
+            <if test="categoryId != null">category_id,</if>
+            <if test="icon != null">icon,</if>
+            <if test="coverUrl != null">cover_url,</if>
+            <if test="description != null">description,</if>
+            <if test="creatorId != null">creator_id,</if>
+            <if test="memberCount != null">member_count,</if>
+            <if test="depositRequired != null">deposit_required,</if>
+            <if test="penaltyRule != null">penalty_rule,</if>
+            <if test="durationDays != null">duration_days,</if>
+            <if test="startDate != null">start_date,</if>
+            <if test="endDate != null">end_date,</if>
+            <if test="status != null">status,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="type != null">#{type},</if>
+            <if test="categoryId != null">#{categoryId},</if>
+            <if test="icon != null">#{icon},</if>
+            <if test="coverUrl != null">#{coverUrl},</if>
+            <if test="description != null">#{description},</if>
+            <if test="creatorId != null">#{creatorId},</if>
+            <if test="memberCount != null">#{memberCount},</if>
+            <if test="depositRequired != null">#{depositRequired},</if>
+            <if test="penaltyRule != null">#{penaltyRule},</if>
+            <if test="durationDays != null">#{durationDays},</if>
+            <if test="startDate != null">#{startDate},</if>
+            <if test="endDate != null">#{endDate},</if>
+            <if test="status != null">#{status},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateWeightCircle" parameterType="WeightCircle">
+        update weight_circle
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="type != null">type = #{type},</if>
+            <if test="categoryId != null">category_id = #{categoryId},</if>
+            <if test="icon != null">icon = #{icon},</if>
+            <if test="coverUrl != null">cover_url = #{coverUrl},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="creatorId != null">creator_id = #{creatorId},</if>
+            <if test="memberCount != null">member_count = #{memberCount},</if>
+            <if test="depositRequired != null">deposit_required = #{depositRequired},</if>
+            <if test="penaltyRule != null">penalty_rule = #{penaltyRule},</if>
+            <if test="durationDays != null">duration_days = #{durationDays},</if>
+            <if test="startDate != null">start_date = #{startDate},</if>
+            <if test="endDate != null">end_date = #{endDate},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteWeightCircleById" parameterType="Long">
+        delete from weight_circle where id = #{id}
+    </delete>
+
+    <delete id="deleteWeightCircleByIds" parameterType="String">
+        delete from weight_circle where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.weight.mapper.WeightExerciseRecordMapper">
+    
+    <resultMap type="WeightExerciseRecord" id="WeightExerciseRecordResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="exerciseType"    column="exercise_type"    />
+        <result property="durationMinutes"    column="duration_minutes"    />
+        <result property="caloriesBurned"    column="calories_burned"    />
+        <result property="distance"    column="distance"    />
+        <result property="recordedAt"    column="recorded_at"    />
+        <result property="syncToCircles"    column="sync_to_circles"    />
+        <result property="images"    column="images"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectWeightExerciseRecordVo">
+        select id, user_id, exercise_type, duration_minutes, calories_burned, distance, recorded_at, sync_to_circles, images, create_by, create_time, update_by, update_time, remark from weight_exercise_record
+    </sql>
+
+    <select id="selectWeightExerciseRecordList" parameterType="WeightExerciseRecord" resultMap="WeightExerciseRecordResult">
+        <include refid="selectWeightExerciseRecordVo"/>
+        <where>  
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="exerciseType != null  and exerciseType != ''"> and exercise_type = #{exerciseType}</if>
+            <if test="durationMinutes != null "> and duration_minutes = #{durationMinutes}</if>
+            <if test="caloriesBurned != null "> and calories_burned = #{caloriesBurned}</if>
+            <if test="distance != null "> and distance = #{distance}</if>
+            <if test="recordedAt != null "> and recorded_at = #{recordedAt}</if>
+            <if test="params.beginRecordedAt != null"> and recorded_at &gt;= #{params.beginRecordedAt}</if>
+            <if test="params.endRecordedAt != null"> and recorded_at &lt;= #{params.endRecordedAt}</if>
+            <if test="syncToCircles != null  and syncToCircles != ''"> and sync_to_circles = #{syncToCircles}</if>
+        </where>
+    </select>
+    
+    <select id="selectWeightExerciseRecordById" parameterType="Long" resultMap="WeightExerciseRecordResult">
+        <include refid="selectWeightExerciseRecordVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertWeightExerciseRecord" parameterType="WeightExerciseRecord" useGeneratedKeys="true" keyProperty="id">
+        insert into weight_exercise_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="exerciseType != null and exerciseType != ''">exercise_type,</if>
+            <if test="durationMinutes != null">duration_minutes,</if>
+            <if test="caloriesBurned != null">calories_burned,</if>
+            <if test="distance != null">distance,</if>
+            <if test="recordedAt != null">recorded_at,</if>
+            <if test="syncToCircles != null">sync_to_circles,</if>
+            <if test="images != null">images,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="exerciseType != null and exerciseType != ''">#{exerciseType},</if>
+            <if test="durationMinutes != null">#{durationMinutes},</if>
+            <if test="caloriesBurned != null">#{caloriesBurned},</if>
+            <if test="distance != null">#{distance},</if>
+            <if test="recordedAt != null">#{recordedAt},</if>
+            <if test="syncToCircles != null">#{syncToCircles},</if>
+            <if test="images != null">#{images},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateWeightExerciseRecord" parameterType="WeightExerciseRecord">
+        update weight_exercise_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="exerciseType != null and exerciseType != ''">exercise_type = #{exerciseType},</if>
+            <if test="durationMinutes != null">duration_minutes = #{durationMinutes},</if>
+            <if test="caloriesBurned != null">calories_burned = #{caloriesBurned},</if>
+            <if test="distance != null">distance = #{distance},</if>
+            <if test="recordedAt != null">recorded_at = #{recordedAt},</if>
+            <if test="syncToCircles != null">sync_to_circles = #{syncToCircles},</if>
+            <if test="images != null">images = #{images},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteWeightExerciseRecordById" parameterType="Long">
+        delete from weight_exercise_record where id = #{id}
+    </delete>
+
+    <delete id="deleteWeightExerciseRecordByIds" parameterType="String">
+        delete from weight_exercise_record where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

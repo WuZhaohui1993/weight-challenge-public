@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>健康挑战 - 圈子 Frontend Design</title>
+  <link rel="stylesheet" href="fd-system.css">
+  <style>
+    body {
+      background: #e8edf5;
+    }
+
+    .online-page {
+      --bg: #f5f7fb;
+      --shell: #e8edf5;
+      --paper: #ffffff;
+      --paper-soft: rgba(255, 255, 255, 0.9);
+      --ink: #18202d;
+      --ink-2: #344255;
+      --muted: #5f6b7a;
+      --faint: #8b95a4;
+      --line: rgba(23, 37, 84, 0.09);
+      --primary: #4a90e2;
+      --primary-deep: #2e6fc8;
+      --primary-soft: #edf5ff;
+      --success: #2ba779;
+      --success-soft: #e9f8f2;
+      --warning: #f29b38;
+      --warning-soft: #fff3df;
+      --danger: #e56767;
+      --danger-soft: #ffefef;
+      --shadow: 0 6px 18px rgba(16, 24, 40, 0.04);
+      --shadow-strong: 0 12px 32px rgba(16, 24, 40, 0.07);
+      --radius: 14px;
+      background: linear-gradient(180deg, #f7f9fc 0%, #f3f6fb 100%);
+    }
+
+    .online-page .app {
+      padding: 18px 16px 112px;
+    }
+
+    .circle-topbar {
+      min-height: 58px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 4px 0 12px;
+    }
+
+    .header-tabs {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .header-tab {
+      position: relative;
+      color: var(--muted);
+      font-size: 20px;
+      line-height: 1.2;
+      font-weight: 800;
+    }
+
+    .header-tab.is-active {
+      color: var(--ink);
+    }
+
+    .header-tab.is-active::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: -7px;
+      width: 22px;
+      height: 3px;
+      border-radius: 999px;
+      background: var(--primary-deep);
+    }
+
+    .search-btn {
+      width: 40px;
+      height: 40px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: var(--primary-deep);
+      background: var(--primary-soft);
+      border: 1px solid rgba(74, 144, 226, 0.14);
+      font-size: 17px;
+    }
+
+    .discover-hero,
+    .circle-card,
+    .feed-card {
+      border-radius: 16px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+    }
+
+    .discover-hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 14px;
+      align-items: center;
+      padding: 16px;
+      margin-bottom: 14px;
+      background:
+        radial-gradient(circle at top right, rgba(74, 144, 226, 0.16), transparent 36%),
+        linear-gradient(180deg, rgba(246, 250, 255, 0.98), rgba(255, 255, 255, 0.98));
+      animation: fd-enter 280ms ease both;
+    }
+
+    .kicker {
+      color: var(--primary-deep);
+      background: transparent;
+      padding: 0;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      font-weight: 800;
+    }
+
+    .discover-title {
+      display: block;
+      margin-top: 8px;
+      color: var(--ink);
+      font-size: 22px;
+      line-height: 1.25;
+      font-weight: 800;
+    }
+
+    .discover-sub {
+      display: block;
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .avatar-stack {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 9px;
+    }
+
+    .circle-avatar {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      margin-left: -7px;
+      border-radius: 50%;
+      color: #fff;
+      background: linear-gradient(135deg, var(--primary-deep), var(--primary));
+      border: 2px solid #fff;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(2, auto);
+      gap: 8px;
+    }
+
+    .hero-stat {
+      min-width: 62px;
+      display: grid;
+      gap: 2px;
+      justify-items: center;
+      padding: 8px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.86);
+      border: 1px solid rgba(210, 218, 230, 0.78);
+    }
+
+    .hero-stat strong {
+      font-size: 18px;
+      line-height: 1;
+      font-weight: 800;
+    }
+
+    .hero-stat span,
+    .section-sub,
+    .circle-desc,
+    .circle-meta,
+    .feed-time,
+    .feed-content,
+    .feed-actions {
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.45;
+    }
+
+    .section-head {
+      align-items: flex-end;
+      margin-bottom: 10px;
+    }
+
+    .section-title-block {
+      display: grid;
+      gap: 3px;
+    }
+
+    .section-title {
+      font-size: 17px;
+      font-weight: 800;
+    }
+
+    .section-action {
+      color: var(--primary-deep);
+      font-weight: 800;
+    }
+
+    .circle-scroll {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(248px, 78%);
+      gap: 12px;
+      overflow-x: auto;
+      padding: 2px 2px 14px;
+      margin: 0 -2px 2px;
+      scrollbar-width: none;
+    }
+
+    .circle-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    .circle-card {
+      overflow: hidden;
+      text-align: left;
+    }
+
+    .circle-cover {
+      min-height: 118px;
+      display: grid;
+      align-content: space-between;
+      padding: 12px;
+      background:
+        radial-gradient(circle at top right, rgba(255, 255, 255, 0.7), transparent 38%),
+        linear-gradient(135deg, #5aa1ec, #8cc5ff);
+      color: #fff;
+    }
+
+    .circle-card:nth-child(2) .circle-cover {
+      background: linear-gradient(135deg, #58b990, #a7dec8);
+    }
+
+    .circle-card:nth-child(3) .circle-cover {
+      background: linear-gradient(135deg, #f2a34f, #ffd29a);
+    }
+
+    .circle-card:nth-child(4) .circle-cover {
+      background: linear-gradient(135deg, #6c7ae6, #b4bafb);
+    }
+
+    .circle-card:nth-child(5) .circle-cover {
+      background: linear-gradient(135deg, #ef7e89, #ffc0c8);
+    }
+
+    .cover-top,
+    .cover-bottom,
+    .circle-title-row,
+    .feed-head,
+    .feed-topline,
+    .feed-actions {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .cover-top {
+      justify-content: space-between;
+    }
+
+    .emblem {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.22);
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .circle-badge,
+    .feed-badge {
+      min-height: 22px;
+      display: inline-flex;
+      align-items: center;
+      padding: 0 8px;
+      border-radius: 999px;
+      color: var(--primary-deep);
+      background: var(--primary-soft);
+      font-size: 10px;
+      line-height: 1;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .cover-top .circle-badge {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.22);
+    }
+
+    .cover-kicker {
+      display: block;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .cover-caption {
+      display: block;
+      margin-top: 4px;
+      font-size: 11px;
+      line-height: 1.35;
+      opacity: 0.9;
+    }
+
+    .circle-info {
+      display: grid;
+      gap: 9px;
+      padding: 12px;
+    }
+
+    .circle-title-row {
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .circle-title-row strong {
+      color: var(--ink);
+      font-size: 15px;
+      line-height: 1.3;
+      font-weight: 800;
+    }
+
+    .circle-status {
+      color: var(--success);
+      font-size: 11px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .circle-stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 7px;
+    }
+
+    .circle-stat {
+      display: grid;
+      gap: 3px;
+      padding: 8px;
+      border-radius: 11px;
+      background: #f8fbff;
+      text-align: center;
+    }
+
+    .circle-stat strong {
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .circle-stat span {
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .circle-footer {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+      padding: 0 12px 12px;
+    }
+
+    .feed-list {
+      display: grid;
+      gap: 10px;
+      padding-bottom: 10px;
+    }
+
+    .feed-card {
+      display: grid;
+      gap: 10px;
+      padding: 13px;
+    }
+
+    .feed-topline {
+      flex-wrap: wrap;
+    }
+
+    .feed-badge.warning {
+      color: #a76716;
+      background: var(--warning-soft);
+    }
+
+    .feed-badge.soft {
+      color: var(--muted);
+      background: #f3f6fb;
+    }
+
+    .feed-head {
+      justify-content: space-between;
+    }
+
+    .feed-user {
+      min-width: 0;
+      flex: 1;
+      display: grid;
+      gap: 3px;
+    }
+
+    .feed-name {
+      color: var(--ink);
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .feed-story {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 9px;
+      align-items: start;
+      padding: 10px;
+      border-radius: 13px;
+      background: #f8fbff;
+      border: 1px solid rgba(210, 218, 230, 0.68);
+    }
+
+    .feed-mark {
+      font-size: 18px;
+    }
+
+    .fab-post {
+      position: fixed;
+      right: calc(50% - min(50vw, 215px) + 20px);
+      bottom: 104px;
+      z-index: 50;
+      width: 52px;
+      height: 52px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: #fff;
+      background: linear-gradient(135deg, var(--primary-deep), var(--primary));
+      box-shadow: 0 16px 30px rgba(46, 111, 200, 0.24);
+      font-size: 20px;
+    }
+
+    .fab-post[hidden] {
+      display: none;
+    }
+
+    .my-circle-hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 14px;
+      align-items: center;
+      padding: 16px;
+      margin-bottom: 14px;
+      border-radius: 16px;
+      background:
+        radial-gradient(circle at top right, rgba(43, 167, 121, 0.14), transparent 36%),
+        linear-gradient(180deg, rgba(247, 252, 249, 0.98), rgba(255, 255, 255, 0.98));
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+    }
+
+    .my-circle-title {
+      display: block;
+      margin-top: 8px;
+      color: var(--ink);
+      font-size: 21px;
+      line-height: 1.25;
+      font-weight: 800;
+    }
+
+    .my-circle-sub {
+      display: block;
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .my-circle-stats {
+      display: grid;
+      grid-template-columns: repeat(3, auto);
+      gap: 6px;
+    }
+
+    .my-circle-stat {
+      min-width: 54px;
+      display: grid;
+      gap: 3px;
+      justify-items: center;
+      padding: 8px 7px;
+      border-radius: 12px;
+      background: #fff;
+      border: 1px solid rgba(210, 218, 230, 0.78);
+    }
+
+    .my-circle-stat strong {
+      font-size: 17px;
+      line-height: 1;
+      font-weight: 800;
+    }
+
+    .my-circle-stat span,
+    .group-desc,
+    .group-readonly {
+      color: var(--muted);
+      font-size: 10px;
+      line-height: 1.35;
+    }
+
+    .section-actions {
+      display: flex;
+      gap: 10px;
+      color: var(--primary-deep);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .group-list {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .group-item {
+      display: grid;
+      grid-template-columns: 54px minmax(0, 1fr) auto;
+      gap: 11px;
+      align-items: center;
+      padding: 12px;
+      border-radius: 16px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      text-align: left;
+    }
+
+    .group-cover {
+      width: 54px;
+      height: 54px;
+      display: grid;
+      place-items: center;
+      border-radius: 15px;
+      color: #fff;
+      background: linear-gradient(135deg, #6c7ae6, #b4bafb);
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .group-info {
+      min-width: 0;
+      display: grid;
+      gap: 5px;
+    }
+
+    .group-name {
+      color: var(--ink);
+      font-size: 15px;
+      line-height: 1.28;
+      font-weight: 800;
+    }
+
+    .group-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+
+    .group-action {
+      min-height: 32px;
+      padding: 0 10px;
+      border-radius: 999px;
+      color: #fff;
+      background: var(--primary-deep);
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="phone online-page">
+    <section class="app" aria-label="圈子">
+      <header class="circle-topbar">
+        <div class="header-tabs">
+          <button class="header-tab is-active" data-circle-tab="discover">发现</button>
+          <button class="header-tab" data-circle-tab="my">我的圈子</button>
+        </div>
+        <button class="search-btn" data-toast="打开圈子搜索">🔍</button>
+      </header>
+
+      <section id="discoverPanel" data-circle-panel="discover">
+      <section class="discover-hero">
+        <div>
+          <div class="kicker">圈子发现</div>
+          <strong class="discover-title">5 个公开圈子正在招募中</strong>
+          <span class="discover-sub">清晨健康打卡群 · 办公室轻记录互助圈 等挑战正在升温。</span>
+        </div>
+        <div>
+          <div class="avatar-stack">
+            <span class="circle-avatar">清</span>
+            <span class="circle-avatar">办</span>
+            <span class="circle-avatar">晚</span>
+          </div>
+          <div class="hero-stats">
+            <span class="hero-stat"><strong>5</strong><span>公开圈子</span></span>
+            <span class="hero-stat"><strong>38</strong><span>活跃成员</span></span>
+          </div>
+        </div>
+      </section>
+
+      <div class="section-head">
+        <div class="section-title-block">
+          <h2 class="section-title">热门圈子</h2>
+          <span class="section-sub">公开挑战与推荐圈子</span>
+        </div>
+        <button class="section-action" data-toast="查看全部公开圈子">查看全部 ></button>
+      </div>
+
+      <div class="circle-scroll" aria-label="热门圈子">
+        <button class="circle-card" data-toast="打开清晨健康打卡群">
+          <span class="circle-cover">
+            <span class="cover-top"><span><span class="circle-badge">早起</span> <span class="circle-badge">长期计划</span></span><span class="emblem">清</span></span>
+            <span class="cover-bottom"><span><span class="cover-kicker">现在可加入</span><span class="cover-caption">现在加入，今天就能开始第一条打卡。</span></span></span>
+          </span>
+          <span class="circle-info">
+            <span class="circle-title-row"><strong>清晨健康打卡群</strong><span class="circle-status">招募中</span></span>
+            <span class="circle-desc">早起称重、早餐和饮水都可以打卡，适合每天轻量记录。</span>
+            <span class="circle-stats"><span class="circle-stat"><strong>16</strong><span>成员</span></span><span class="circle-stat"><strong>长期</strong><span>周期</span></span><span class="circle-stat"><strong>免押</strong><span>门槛</span></span></span>
+          </span>
+          <span class="circle-footer"><span class="circle-meta">打开详情查看规则、成员和最新动态。</span><span class="circle-badge">查看详情</span></span>
+        </button>
+
+        <button class="circle-card" data-toast="打开办公室轻记录互助圈">
+          <span class="circle-cover">
+            <span class="cover-top"><span><span class="circle-badge">饮食</span> <span class="circle-badge">长期计划</span></span><span class="emblem">办</span></span>
+            <span class="cover-bottom"><span><span class="cover-kicker">现在可加入</span><span class="cover-caption">现在加入，今天就能开始第一条打卡。</span></span></span>
+          </span>
+          <span class="circle-info">
+            <span class="circle-title-row"><strong>办公室轻记录互助圈</strong><span class="circle-status">招募中</span></span>
+            <span class="circle-desc">上班族记录食堂、外卖和饮水，互相提醒别漏餐也别过量。</span>
+            <span class="circle-stats"><span class="circle-stat"><strong>9</strong><span>成员</span></span><span class="circle-stat"><strong>长期</strong><span>周期</span></span><span class="circle-stat"><strong>免押</strong><span>门槛</span></span></span>
+          </span>
+          <span class="circle-footer"><span class="circle-meta">打开详情查看规则、成员和最新动态。</span><span class="circle-badge">查看详情</span></span>
+        </button>
+
+        <button class="circle-card" data-toast="打开晚饭后一起走">
+          <span class="circle-cover">
+            <span class="cover-top"><span><span class="circle-badge">运动</span> <span class="circle-badge">长期计划</span></span><span class="emblem">晚</span></span>
+            <span class="cover-bottom"><span><span class="cover-kicker">现在可加入</span><span class="cover-caption">现在加入，今天就能开始第一条打卡。</span></span></span>
+          </span>
+          <span class="circle-info">
+            <span class="circle-title-row"><strong>晚饭后一起走</strong><span class="circle-status">招募中</span></span>
+            <span class="circle-desc">下班后快走、慢跑、骑行都算，重在把习惯坚持起来。</span>
+            <span class="circle-stats"><span class="circle-stat"><strong>8</strong><span>成员</span></span><span class="circle-stat"><strong>长期</strong><span>周期</span></span><span class="circle-stat"><strong>免押</strong><span>门槛</span></span></span>
+          </span>
+          <span class="circle-footer"><span class="circle-meta">打开详情查看规则、成员和最新动态。</span><span class="circle-badge">查看详情</span></span>
+        </button>
+
+        <button class="circle-card" data-toast="继续查看健康小分队">
+          <span class="circle-cover">
+            <span class="cover-top"><span><span class="circle-badge">运动</span> <span class="circle-badge">长期计划</span></span><span class="emblem">健</span></span>
+            <span class="cover-bottom"><span><span class="cover-kicker">挑战进行中</span><span class="cover-caption">保持更新，和圈友一起完成目标。</span></span></span>
+          </span>
+          <span class="circle-info">
+            <span class="circle-title-row"><strong>健康小分队</strong><span class="circle-status">已加入</span></span>
+            <span class="circle-desc">每日运动60分钟可还行</span>
+            <span class="circle-stats"><span class="circle-stat"><strong>4</strong><span>成员</span></span><span class="circle-stat"><strong>长期</strong><span>周期</span></span><span class="circle-stat"><strong>免押</strong><span>门槛</span></span></span>
+          </span>
+          <span class="circle-footer"><span class="circle-meta">你已经在这个圈子里，可以继续打卡互动。</span><span class="circle-badge">继续查看</span></span>
+        </button>
+
+        <button class="circle-card" data-toast="打开轻盈一夏，享瘦人生">
+          <span class="circle-cover">
+            <span class="cover-top"><span><span class="circle-badge">减重</span> <span class="circle-badge">100 天</span></span><span class="emblem">轻</span></span>
+            <span class="cover-bottom"><span><span class="cover-kicker">现在可加入</span><span class="cover-caption">现在加入，今天就能开始第一条打卡。</span></span></span>
+          </span>
+          <span class="circle-info">
+            <span class="circle-title-row"><strong>轻盈一夏，享瘦人生</strong><span class="circle-status">招募中</span></span>
+            <span class="circle-desc">有需要减脂增肌健康饮食的亲们一起相互助力，轻盈一夏！</span>
+            <span class="circle-stats"><span class="circle-stat"><strong>1</strong><span>成员</span></span><span class="circle-stat"><strong>3 月</strong><span>周期</span></span><span class="circle-stat"><strong>免押</strong><span>门槛</span></span></span>
+          </span>
+          <span class="circle-footer"><span class="circle-meta">打开详情查看规则、成员和最新动态。</span><span class="circle-badge">查看详情</span></span>
+        </button>
+      </div>
+
+      <div class="section-head">
+        <div class="section-title-block">
+          <h2 class="section-title">公开动态</h2>
+          <span class="section-sub">6 条最新公开内容</span>
+        </div>
+      </div>
+
+      <div class="feed-list">
+        <article class="feed-card">
+          <div class="feed-topline"><span class="feed-badge warning">精选</span><span class="feed-badge">公开动态</span><span class="feed-badge soft">体重打卡</span><span class="feed-badge soft">同步至 清晨健康打卡群</span></div>
+          <div class="feed-head"><span class="avatar">许</span><span class="feed-user"><strong class="feed-name">许嘉宁</strong><span class="feed-time">2026-05-21 · 公开可见</span></span><span class="feed-badge warning">精选</span></div>
+          <div class="feed-story"><span class="feed-mark">⚖️</span><p class="feed-content">早上称重 57.8kg，先把记录保持住，今天正常吃。</p></div>
+          <div class="feed-actions"><span>🤍 7</span><span>💬 5</span></div>
+        </article>
+
+        <article class="feed-card">
+          <div class="feed-topline"><span class="feed-badge warning">精选</span><span class="feed-badge">公开动态</span><span class="feed-badge soft">运动记录</span><span class="feed-badge soft">同步至 晚饭后一起走</span></div>
+          <div class="feed-head"><span class="avatar">顾</span><span class="feed-user"><strong class="feed-name">顾南</strong><span class="feed-time">2026-05-20 · 公开可见</span></span><span class="feed-badge warning">精选</span></div>
+          <div class="feed-story"><span class="feed-mark">🏃</span><p class="feed-content">晚饭后在小区快走 40 分钟，顺手把步数补上了。</p></div>
+          <div class="feed-actions"><span>🤍 6</span><span>💬 6</span></div>
+        </article>
+
+        <article class="feed-card">
+          <div class="feed-topline"><span class="feed-badge warning">精选</span><span class="feed-badge">公开动态</span><span class="feed-badge soft">体重打卡</span><span class="feed-badge soft">同步至 清晨健康打卡群</span></div>
+          <div class="feed-head"><span class="avatar">橙</span><span class="feed-user"><strong class="feed-name">小橙子</strong><span class="feed-time">2026-05-20 · 公开可见</span></span><span class="feed-badge warning">精选</span></div>
+          <div class="feed-story"><span class="feed-mark">⚖️</span><p class="feed-content">早上称重 57.0kg，先把记录保持住，今天正常吃。</p></div>
+          <div class="feed-actions"><span>🤍 6</span><span>💬 7</span></div>
+        </article>
+
+        <article class="feed-card">
+          <div class="feed-topline"><span class="feed-badge warning">精选</span><span class="feed-badge">公开动态</span><span class="feed-badge soft">运动记录</span><span class="feed-badge soft">同步至 晚饭后一起走</span></div>
+          <div class="feed-head"><span class="avatar">刘</span><span class="feed-user"><strong class="feed-name">刘一鸣</strong><span class="feed-time">2026-05-19 · 公开可见</span></span><span class="feed-badge warning">精选</span></div>
+          <div class="feed-story"><span class="feed-mark">🏃</span><p class="feed-content">晚饭后在小区快走 40 分钟，顺手把步数补上了。</p></div>
+          <div class="feed-actions"><span>🤍 6</span><span>💬 6</span></div>
+        </article>
+
+        <article class="feed-card">
+          <div class="feed-topline"><span class="feed-badge warning">精选</span><span class="feed-badge">公开动态</span><span class="feed-badge soft">体重打卡</span><span class="feed-badge soft">同步至 清晨健康打卡群</span></div>
+          <div class="feed-head"><span class="avatar">陈</span><span class="feed-user"><strong class="feed-name">陈思远</strong><span class="feed-time">2026-05-19 · 公开可见</span></span><span class="feed-badge warning">精选</span></div>
+          <div class="feed-story"><span class="feed-mark">⚖️</span><p class="feed-content">早上称重 78.6kg，先把记录保持住，今天正常吃。</p></div>
+          <div class="feed-actions"><span>🤍 6</span><span>💬 4</span></div>
+        </article>
+
+        <article class="feed-card">
+          <div class="feed-topline"><span class="feed-badge warning">精选</span><span class="feed-badge">公开动态</span><span class="feed-badge soft">运动记录</span><span class="feed-badge soft">同步至 晚饭后一起走</span></div>
+          <div class="feed-head"><span class="avatar">杰</span><span class="feed-user"><strong class="feed-name">阿杰</strong><span class="feed-time">2026-05-18 · 公开可见</span></span><span class="feed-badge warning">精选</span></div>
+          <div class="feed-story"><span class="feed-mark">🏃</span><p class="feed-content">晚饭后在小区快走 40 分钟，顺手把步数补上了。</p></div>
+          <div class="feed-actions"><span>🤍 6</span><span>💬 3</span></div>
+        </article>
+      </div>
+      </section>
+
+      <section id="myCirclePanel" data-circle-panel="my" hidden>
+        <section class="my-circle-hero">
+          <div>
+            <div class="kicker">我的圈子</div>
+            <strong class="my-circle-title">把常去的挑战放在手边</strong>
+            <span class="my-circle-sub">主圈子、私密陪跑和公开挑战都在这里统一管理。</span>
+          </div>
+          <div class="my-circle-stats">
+            <span class="my-circle-stat"><strong>1</strong><span>已加入</span></span>
+            <span class="my-circle-stat"><strong>0</strong><span>私密</span></span>
+            <span class="my-circle-stat"><strong>1</strong><span>公开</span></span>
+          </div>
+        </section>
+
+        <div class="section-head">
+          <div class="section-title-block">
+            <h2 class="section-title">我的圈子</h2>
+            <span class="section-sub">管理主圈子、加入状态和挑战入口</span>
+          </div>
+          <div class="section-actions">
+            <button data-toast="管理全部圈子">管理全部</button>
+            <button data-toast="创建圈子">+ 创建</button>
+          </div>
+        </div>
+
+        <div class="section-head">
+          <div class="section-title-block">
+            <h2 class="section-title">🔒 私密圈子</h2>
+            <span class="section-sub">0 个已加入私密圈子</span>
+          </div>
+        </div>
+        <div class="circle-meta" style="margin: -4px 0 14px;">还没有加入私密圈子</div>
+
+        <div class="section-head">
+          <div class="section-title-block">
+            <h2 class="section-title">⭕ 公开圈子</h2>
+            <span class="section-sub">1 个公开挑战</span>
+          </div>
+        </div>
+        <div class="group-list">
+          <button class="group-item" data-toast="查看健康小分队">
+            <span class="group-cover">健</span>
+            <span class="group-info">
+              <strong class="group-name">健康小分队</strong>
+              <span class="group-desc">4 人 · 连续 0 天</span>
+              <span class="group-tags">
+                <span class="circle-badge">管理员</span>
+                <span class="circle-badge">长期计划</span>
+                <span class="circle-badge">免押</span>
+              </span>
+            </span>
+            <span class="group-action">查看详情</span>
+          </button>
+        </div>
+      </section>
+    </section>
+
+    <button class="fab-post" id="circleFab" data-toast="打开发布动态">✏️</button>
+
+    <nav class="bottom-nav" aria-label="底部导航">
+      <button class="tab" data-nav="index_simplified.html">首页<span class="tab-dot"></span></button>
+      <button class="tab is-active">圈子<span class="tab-dot"></span></button>
+      <button class="tab tab-action" data-sheet-open="#quickRecordSheet"><span class="tab-plus">+</span><span>记录</span></button>
+      <button class="tab" data-nav="analytics_fd.html">分析<span class="tab-dot"></span></button>
+      <button class="tab" data-nav="profile_fd.html">我的<span class="tab-dot"></span></button>
+    </nav>
+
+    <section class="sheet" id="quickRecordSheet" aria-label="快捷记录">
+      <div class="sheet-panel">
+        <div class="sheet-head">
+          <strong class="sheet-title">快速记录</strong>
+          <button class="chip-btn" data-sheet-close>关闭</button>
+        </div>
+        <div class="sheet-grid">
+          <button class="sheet-item" data-nav="record_fd.html?tab=dinner"><span class="mark rose">食</span><span>饮食</span></button>
+          <button class="sheet-item" data-nav="record_fd.html?tab=morning"><span class="mark">重</span><span>体重</span></button>
+          <button class="sheet-item" data-nav="record_fd.html?tab=move"><span class="mark warning">动</span><span>运动</span></button>
+          <button class="sheet-item" data-nav="record_fd.html?tab=habit"><span class="mark success">惯</span><span>习惯</span></button>
+          <button class="sheet-item" data-nav="record_fd.html?tab=water"><span class="mark success">水</span><span>饮水</span></button>
+        </div>
+      </div>
+    </section>
+    <div class="toast" id="toast">已操作</div>
+  </main>
+  <script src="fd-interactions.js"></script>
+  <script>
+    document.querySelectorAll('[data-circle-tab]').forEach((tab) => {
+      tab.addEventListener('click', () => {
+        const target = tab.dataset.circleTab;
+        document.querySelectorAll('[data-circle-tab]').forEach((item) => item.classList.toggle('is-active', item === tab));
+        document.querySelectorAll('[data-circle-panel]').forEach((panel) => {
+          panel.hidden = panel.dataset.circlePanel !== target;
+        });
+        document.getElementById('circleFab').hidden = target !== 'discover';
+      });
+    });
+  </script>
+</body>
+
+</html>

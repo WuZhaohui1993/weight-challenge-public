@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Weight Challenge - 我的</title>
+    <style>
+        :root {
+            --primary: #4A90E2;
+            --accent: #50E3C2;
+            --bg-page: #F7F8FA;
+            --card-bg: #FFFFFF;
+            --text-main: #333333;
+            --text-sub: #888888;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            padding-bottom: 80px;
+        }
+
+        /* 顶部背景 */
+        .profile-header {
+            background: white;
+            padding: 60px 20px 30px;
+            display: flex;
+            align-items: center;
+        }
+
+        .avatar-large {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: #ddd;
+            margin-right: 20px;
+            border: 2px solid white;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .user-info h2 {
+            font-size: 22px;
+            margin-bottom: 5px;
+        }
+
+        .user-id {
+            font-size: 14px;
+            color: var(--text-sub);
+        }
+
+        .user-stats {
+            display: flex;
+            justify-content: space-around;
+            background: white;
+            padding-bottom: 20px;
+            border-bottom: 10px solid var(--bg-page);
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-val {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--text-main);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-sub);
+            margin-top: 4px;
+        }
+
+        /* 勋章墙 */
+        .badges-section {
+            background: white;
+            padding: 20px;
+            margin-bottom: 10px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .section-title {
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .badge-list {
+            display: flex;
+            gap: 15px;
+        }
+
+        .badge {
+            width: 50px;
+            height: 50px;
+            background: #FFF3E0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        /* 菜单列表 */
+        .menu-list {
+            background: white;
+            padding: 0 20px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 18px 0;
+            border-bottom: 1px solid #f5f5f5;
+        }
+
+        .menu-item:last-child {
+            border-bottom: none;
+        }
+
+        .menu-icon {
+            width: 24px;
+            font-size: 20px;
+            margin-right: 15px;
+        }
+
+        .menu-text {
+            flex: 1;
+            font-size: 16px;
+        }
+
+        .menu-arrow {
+            color: #ccc;
+        }
+
+        /* 底部导航 (复用) */
+        .tab-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 80px;
+            background: var(--card-bg);
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            padding-bottom: 20px;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.03);
+            z-index: 100;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+        }
+
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #C5C5C5;
+            font-size: 10px;
+            width: 20%;
+            position: relative;
+        }
+
+        .tab-item.active {
+            color: var(--primary);
+        }
+
+        .tab-item.active::after {
+            content: '';
+            position: absolute;
+            top: -10px;
+            width: 40%;
+            height: 2px;
+            background: var(--primary);
+            border-radius: 0 0 4px 4px;
+        }
+
+        .tab-icon {
+            margin-bottom: 4px;
+            transition: transform 0.2s;
+        }
+
+        .tab-item:active .tab-icon {
+            transform: scale(0.9);
+        }
+
+        .tab-item-center {
+            position: relative;
+            width: 20%;
+            display: flex;
+            justify-content: center;
+        }
+
+        .tab-center-btn {
+            width: 48px;
+            height: 48px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 28px;
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.4);
+            margin-top: -15px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="profile-header">
+        <img src="https://i.pravatar.cc/150?img=12" class="avatar-large">
+        <div class="user-info">
+            <h2>用户9527</h2>
+            <div class="user-id">ID: 8848321</div>
+        </div>
+        <div style="flex:1"></div>
+        <div style="font-size:24px;">⚙️</div>
+    </div>
+
+    <div class="user-stats">
+        <div class="stat-item">
+            <div class="stat-val">12</div>
+            <div class="stat-label">连续打卡</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-val">3.2</div>
+            <div class="stat-label">累计减重(kg)</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-val">5</div>
+            <div class="stat-label">获得勋章</div>
+        </div>
+    </div>
+
+    <div class="badges-section">
+        <div class="section-header">
+            <div class="section-title">我的成就</div>
+            <div style="color: #888; font-size:12px;">查看全部 ></div>
+        </div>
+        <div class="badge-list">
+            <div class="badge">🌟</div>
+            <div class="badge">🔥</div>
+            <div class="badge">💧</div>
+            <div class="badge">🏃</div>
+        </div>
+    </div>
+
+    <!--
+        [后端关联] 个人中心数据来源：
+        
+        1. 用户信息 API: GET /api/user/me
+        返回: {
+            id, nickname, avatar,
+            height: 175, birthday: "1990-01-01",
+            current_weight: 72.4, target_weight: 68,
+            bmi: 23.1,
+            streak_days: 12, total_weight_loss: 3.2, badge_count: 5
+        }
+        
+        2. 更新设置 API: PUT /api/user/settings
+        Body: { height, target_weight, ... }
+    -->
+
+    <!-- 身体信息卡片 (新增) -->
+    <div class="body-info-card">
+        <div class="body-info-header">
+            <span>📋 身体信息</span>
+            <span class="edit-btn" onclick="alert('编辑身体信息')">编辑</span>
+        </div>
+        <div class="body-info-grid">
+            <div class="body-info-item">
+                <div class="body-info-label">身高</div>
+                <div class="body-info-value">175 <span>cm</span></div>
+            </div>
+            <div class="body-info-item">
+                <div class="body-info-label">当前体重</div>
+                <div class="body-info-value">72.4 <span>kg</span></div>
+            </div>
+            <div class="body-info-item">
+                <div class="body-info-label">目标体重</div>
+                <div class="body-info-value">68 <span>kg</span></div>
+            </div>
+            <div class="body-info-item">
+                <div class="body-info-label">BMI</div>
+                <div class="body-info-value">23.1 <span class="bmi-tag normal">正常</span></div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .body-info-card {
+            background: white;
+            margin: 10px 20px;
+            border-radius: 16px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+        }
+
+        .body-info-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .edit-btn {
+            font-size: 12px;
+            color: var(--primary);
+            font-weight: normal;
+            cursor: pointer;
+        }
+
+        .body-info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .body-info-item {
+            background: #F9FAFC;
+            padding: 12px;
+            border-radius: 12px;
+        }
+
+        .body-info-label {
+            font-size: 11px;
+            color: var(--text-sub);
+            margin-bottom: 4px;
+        }
+
+        .body-info-value {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .body-info-value span {
+            font-size: 12px;
+            font-weight: normal;
+            color: var(--text-sub);
+        }
+
+        .bmi-tag {
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 4px;
+        }
+
+        .bmi-tag.normal {
+            background: #E8F5E9;
+            color: #4CAF50;
+        }
+
+        .bmi-tag.overweight {
+            background: #FFF3E0;
+            color: #FF9800;
+        }
+    </style>
+
+    <div class="menu-list">
+        <!-- 核心功能入口 -->
+        <div class="menu-item" onclick="location.href='habit.html'">
+            <div class="menu-icon">✅</div>
+            <div class="menu-text">习惯管理</div>
+            <div class="menu-badge">3/5</div>
+            <div class="menu-arrow">›</div>
+        </div>
+        <div class="menu-item" onclick="location.href='circle_manage.html'">
+            <div class="menu-icon">⭕</div>
+            <div class="menu-text">我的圈子</div>
+            <div class="menu-badge">2个</div>
+            <div class="menu-arrow">›</div>
+        </div>
+        <div class="menu-item" onclick="location.href='achievements.html'">
+            <div class="menu-icon">🏅</div>
+            <div class="menu-text">成就徽章</div>
+            <div class="menu-badge">6/12</div>
+            <div class="menu-arrow">›</div>
+        </div>
+    </div>
+
+    <div style="height: 10px; background: var(--bg-page);"></div>
+
+    <div class="menu-list">
+        <div class="menu-item" onclick="alert('我的目标设置')">
+            <div class="menu-icon">🎯</div>
+            <div class="menu-text">我的目标</div>
+            <div class="menu-arrow">›</div>
+        </div>
+        <div class="menu-item" onclick="alert('健康周报')">
+            <div class="menu-icon">📊</div>
+            <div class="menu-text">健康周报</div>
+            <div class="menu-arrow">›</div>
+        </div>
+        <div class="menu-item" onclick="openSyncSettings()">
+            <div class="menu-icon">🔄</div>
+            <div class="menu-text">同步设置</div>
+            <div class="menu-arrow">›</div>
+        </div>
+        <div class="menu-item" onclick="alert('饮食偏好设置')">
+            <div class="menu-icon">🍏</div>
+            <div class="menu-text">饮食偏好</div>
+            <div class="menu-arrow">›</div>
+        </div>
+        <div class="menu-item" onclick="alert('提醒设置')">
+            <div class="menu-icon">🔔</div>
+            <div class="menu-text">提醒设置</div>
+            <div class="menu-arrow">›</div>
+        </div>
+    </div>
+
+    <div style="height: 10px; background: var(--bg-page);"></div>
+
+    <div class="menu-list">
+        <div class="menu-item" onclick="alert('关于我们')">
+            <div class="menu-icon">ℹ️</div>
+            <div class="menu-text">关于我们</div>
+            <div class="menu-arrow">›</div>
+        </div>
+        <div class="menu-item" onclick="alert('意见反馈')">
+            <div class="menu-icon">💬</div>
+            <div class="menu-text">意见反馈</div>
+            <div class="menu-arrow">›</div>
+        </div>
+    </div>
+
+    <style>
+        .menu-badge {
+            font-size: 12px;
+            color: var(--primary);
+            background: #E3F2FD;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-right: 8px;
+        }
+
+        .menu-item {
+            cursor: pointer;
+        }
+
+        .menu-item:active {
+            background: #F5F5F5;
+        }
+    </style>
+
+    <!-- 记录菜单 Action Sheet (复用首页) -->
+    <div id="actionSheet" class="action-sheet-overlay" onclick="toggleRecordMenu()">
+        <div class="action-sheet-content" onclick="event.stopPropagation()">
+            <div class="action-sheet-header">记录生活</div>
+
+            <div class="action-grid">
+                <!-- 核心功能：拍照识别 -->
+                <div class="action-item primary" onclick="location.href='camera_result.html'">
+                    <div class="action-icon camera">📷</div>
+                    <div class="action-name">AI 拍断食</div>
+                    <div class="action-desc">拍照自动计算卡路里</div>
+                </div>
+
+                <!-- 其他记录 -->
+                <div class="action-sub-grid">
+                    <div class="action-item" onclick="location.href='record.html?tab=weight'">
+                        <div class="action-icon weight">⚖️</div>
+                        <div class="action-name">记体重</div>
+                    </div>
+                    <div class="action-item" onclick="location.href='record.html?tab=exercise'">
+                        <div class="action-icon exercise">🏃</div>
+                        <div class="action-name">记运动</div>
+                    </div>
+                    <div class="action-item" onclick="location.href='record.html?tab=habit'">
+                        <div class="action-icon habit">✅</div>
+                        <div class="action-name">打卡</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-sheet-close" onclick="toggleRecordMenu()">✕</div>
+        </div>
+    </div>
+
+    <!-- 底部导航 -->
+    <div class="tab-bar">
+        <a href="index.html" class="tab-item">
+            <svg class="tab-icon" viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2"
+                fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+            <span class="tab-label">首页</span>
+        </a>
+        <a href="circle.html" class="tab-item">
+            <svg class="tab-icon" viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2"
+                fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="2" y1="12" x2="22" y2="12"></line>
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z">
+                </path>
+            </svg>
+            <span class="tab-label">圈子</span>
+        </a>
+        <div class="tab-item tab-item-center">
+            <div class="tab-center-btn" onclick="toggleRecordMenu()">+</div>
+        </div>
+        <a href="analytics.html" class="tab-item">
+            <svg class="tab-icon" viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2"
+                fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="20" x2="18" y2="10"></line>
+                <line x1="12" y1="20" x2="12" y2="4"></line>
+                <line x1="6" y1="20" x2="6" y2="14"></line>
+            </svg>
+            <span class="tab-label">分析</span>
+        </a>
+        <a href="profile.html" class="tab-item active">
+            <svg class="tab-icon" viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2"
+                fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <span class="tab-label">我的</span>
+        </a>
+    </div>
+
+    <style>
+        /* Action Sheet 样式 */
+        .action-sheet-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 200;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+
+        .action-sheet-overlay.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .action-sheet-content {
+            background: #FFFFFF;
+            border-top-left-radius: 24px;
+            border-top-right-radius: 24px;
+            padding: 30px 20px;
+            transform: translateY(100%);
+            transition: transform 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        .action-sheet-overlay.show .action-sheet-content {
+            transform: translateY(0);
+        }
+
+        .action-sheet-header {
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 25px;
+            color: var(--text-main);
+        }
+
+        .action-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .action-item {
+            background: #F5F7FA;
+            border-radius: 20px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        .action-item:active {
+            transform: scale(0.98);
+        }
+
+        .action-item.primary {
+            background: linear-gradient(135deg, #E3F2FD, #F3E5F5);
+            border: 2px solid #FFFFFF;
+            box-shadow: 0 4px 15px rgba(74, 144, 226, 0.15);
+            flex-direction: row;
+            justify-content: flex-start;
+            padding: 20px;
+            gap: 15px;
+        }
+
+        .action-item.primary .action-icon {
+            width: 50px;
+            height: 50px;
+            font-size: 24px;
+            background: #FFFFFF;
+        }
+
+        .action-item.primary .action-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .action-item.primary .action-desc {
+            font-size: 12px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        .action-sub-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+        }
+
+        .action-sub-grid .action-item {
+            height: 100px;
+        }
+
+        .action-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-bottom: 8px;
+            background: white;
+        }
+
+        .action-icon.camera {
+            color: var(--primary);
+        }
+
+        .action-icon.weight {
+            color: var(--accent);
+        }
+
+        .action-icon.exercise {
+            color: #FF9800;
+        }
+
+        .action-icon.habit {
+            color: #9C27B0;
+        }
+
+        .action-name {
+            font-size: 14px;
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        .action-sheet-close {
+            margin-top: 25px;
+            text-align: center;
+            font-size: 24px;
+            color: #ccc;
+            cursor: pointer;
+            padding: 10px;
+        }
+    </style>
+
+    <script>
+        function toggleRecordMenu() {
+            const sheet = document.getElementById('actionSheet');
+            if (sheet.classList.contains('show')) {
+                sheet.classList.remove('show');
+            } else {
+                sheet.classList.add('show');
+            }
+        }
+
+        function openSyncSettings() {
+            const msg = `📤 同步设置
+
+同步模式：
+○ 实时同步（每次记录后选择）
+● 手动同步（不自动弹窗）
+
+默认同步圈子：
+☑ 每次询问
+☐ 自动同步到主圈子
+
+同步内容：
+☑ 体重变化
+☑ 饮食记录
+☑ 运动记录
+☐ 习惯打卡`;
+            alert(msg);
+        }
+    </script>
+
+</body>
+
+</html>

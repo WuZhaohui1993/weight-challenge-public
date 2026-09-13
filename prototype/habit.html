@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Weight Challenge - 习惯管理</title>
+    <style>
+        /* 复用全局变量 */
+        :root {
+            --primary: #4A90E2;
+            --accent: #50E3C2;
+            --success: #4CAF50;
+            --warning: #FF9800;
+            --bg-page: #F7F8FA;
+            --card-bg: #FFFFFF;
+            --text-main: #333333;
+            --text-sub: #888888;
+            --radius-m: 16px;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            padding-bottom: 100px;
+        }
+
+        /* 统一 Header 风格 (与 circle_private.html 一致) */
+        .header {
+            padding: 44px 20px 10px;
+            background: white;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05);
+            height: 88px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-main);
+            cursor: pointer;
+        }
+
+        .header-icon {
+            font-size: 20px;
+        }
+
+        .header-right {
+            font-size: 14px;
+            color: var(--primary);
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* 页面说明 */
+        .page-desc {
+            background: linear-gradient(135deg, #E3F2FD, #F3E5F5);
+            padding: 12px 20px;
+            font-size: 13px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* 日历条 */
+        .calendar-strip {
+            background: white;
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            box-shadow: var(--shadow);
+        }
+
+        .calendar-day {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            width: 36px;
+            padding: 8px 0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .calendar-day:active {
+            transform: scale(0.95);
+        }
+
+        .calendar-day.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .day-label {
+            font-size: 11px;
+            color: var(--text-sub);
+        }
+
+        .calendar-day.active .day-label {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .day-num {
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .day-dot {
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: var(--success);
+        }
+
+        .calendar-day.active .day-dot {
+            background: white;
+        }
+
+        /* 进度统计卡片 (与 circle_private.html 的 streak-badge 风格类似) */
+        .stats-card {
+            background: white;
+            margin: 16px 20px;
+            border-radius: var(--radius-m);
+            padding: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .stats-row {
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+        }
+
+        .stat-item {
+            flex: 1;
+        }
+
+        .stat-num {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: var(--text-sub);
+            margin-top: 4px;
+        }
+
+        /* 习惯分组标题 */
+        .section-title {
+            padding: 16px 20px 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-sub);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* 习惯卡片 (与其他页面的 card 风格一致) */
+        .habit-card {
+            background: white;
+            margin: 0 20px 12px;
+            border-radius: var(--radius-m);
+            padding: 16px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.2s;
+        }
+
+        .habit-card:active {
+            transform: scale(0.98);
+        }
+
+        .habit-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .habit-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: #F5F7FA;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+
+        }
+
+        .habit-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .habit-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
+
+        .habit-streak {
+            font-size: 11px;
+            color: var(--text-sub);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .streak-fire {
+            color: var(--warning);
+        }
+
+        /* 勾选按钮 (与 circle_private 的 task-check 一致) */
+        .check-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: 2px solid #E0E0E0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: transparent;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+        }
+
+        .habit-card.done .habit-name {
+            color: #AAA;
+            text-decoration: line-through;
+        }
+
+        .habit-card.done .check-btn {
+            background: var(--success);
+            border-color: var(--success);
+            color: white;
+        }
+
+        .habit-card.done .check-btn::after {
+            content: '✓';
+        }
+
+        /* 底部操作栏 (与 circle_private.html 一致) */
+        .bottom-action {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 12px 20px 30px;
+            background: white;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+            display: flex;
+            gap: 12px;
+            z-index: 100;
+        }
+
+        .btn-add {
+            flex: 1;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 24px;
+            font-size: 15px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+        }
+
+        .btn-share {
+            width: 50px;
+            background: #F5F5F5;
+            border: none;
+            border-radius: 24px;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 成就提示条 */
+        .achievement-banner {
+            background: linear-gradient(135deg, #FFF3E0, #FFECB3);
+            margin: 16px 20px;
+            border-radius: var(--radius-m);
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .achievement-icon {
+            font-size: 28px;
+        }
+
+        .achievement-info h4 {
+            font-size: 14px;
+            font-weight: 700;
+            color: #E65100;
+            margin-bottom: 2px;
+        }
+
+        .achievement-info p {
+            font-size: 11px;
+            color: #BF360C;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- 统一风格的 Header -->
+    <div class="header">
+        <div class="header-left" onclick="location.href='index.html'">
+            <span class="header-icon">←</span>
+            <span>习惯管理</span>
+        </div>
+        <div class="header-right" onclick="location.href='achievements.html'">🏅 成就</div>
+    </div>
+
+    <!-- 页面说明 -->
+    <div class="page-desc">
+        <span>💡</span>
+        <span>在这里创建和管理你的习惯，查看历史记录和完成统计</span>
+    </div>
+
+    <!-- 日历条 -->
+    <div class="calendar-strip">
+        <div class="calendar-day" onclick="selectDay(this)">
+            <span class="day-label">一</span>
+            <span class="day-num">13</span>
+        </div>
+        <div class="calendar-day" onclick="selectDay(this)">
+            <span class="day-label">二</span>
+            <span class="day-num">14</span>
+            <span class="day-dot"></span>
+        </div>
+        <div class="calendar-day" onclick="selectDay(this)">
+            <span class="day-label">三</span>
+            <span class="day-num">15</span>
+            <span class="day-dot"></span>
+        </div>
+        <div class="calendar-day active" onclick="selectDay(this)">
+            <span class="day-label">四</span>
+            <span class="day-num">16</span>
+        </div>
+        <div class="calendar-day" onclick="selectDay(this)">
+            <span class="day-label">五</span>
+            <span class="day-num">17</span>
+        </div>
+        <div class="calendar-day" onclick="selectDay(this)">
+            <span class="day-label">六</span>
+            <span class="day-num">18</span>
+        </div>
+        <div class="calendar-day" onclick="selectDay(this)">
+            <span class="day-label">日</span>
+            <span class="day-num">19</span>
+        </div>
+    </div>
+
+    <!-- 统计卡片 -->
+    <div class="stats-card">
+        <div class="stats-row">
+            <div class="stat-item">
+                <div class="stat-num" id="completedCount">3</div>
+                <div class="stat-label">今日已完成</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-num" style="color: var(--warning);">🔥 12</div>
+                <div class="stat-label">最长连续</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-num">85%</div>
+                <div class="stat-label">本周完成率</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 成就提示 (与 achievements.html 联动) -->
+    <div class="achievement-banner" onclick="location.href='achievements.html'">
+        <span class="achievement-icon">🏆</span>
+        <div class="achievement-info">
+            <h4>即将解锁「早起达人」</h4>
+            <p>再坚持 2 天即可获得！继续加油</p>
+        </div>
+    </div>
+
+    <!--
+        [后端关联] 习惯打卡数据来源：
+        
+        1. 习惯列表 API: GET /api/habits/today
+        返回: [
+            { id, name, icon, period: "morning/anytime/evening", streak, completed },
+            ...
+        ]
+        
+        2. 打卡 API: POST /api/habits/{id}/checkin
+        3. 撤销打卡 API: DELETE /api/habits/{id}/checkin?date=...
+        4. 新增习惯 API: POST /api/habits
+        
+        数据关联：
+        - HabitCheckin 记录 → CircleFeed（若关联圈子）
+        - 连续打卡 → Achievement 触发
+    -->
+
+    <!-- 晨间习惯 -->
+    <div class="section-title">
+        <span>🌅</span> 晨间习惯
+    </div>
+    <div class="habit-card done" onclick="toggleHabit(this)">
+        <div class="habit-left">
+            <div class="habit-icon">💧</div>
+            <div class="habit-info">
+                <div class="habit-name">早起一杯温水</div>
+                <div class="habit-streak"><span class="streak-fire">🔥</span> 已坚持 12 天</div>
+            </div>
+        </div>
+        <div class="check-btn"></div>
+    </div>
+    <div class="habit-card" onclick="toggleHabit(this)">
+        <div class="habit-left">
+            <div class="habit-icon">🥗</div>
+            <div class="habit-info">
+                <div class="habit-name">吃健康早餐</div>
+                <div class="habit-streak"><span class="streak-fire">🔥</span> 已坚持 5 天</div>
+            </div>
+        </div>
+        <div class="check-btn"></div>
+    </div>
+
+    <!-- 随时习惯 -->
+    <div class="section-title">
+        <span>☀️</span> 随时进行
+    </div>
+    <div class="habit-card done" onclick="toggleHabit(this)">
+        <div class="habit-left">
+            <div class="habit-icon">📖</div>
+            <div class="habit-info">
+                <div class="habit-name">阅读 30 分钟</div>
+                <div class="habit-streak">累计完成 28 次</div>
+            </div>
+        </div>
+        <div class="check-btn"></div>
+    </div>
+    <div class="habit-card done" onclick="toggleHabit(this)">
+        <div class="habit-left">
+            <div class="habit-icon">🚶</div>
+            <div class="habit-info">
+                <div class="habit-name">久坐提醒走动</div>
+                <div class="habit-streak">今日已完成 3 次</div>
+            </div>
+        </div>
+        <div class="check-btn"></div>
+    </div>
+
+    <!-- 晚间习惯 -->
+    <div class="section-title">
+        <span>🌙</span> 晚间习惯
+    </div>
+    <div class="habit-card" onclick="toggleHabit(this)">
+        <div class="habit-left">
+            <div class="habit-icon">📵</div>
+            <div class="habit-info">
+                <div class="habit-name">睡前不玩手机</div>
+                <div class="habit-streak">已坚持 2 天</div>
+            </div>
+        </div>
+        <div class="check-btn"></div>
+    </div>
+
+    <!-- 底部操作栏 -->
+    <div class="bottom-action">
+        <button class="btn-add" onclick="addHabit()">
+            <span>+</span> 添加新习惯
+        </button>
+        <button class="btn-share" onclick="alert('分享今日习惯完成情况')">📤</button>
+    </div>
+
+    <script>
+        function selectDay(el) {
+            document.querySelectorAll('.calendar-day').forEach(d => d.classList.remove('active'));
+            el.classList.add('active');
+            // 实际开发中会加载对应日期的数据
+        }
+
+        function toggleHabit(card) {
+            const isDone = card.classList.contains('done');
+
+            if (!isDone) {
+                card.classList.add('done');
+                showToast('🎉 完成打卡！');
+            } else {
+                card.classList.remove('done');
+            }
+            updateStats();
+        }
+
+        function updateStats() {
+            const total = document.querySelectorAll('.habit-card').length;
+            const done = document.querySelectorAll('.habit-card.done').length;
+            document.getElementById('completedCount').innerText = done;
+        }
+
+        function addHabit() {
+            const name = prompt("请输入新习惯名称：");
+            if (name && name.trim()) {
+                alert(`✅ "${name}" 已添加！\n\n可在设置中配置提醒时间和频率。`);
+            }
+        }
+
+        function showToast(msg) {
+            const div = document.createElement('div');
+            div.style.cssText = `
+                position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+                background: rgba(0,0,0,0.8); color: white; padding: 12px 24px;
+                border-radius: 24px; z-index: 1000; font-size: 14px;
+            `;
+            div.innerText = msg;
+            document.body.appendChild(div);
+            setTimeout(() => div.remove(), 1500);
+        }
+    </script>
+</body>
+
+</html>

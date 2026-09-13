@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Weight Challenge - 创建圈子</title>
+    <style>
+        :root {
+            --primary: #4A90E2;
+            --accent: #50E3C2;
+            --bg-page: #F7F8FA;
+            --card-bg: #FFFFFF;
+            --text-main: #333333;
+            --text-sub: #888888;
+            --radius-m: 16px;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            padding-bottom: 80px;
+        }
+
+        .header {
+            padding: 44px 20px 10px;
+            background: white;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05);
+            height: 88px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-main);
+            cursor: pointer;
+        }
+
+        .header-icon {
+            font-size: 20px;
+        }
+
+        /* 表单容器 */
+        .form-container {
+            padding: 20px;
+        }
+
+        .form-section {
+            background: var(--card-bg);
+            border-radius: var(--radius-m);
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* 1. 类型选择 */
+        .type-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .type-card {
+            border: 2px solid #eee;
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .type-card.active {
+            border-color: var(--primary);
+            background: #F0F7FF;
+        }
+
+        .type-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .type-name {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .type-desc {
+            font-size: 10px;
+            color: var(--text-sub);
+        }
+
+        /* 2. 基础信息 */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--text-main);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #eee;
+            border-radius: 12px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+            background: #F9F9F9;
+        }
+
+        .form-input:focus {
+            border-color: var(--primary);
+            background: white;
+        }
+
+        .cover-upload {
+            width: 100%;
+            height: 120px;
+            background: #F5F5F5;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-sub);
+            border: 2px dashed #ddd;
+            cursor: pointer;
+        }
+
+        /* 3. 目标设定 */
+        .goal-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .goal-tag {
+            padding: 8px 16px;
+            background: #F5F5F5;
+            border-radius: 20px;
+            font-size: 13px;
+            color: var(--text-sub);
+            cursor: pointer;
+        }
+
+        .goal-tag.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* 圈子分类标签 */
+        .category-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        /* 图标选择器 */
+        .icon-picker {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .icon-option {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            background: #F5F5F5;
+            border-radius: 12px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .icon-option.active {
+            border-color: var(--primary);
+            background: #E3F2FD;
+        }
+
+        /* 4. 邀请好友 (模拟) */
+        .friend-list {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+
+        .friend-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 60px;
+            position: relative;
+        }
+
+        .friend-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-bottom: 6px;
+            border: 2px solid transparent;
+        }
+
+        .friend-item.selected .friend-avatar {
+            border-color: var(--primary);
+        }
+
+        .friend-item.selected::after {
+            content: '✓';
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: var(--primary);
+            color: white;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid white;
+        }
+
+        .friend-name {
+            font-size: 11px;
+            color: var(--text-sub);
+        }
+
+        /* 底部按钮 */
+        .footer-action {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 10px 20px 30px;
+            background: white;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+            z-index: 100;
+        }
+
+        .btn-submit {
+            background: var(--primary);
+            color: white;
+            width: 100%;
+            padding: 14px;
+            border-radius: 24px;
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+        }
+
+        /* 押金支付确认弹窗 */
+        .payment-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .payment-modal.show {
+            display: flex;
+        }
+
+        .payment-content {
+            background: white;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 340px;
+            padding: 24px;
+            text-align: center;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .payment-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .payment-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .payment-desc {
+            font-size: 14px;
+            color: var(--text-sub);
+            margin-bottom: 20px;
+        }
+
+        .payment-amount {
+            background: linear-gradient(135deg, #FFF8E1, #FFECB3);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .payment-amount .label {
+            font-size: 12px;
+            color: #F57C00;
+            margin-bottom: 4px;
+        }
+
+        .payment-amount .value {
+            font-size: 32px;
+            font-weight: 800;
+            color: #E65100;
+        }
+
+        .payment-rules {
+            background: #F5F7FA;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .payment-rules .rule-title {
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-main);
+        }
+
+        .payment-rules .rule-item {
+            font-size: 11px;
+            color: var(--text-sub);
+            margin-bottom: 4px;
+            display: flex;
+            align-items: flex-start;
+            gap: 6px;
+        }
+
+        .payment-btns {
+            display: flex;
+            gap: 12px;
+        }
+
+        .payment-btns .btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 24px;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+        }
+
+        .payment-btns .btn-cancel {
+            background: #F0F0F0;
+            color: var(--text-main);
+        }
+
+        .payment-btns .btn-confirm {
+            background: var(--primary);
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <div class="header-left" onclick="history.back()">
+            <span class="header-icon">←</span>
+            <span>创建圈子</span>
+        </div>
+    </div>
+
+    <div class="form-container">
+
+        <!-- 1. 圈子类型 -->
+        <div class="form-section">
+            <div class="section-title">
+                <span>1️⃣</span> 选择类型
+            </div>
+            <div class="type-grid">
+                <div class="type-card active" onclick="selectType(this, 'private')">
+                    <span class="type-icon">🔒</span>
+                    <div class="type-name">私密小圈</div>
+                    <div class="type-desc">仅邀请可见<br>适合熟人互助</div>
+                </div>
+                <div class="type-card" onclick="selectType(this, 'public')">
+                    <span class="type-icon">📢</span>
+                    <div class="type-name">公开挑战</div>
+                    <div class="type-desc">所有人可见<br>适合大型活动</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. 基础信息 -->
+        <div class="form-section">
+            <div class="section-title">
+                <span>2️⃣</span> 基础信息
+            </div>
+            <div class="form-group">
+                <label class="form-label">圈子名称</label>
+                <input type="text" class="form-input" placeholder="例如：减脂打卡小分队" id="circleName">
+            </div>
+
+            <!-- 新增：圈子分类 -->
+            <div class="form-group">
+                <label class="form-label">圈子分类</label>
+                <div class="category-tags">
+                    <div class="goal-tag active" onclick="selectCategory(this, 'weight')">🏋️ 减重</div>
+                    <div class="goal-tag" onclick="selectCategory(this, 'exercise')">🏃 运动</div>
+                    <div class="goal-tag" onclick="selectCategory(this, 'morning')">🌅 早起</div>
+                    <div class="goal-tag" onclick="selectCategory(this, 'diet')">🥗 饮食</div>
+                    <div class="goal-tag" onclick="selectCategory(this, 'habit')">✅ 习惯</div>
+                    <div class="goal-tag" onclick="selectCategory(this, 'challenge')">🔥 挑战</div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">圈子图标</label>
+                <div class="icon-picker">
+                    <div class="icon-option active" onclick="selectIcon(this, '⚖️')">⚖️</div>
+                    <div class="icon-option" onclick="selectIcon(this, '🏃')">🏃</div>
+                    <div class="icon-option" onclick="selectIcon(this, '🌅')">🌅</div>
+                    <div class="icon-option" onclick="selectIcon(this, '🥗')">🥗</div>
+                    <div class="icon-option" onclick="selectIcon(this, '✅')">✅</div>
+                    <div class="icon-option" onclick="selectIcon(this, '🔥')">🔥</div>
+                    <div class="icon-option" onclick="selectIcon(this, '💪')">💪</div>
+                    <div class="icon-option" onclick="selectIcon(this, '🎯')">🎯</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. 目标设定 -->
+        <div class="form-section">
+            <div class="section-title">
+                <span>3️⃣</span> 共同目标
+            </div>
+            <div class="goal-tags">
+                <div class="goal-tag active" onclick="toggleTag(this)">早起打卡</div>
+                <div class="goal-tag" onclick="toggleTag(this)">不吃夜宵</div>
+                <div class="goal-tag" onclick="toggleTag(this)">每日运动</div>
+                <div class="goal-tag" onclick="toggleTag(this)">多喝水</div>
+                <div class="goal-tag" onclick="toggleTag(this)">记录体重</div>
+            </div>
+            <div style="margin-top: 12px;">
+                <input type="text" class="form-input" placeholder="或输入自定义目标...">
+            </div>
+        </div>
+
+        <!-- 4. 挑战规则 (新增) -->
+        <div class="form-section">
+            <div class="section-title">
+                <span>4️⃣</span> 挑战规则
+            </div>
+
+            <!-- 挑战周期 -->
+            <div class="form-group">
+                <label class="form-label">挑战周期</label>
+                <div class="period-options">
+                    <div class="period-option" onclick="selectPeriod(this, 7)">7天</div>
+                    <div class="period-option active" onclick="selectPeriod(this, 21)">21天</div>
+                    <div class="period-option" onclick="selectPeriod(this, 30)">30天</div>
+                    <div class="period-option" onclick="selectPeriod(this, 0)">永久</div>
+                </div>
+            </div>
+
+            <!-- 押金设置 -->
+            <div class="form-group">
+                <label class="form-label">押金金额 <span style="font-size:11px; color:#888;">(可选，激励坚持)</span></label>
+                <div class="deposit-options">
+                    <div class="deposit-option" onclick="selectDeposit(this, 0)">无押金</div>
+                    <div class="deposit-option active" onclick="selectDeposit(this, 20)">¥20</div>
+                    <div class="deposit-option" onclick="selectDeposit(this, 50)">¥50</div>
+                    <div class="deposit-option" onclick="selectDeposit(this, 100)">¥100</div>
+                </div>
+                <div style="font-size:11px; color:#888; margin-top:8px;">💡 完成挑战全额退还，中途放弃按规则扣除</div>
+            </div>
+
+            <!-- 惩罚规则 -->
+            <div class="form-group">
+                <label class="form-label">未打卡惩罚</label>
+                <div class="penalty-options">
+                    <div class="penalty-option active" onclick="selectPenalty(this, 'warn')">
+                        <span class="penalty-icon">⚠️</span>
+                        <span>仅提醒</span>
+                    </div>
+                    <div class="penalty-option" onclick="selectPenalty(this, 'deduct')">
+                        <span class="penalty-icon">💸</span>
+                        <span>扣除押金</span>
+                    </div>
+                    <div class="penalty-option" onclick="selectPenalty(this, 'kick')">
+                        <span class="penalty-icon">🚪</span>
+                        <span>移出圈子</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. 邀请好友 -->
+        <div class="form-section">
+            <div class="section-title">
+                <span>5️⃣</span> 邀请好友 (可选)
+            </div>
+            <div class="friend-list">
+                <div class="friend-item selected" onclick="toggleFriend(this)">
+                    <img src="https://i.pravatar.cc/100?img=3" class="friend-avatar">
+                    <span class="friend-name">阿杰</span>
+                </div>
+                <div class="friend-item" onclick="toggleFriend(this)">
+                    <img src="https://i.pravatar.cc/100?img=5" class="friend-avatar">
+                    <span class="friend-name">小美</span>
+                </div>
+                <div class="friend-item" onclick="toggleFriend(this)">
+                    <img src="https://i.pravatar.cc/100?img=8" class="friend-avatar">
+                    <span class="friend-name">大壮</span>
+                </div>
+                <div class="friend-item" onclick="toggleFriend(this)">
+                    <img src="https://i.pravatar.cc/100?img=12" class="friend-avatar">
+                    <span class="friend-name">Lisa</span>
+                </div>
+                <div class="friend-item">
+                    <div class="friend-avatar"
+                        style="background:#eee; display:flex; align-items:center; justify-content:center; font-size:20px; color:#aaa;">
+                        +</div>
+                    <span class="friend-name">微信邀请</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 规则选项样式 -->
+    <style>
+        .period-options,
+        .deposit-options {
+            display: flex;
+            gap: 10px;
+        }
+
+        .period-option,
+        .deposit-option {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            background: #F5F5F5;
+            border-radius: 10px;
+            font-size: 13px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .period-option.active,
+        .deposit-option.active {
+            background: #E3F2FD;
+            border-color: var(--primary);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .penalty-options {
+            display: flex;
+            gap: 10px;
+        }
+
+        .penalty-option {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 12px;
+            background: #F5F5F5;
+            border-radius: 12px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .penalty-option.active {
+            background: #FFF3E0;
+            border-color: #FF9800;
+        }
+
+        .penalty-icon {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+
+        .penalty-option span:last-child {
+            font-size: 11px;
+            color: #666;
+        }
+    </style>
+
+    <div class="footer-action">
+        <button class="btn-submit" onclick="submitCreate()">立即创建</button>
+    </div>
+
+    <!-- 押金支付确认弹窗 -->
+    <div class="payment-modal" id="paymentModal" onclick="closePaymentModal(event)">
+        <div class="payment-content" onclick="event.stopPropagation()">
+            <div class="payment-icon">💰</div>
+            <div class="payment-title">确认支付押金</div>
+            <div class="payment-desc">支付押金后即可创建圈子</div>
+
+            <div class="payment-amount">
+                <div class="label">需支付押金</div>
+                <div class="value" id="paymentAmount">¥20</div>
+            </div>
+
+            <div class="payment-rules">
+                <div class="rule-title">📋 押金规则</div>
+                <div class="rule-item"><span>✓</span> 挑战期间完成每日打卡，押金全额退还</div>
+                <div class="rule-item"><span>✓</span> 未完成打卡，押金按规则扣除</div>
+                <div class="rule-item"><span>✓</span> 中途退出圈子，押金不予退还</div>
+            </div>
+
+            <div class="payment-btns">
+                <button class="btn btn-cancel" onclick="closePaymentModal()">取消</button>
+                <button class="btn btn-confirm" onclick="confirmPayment()">确认支付</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 当前选中的配置
+        let selectedType = 'private';
+        let selectedPeriod = 21;
+        let selectedDeposit = 20;
+        let selectedPenalty = 'warn';
+        let selectedCategory = 'weight';
+        let selectedIcon = '⚖️';
+
+        function selectType(card, type) {
+            selectedType = type;
+            document.querySelectorAll('.type-card').forEach(el => el.classList.remove('active'));
+            card.classList.add('active');
+        }
+
+        function selectCategory(el, category) {
+            selectedCategory = category;
+            document.querySelectorAll('.category-tags .goal-tag').forEach(e => e.classList.remove('active'));
+            el.classList.add('active');
+        }
+
+        function selectIcon(el, icon) {
+            selectedIcon = icon;
+            document.querySelectorAll('.icon-option').forEach(e => e.classList.remove('active'));
+            el.classList.add('active');
+        }
+
+        function selectPeriod(el, days) {
+            selectedPeriod = days;
+            document.querySelectorAll('.period-option').forEach(e => e.classList.remove('active'));
+            el.classList.add('active');
+        }
+
+        function selectDeposit(el, amount) {
+            selectedDeposit = amount;
+            document.querySelectorAll('.deposit-option').forEach(e => e.classList.remove('active'));
+            el.classList.add('active');
+        }
+
+        function selectPenalty(el, rule) {
+            selectedPenalty = rule;
+            document.querySelectorAll('.penalty-option').forEach(e => e.classList.remove('active'));
+            el.classList.add('active');
+        }
+
+        function toggleTag(tag) {
+            tag.classList.toggle('active');
+        }
+
+        function toggleFriend(item) {
+            item.classList.toggle('selected');
+        }
+
+        function submitCreate() {
+            const name = document.getElementById('circleName').value;
+            if (!name) {
+                alert('请输入圈子名称');
+                return;
+            }
+
+            // 收集选中的目标
+            const selectedGoals = Array.from(document.querySelectorAll('.goal-tag.active'))
+                .map(el => el.textContent);
+
+            // 收集邀请的好友 ID
+            const invitedFriends = Array.from(document.querySelectorAll('.friend-item.selected'))
+                .map(el => el.querySelector('.friend-name').textContent);
+
+            /*
+                [后端关联] 创建圈子 API：
+                POST /api/circles
+                Body: {
+                    name: "减脂三剑客",
+                    type: "private",
+                    duration_days: 21,           // ← 挑战周期
+                    deposit_required: 20,        // ← 押金金额
+                    penalty_rule: "warn",        // ← 惩罚规则
+                    goals: ["早起打卡", "记录体重"],
+                    invite_user_ids: [uuid1, uuid2]
+                }
+            */
+
+            // 构建请求体
+            const requestBody = {
+                name,
+                type: selectedType,
+                duration_days: selectedPeriod,
+                deposit_required: selectedDeposit,
+                penalty_rule: selectedPenalty,
+                goals: selectedGoals,
+                invited_friends: invitedFriends
+            };
+
+            console.log('创建圈子请求体:', requestBody);
+
+            // 临时保存请求体
+            window.pendingCreateRequest = requestBody;
+
+            // 如果有押金，弹出支付确认弹窗
+            if (selectedDeposit > 0) {
+                document.getElementById('paymentAmount').textContent = `¥${selectedDeposit}`;
+                document.getElementById('paymentModal').classList.add('show');
+            } else {
+                // 无押金直接创建
+                doCreateCircle();
+            }
+        }
+
+        function closePaymentModal(event) {
+            if (!event || event.target === document.getElementById('paymentModal')) {
+                document.getElementById('paymentModal').classList.remove('show');
+            }
+        }
+
+        function confirmPayment() {
+            closePaymentModal();
+
+            // 模拟支付过程
+            const btn = document.querySelector('.btn-submit');
+            btn.innerText = '支付中...';
+            btn.style.opacity = '0.8';
+
+            setTimeout(() => {
+                alert('✅ 支付成功！');
+                doCreateCircle();
+            }, 1000);
+        }
+
+        function doCreateCircle() {
+            const req = window.pendingCreateRequest;
+            if (!req) return;
+
+            // 模拟创建 loading
+            const btn = document.querySelector('.btn-submit');
+            btn.innerText = '创建中...';
+            btn.style.opacity = '0.8';
+
+            setTimeout(() => {
+                const periodText = req.duration_days === 0 ? '永久' : `${req.duration_days}天`;
+                const depositText = req.deposit_required === 0 ? '无押金' : `¥${req.deposit_required}`;
+                alert(`🎉 创建成功！\n\n圈子"${req.name}"已建立\n📅 周期：${periodText}\n💰 押金：${depositText}\n🎯 目标：${req.goals.join('、')}`);
+                location.href = 'circle_private.html';
+            }, 1000);
+        }
+    </script>
+</body>
+
+</html>

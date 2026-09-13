@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.weight.mapper.WeightWaterRecordMapper">
+    
+    <resultMap type="WeightWaterRecord" id="WeightWaterRecordResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="cups"    column="cups"    />
+        <result property="ml"    column="ml"    />
+        <result property="recordedAt"    column="recorded_at"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectWeightWaterRecordVo">
+        select id, user_id, cups, ml, recorded_at, create_by, create_time, update_by, update_time from weight_water_record
+    </sql>
+
+    <select id="selectWeightWaterRecordList" parameterType="WeightWaterRecord" resultMap="WeightWaterRecordResult">
+        <include refid="selectWeightWaterRecordVo"/>
+        <where>  
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="cups != null "> and cups = #{cups}</if>
+            <if test="ml != null "> and ml = #{ml}</if>
+            <if test="recordedAt != null "> and recorded_at = #{recordedAt}</if>
+        </where>
+    </select>
+    
+    <select id="selectWeightWaterRecordById" parameterType="Long" resultMap="WeightWaterRecordResult">
+        <include refid="selectWeightWaterRecordVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertWeightWaterRecord" parameterType="WeightWaterRecord" useGeneratedKeys="true" keyProperty="id">
+        insert into weight_water_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="cups != null">cups,</if>
+            <if test="ml != null">ml,</if>
+            <if test="recordedAt != null">recorded_at,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="cups != null">#{cups},</if>
+            <if test="ml != null">#{ml},</if>
+            <if test="recordedAt != null">#{recordedAt},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateWeightWaterRecord" parameterType="WeightWaterRecord">
+        update weight_water_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="cups != null">cups = #{cups},</if>
+            <if test="ml != null">ml = #{ml},</if>
+            <if test="recordedAt != null">recorded_at = #{recordedAt},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteWeightWaterRecordById" parameterType="Long">
+        delete from weight_water_record where id = #{id}
+    </delete>
+
+    <delete id="deleteWeightWaterRecordByIds" parameterType="String">
+        delete from weight_water_record where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

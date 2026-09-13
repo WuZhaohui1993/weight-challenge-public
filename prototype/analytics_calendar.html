@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Weight Challenge - 体重日历分析原型</title>
+    <style>
+        :root {
+            --primary: #4a90e2;
+            --primary-soft: #eaf3ff;
+            --success: #22c55e;
+            --warning: #ff9f43;
+            --danger: #ef4444;
+            --ink: #1f2937;
+            --sub: #6b7280;
+            --muted: #94a3b8;
+            --line: #e5e7eb;
+            --page: #f5f7fb;
+            --card: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background:
+                radial-gradient(circle at top right, rgba(74, 144, 226, 0.16), transparent 28%),
+                linear-gradient(180deg, #f7f9fc 0%, #f4f7fb 100%);
+            color: var(--ink);
+            padding-bottom: 110px;
+        }
+
+        .header {
+            padding: 46px 20px 16px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(229, 231, 235, 0.8);
+            position: sticky;
+            top: 0;
+            z-index: 20;
+        }
+
+        .eyebrow {
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .page-title {
+            font-size: 26px;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        .page-desc {
+            margin-top: 8px;
+            font-size: 14px;
+            line-height: 1.7;
+            color: var(--sub);
+        }
+
+        .surface {
+            background: var(--card);
+            border-radius: 26px;
+            border: 1px solid rgba(229, 231, 235, 0.84);
+            box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
+            margin: 14px 16px 0;
+            padding: 18px;
+        }
+
+        .spotlight {
+            background:
+                radial-gradient(circle at top right, rgba(74, 144, 226, 0.18), transparent 32%),
+                linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(245, 249, 255, 0.98));
+        }
+
+        .spotlight-title {
+            font-size: 22px;
+            font-weight: 800;
+            line-height: 1.35;
+        }
+
+        .spotlight-desc {
+            margin-top: 10px;
+            font-size: 14px;
+            line-height: 1.7;
+            color: var(--sub);
+        }
+
+        .spotlight-metrics {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        .spotlight-metric {
+            padding: 14px 12px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.88);
+            border: 1px solid rgba(229, 231, 235, 0.88);
+        }
+
+        .spotlight-metric .label {
+            font-size: 11px;
+            color: var(--muted);
+        }
+
+        .spotlight-metric .value {
+            font-size: 22px;
+            font-weight: 800;
+            margin-top: 6px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .section-copy {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .section-kicker {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            color: var(--primary);
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 800;
+        }
+
+        .section-desc {
+            font-size: 13px;
+            line-height: 1.6;
+            color: var(--sub);
+        }
+
+        .pill-rail {
+            display: inline-flex;
+            gap: 8px;
+            padding: 4px;
+            border-radius: 999px;
+            background: #f4f7fb;
+            border: 1px solid rgba(229, 231, 235, 0.92);
+            white-space: nowrap;
+        }
+
+        .pill {
+            padding: 7px 12px;
+            border-radius: 999px;
+            font-size: 12px;
+            color: var(--sub);
+        }
+
+        .pill.active {
+            background: white;
+            color: var(--primary);
+            font-weight: 700;
+            box-shadow: 0 4px 10px rgba(15, 23, 42, 0.05);
+        }
+
+        .month-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+
+        .month-title {
+            font-size: 20px;
+            font-weight: 800;
+        }
+
+        .month-nav {
+            display: flex;
+            gap: 8px;
+        }
+
+        .nav-btn {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: #f6f8fb;
+            border: 1px solid rgba(229, 231, 235, 0.92);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--sub);
+            font-size: 16px;
+        }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .legend-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            min-height: 30px;
+            padding: 0 10px;
+            border-radius: 999px;
+            background: #f8fafc;
+            border: 1px solid rgba(229, 231, 235, 0.92);
+            font-size: 12px;
+            color: var(--sub);
+        }
+
+        .legend-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .weekday-row,
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, minmax(0, 1fr));
+            gap: 8px;
+        }
+
+        .weekday {
+            text-align: center;
+            font-size: 12px;
+            color: var(--muted);
+            padding-bottom: 4px;
+        }
+
+        .day-card {
+            min-height: 96px;
+            padding: 10px 8px 9px;
+            border-radius: 18px;
+            background: linear-gradient(180deg, rgba(249, 250, 251, 0.92), rgba(255, 255, 255, 0.98));
+            border: 1px solid rgba(229, 231, 235, 0.92);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .day-card.muted {
+            opacity: 0.38;
+        }
+
+        .day-card.selected {
+            background: linear-gradient(180deg, rgba(234, 243, 255, 0.98), rgba(255, 255, 255, 0.98));
+            border-color: rgba(74, 144, 226, 0.32);
+            box-shadow: inset 0 0 0 1px rgba(74, 144, 226, 0.08);
+        }
+
+        .day-card.heavy-up {
+            border-color: rgba(239, 68, 68, 0.2);
+        }
+
+        .day-card.heavy-down {
+            border-color: rgba(34, 197, 94, 0.2);
+        }
+
+        .day-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+            color: var(--muted);
+        }
+
+        .day-top .num {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--ink);
+        }
+
+        .weight-chip {
+            display: inline-flex;
+            align-items: baseline;
+            gap: 2px;
+        }
+
+        .weight-val {
+            font-size: 16px;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .weight-unit {
+            font-size: 10px;
+            color: var(--muted);
+        }
+
+        .weight-trace {
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .weight-trace.down {
+            color: var(--success);
+        }
+
+        .weight-trace.up {
+            color: var(--danger);
+        }
+
+        .weight-trace.flat {
+            color: var(--warning);
+        }
+
+        .checkin-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+
+        .checkin-badge {
+            min-width: 20px;
+            height: 20px;
+            padding: 0 6px;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .food {
+            background: #22c55e;
+        }
+
+        .exercise {
+            background: #f97316;
+        }
+
+        .water {
+            background: #38bdf8;
+        }
+
+        .habit {
+            background: #8b5cf6;
+        }
+
+        .day-note {
+            margin-top: auto;
+            font-size: 10px;
+            line-height: 1.4;
+            color: var(--sub);
+        }
+
+        .selected-panel {
+            display: grid;
+            grid-template-columns: 1.3fr 1fr;
+            gap: 12px;
+        }
+
+        .selected-summary,
+        .selected-correlation {
+            padding: 16px;
+            border-radius: 20px;
+            background: #f8fafc;
+            border: 1px solid rgba(229, 231, 235, 0.92);
+        }
+
+        .selected-date {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .selected-weight {
+            font-size: 30px;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .selected-sub {
+            margin-top: 8px;
+            font-size: 13px;
+            color: var(--sub);
+            line-height: 1.6;
+        }
+
+        .stack {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .mini-item {
+            padding: 10px 12px;
+            border-radius: 14px;
+            background: white;
+            border: 1px solid rgba(229, 231, 235, 0.92);
+        }
+
+        .mini-label {
+            font-size: 11px;
+            color: var(--muted);
+        }
+
+        .mini-value {
+            margin-top: 4px;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .insight-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .insight-item {
+            padding: 14px;
+            border-radius: 18px;
+            background: linear-gradient(180deg, rgba(248, 250, 252, 0.96), rgba(255, 255, 255, 0.98));
+            border: 1px solid rgba(229, 231, 235, 0.92);
+        }
+
+        .insight-label {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            color: var(--primary);
+            margin-bottom: 6px;
+        }
+
+        .insight-title {
+            font-size: 15px;
+            font-weight: 700;
+            line-height: 1.5;
+        }
+
+        .insight-desc {
+            margin-top: 6px;
+            font-size: 13px;
+            line-height: 1.6;
+            color: var(--sub);
+        }
+
+        .footer-cta {
+            display: flex;
+            gap: 10px;
+        }
+
+        .cta {
+            flex: 1;
+            min-height: 46px;
+            border-radius: 999px;
+            border: none;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .cta.primary {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 10px 20px rgba(74, 144, 226, 0.22);
+        }
+
+        .cta.secondary {
+            background: #f6f8fb;
+            color: var(--ink);
+            border: 1px solid rgba(229, 231, 235, 0.92);
+        }
+
+        .tab-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 84px;
+            padding-bottom: 18px;
+            background: rgba(255, 255, 255, 0.96);
+            border-top: 1px solid rgba(229, 231, 235, 0.9);
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-around;
+            border-top-left-radius: 28px;
+            border-top-right-radius: 28px;
+            box-shadow: 0 -10px 30px rgba(15, 23, 42, 0.06);
+        }
+
+        .tab-item {
+            width: 20%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: #9ca3af;
+            font-size: 11px;
+            margin-top: 14px;
+        }
+
+        .tab-item.active {
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .tab-center {
+            width: 20%;
+            display: flex;
+            justify-content: center;
+        }
+
+        .center-btn {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            box-shadow: 0 12px 24px rgba(74, 144, 226, 0.24);
+            margin-top: -18px;
+        }
+
+        @media (max-width: 420px) {
+            .spotlight-metrics {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+
+            .selected-panel {
+                grid-template-columns: 1fr;
+            }
+
+            .day-card {
+                min-height: 88px;
+                padding: 8px 6px 8px;
+            }
+
+            .weight-val {
+                font-size: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <div class="eyebrow">Analytics Prototype</div>
+        <div class="page-title">体重日历分析</div>
+        <div class="page-desc">把每天体重和饮食、运动、饮水、习惯打卡放在同一张月历里，再从日历里找出波动规律。</div>
+    </div>
+
+    <div class="surface spotlight">
+        <div class="spotlight-title">4 月上半月最明显的波动，集中在“晚餐偏重 + 饮水不足”的次日。</div>
+        <div class="spotlight-desc">这版原型的核心不是再堆图表，而是把“哪一天发生了什么”和“体重怎么变化”放在同一个日历单元里看。</div>
+        <div class="spotlight-metrics">
+            <div class="spotlight-metric">
+                <div class="label">本月最低</div>
+                <div class="value">71.8</div>
+            </div>
+            <div class="spotlight-metric">
+                <div class="label">本月波动</div>
+                <div class="value">1.4kg</div>
+            </div>
+            <div class="spotlight-metric">
+                <div class="label">稳定天数</div>
+                <div class="value">9天</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="surface">
+        <div class="section-header">
+            <div class="section-copy">
+                <div class="section-kicker">Calendar</div>
+                <div class="section-title">体重月历</div>
+                <div class="section-desc">日历格里直接显示体重，下面叠加当天的饮食、运动、饮水、习惯完成情况。</div>
+            </div>
+            <div class="pill-rail">
+                <div class="pill active">月视图</div>
+                <div class="pill">联动视图</div>
+            </div>
+        </div>
+
+        <div class="month-row">
+            <div class="month-title">2026 年 04 月</div>
+            <div class="month-nav">
+                <div class="nav-btn">‹</div>
+                <div class="nav-btn">›</div>
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item"><span class="legend-dot" style="background:#4a90e2;"></span>体重</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#22c55e;"></span>饮食</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#f97316;"></span>运动</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#38bdf8;"></span>饮水</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#8b5cf6;"></span>习惯</div>
+        </div>
+
+        <div class="weekday-row">
+            <div class="weekday">一</div>
+            <div class="weekday">二</div>
+            <div class="weekday">三</div>
+            <div class="weekday">四</div>
+            <div class="weekday">五</div>
+            <div class="weekday">六</div>
+            <div class="weekday">日</div>
+        </div>
+
+        <div class="calendar-grid">
+            <div class="day-card muted">
+                <div class="day-top"><span class="num">31</span><span>上月</span></div>
+                <div class="weight-chip"><span class="weight-val">72.9</span><span class="weight-unit">kg</span></div>
+                <div class="checkin-row"><span class="checkin-badge water">6</span></div>
+                <div class="day-note">晚餐偏晚</div>
+            </div>
+            <div class="day-card heavy-up">
+                <div class="day-top"><span class="num">1</span><span class="weight-trace up">+0.4</span></div>
+                <div class="weight-chip"><span class="weight-val">73.3</span><span class="weight-unit">kg</span></div>
+                <div class="checkin-row"><span class="checkin-badge food">餐</span><span class="checkin-badge water">4</span></div>
+                <div class="day-note">外食偏咸</div>
+            </div>
+            <div class="day-card">
+                <div class="day-top"><span class="num">2</span><span class="weight-trace flat">0.0</span></div>
+                <div class="weight-chip"><span class="weight-val">73.3</span><span class="weight-unit">kg</span></div>
+                <div class="checkin-row"><span class="checkin-badge food">餐</span><span class="checkin-badge habit">2</span></div>
+                <div class="day-note">饮水不足</div>
+            </div>
+            <div class="day-card heavy-down">
+                <div class="day-top"><span class="num">3</span><span class="weight-trace down">-0.5</span></div>
+                <div class="weight-chip"><span class="weight-val">72.8</span><span class="weight-unit">kg</span></div>
+                <div class="checkin-row"><span class="checkin-badge exercise">跑</span><span class="checkin-badge water">8</span></div>
+                <div class="day-note">晨跑 + 补水</div>
+            </div>
+            <div class="day-card heavy-down">
+                <div class="day-top"><span class="num">4</span><span class="weight-trace down">-0.2</span></div>
+                <div class="weight-chip"><span class="weight-val">72.6</span><span class="weight-unit">kg</span></div>
+                <div class="checkin-row"><span class="checkin-badge food">轻</span><span class="checkin-badge water">7</span><span class="checkin-badge habit">2</span></div>
+                <div class="day-note">节奏平稳</div>
+            </div>
+            <div class="day-card">
+                <div class="day-top"><span class="num">5</span><span class="weight-trace flat">0.0</span></div>
+                <div class="weight-chip"><span class="weight-val">72.6</span><span class="weight-unit">kg</span></div>
+                <div class="checkin-row"><span class="checkin-badge water">7</span></div>
+                <div class="day-note">休息日</div>
+            </div>
+            <div class="day-card">
+                <div class="day-top"><span class="num">6</span><span class="weight-trace up">+0.2</span></div>
+                <div class="weight-chip"><span class="weight-val">72.8</span><span class="weight-unit">kg</span></div>
+                <div class="checkin-row"><span class="checkin-badge food">聚</span><span class="checkin-badge water">5</span></div>
+                <div class="day-note">周末聚餐</div>
+            </div>
+
+            <div class="day-card">
+                <div class="day-top"><span class="num">7</span><span class="weight-trace up">+0.3</span></div>
+                <div class="weight-chip"><span class="weight-val">73.1</span><span class="weight-unit">kg</span></div>
+                <div class="checkin-row"><span class="checkin-badge food">餐</span><span class="checkin-badge habit">1</span></div>
+                <div class="day-note">晚餐偏重</div>
+            </div>
+            <div class="day-card selected heavy-down">
+                <div class="day-top"><span class="num">8</span><span class="weight-trace down">-0.4</span></div>
+                <div class="weight-chip"><span class="weight-val">72.7</span><span class="weight-unit">kg</span></div>
+                <div class="checkin-row">
+                    <span class="checkin-badge food">轻</span>
+                    <span class="checkin-badge exercise">走</span>
+                    <span class="checkin-badge water">8</span>
+                    <span class="checkin-badge habit">2</span>
+                </div>
+                <div class="day-note">高完成日</div>
+            </div>
+            <div class="day-card heavy-down">
+                <div class="day-top"><span class="num">9</span><span class="weight-trace down">-0.2</span></div>
+                <div class="weight-chip"><span class="weight-val">72.5</span><span class="weight-unit">kg</span></div>
+                <div class="checkin-row"><span class="checkin-badge exercise">练</span><span class="checkin-badge water">8</span></div>
+                <div class="day-note">训练后回落</div>
+            </div>
+            <div class="day-card">
+                <div class="day-top"><span class="num">10</span><span class="weight-trace flat">0.0</span></div>
+                <div class="weight-chip"><span class="weight-val">72.5</span><span class="weight-unit">kg</span></div>
+                <div class="checkin-row"><span class="checkin-badge food">餐</span><span class="checkin-badge water">7</span><span class="checkin-badge habit">2</span></div>
+                <div class="day-note">稳定日</div>
+            </div>
+            <div class="day-card heavy-up">
+                <div class="day-top"><span class="num">11</span><span class="weight-trace up">+0.4</span></div>
+                <div class="weight-chip"><span class="weight-val">72.9</span><span class="weight-unit">kg</span></div>
+                <div class="checkin-row"><span class="checkin-badge food">夜</span><span class="checkin-badge water">4</span></div>
+                <div class="day-note">夜宵影响</div>
+            </div>
+            <div class="day-card heavy-down">
+                <div class="day-top"><span class="num">12</span><span class="weight-trace down">-0.3</span></div>
+                <div class="weight-chip"><span class="weight-val">72.6</span><span class="weight-unit">kg</span></div>
+                <div class="checkin-row"><span class="checkin-badge exercise">跑</span><span class="checkin-badge water">8</span><span class="checkin-badge habit">2</span></div>
+                <div class="day-note">补偿日</div>
+            </div>
+            <div class="day-card heavy-down">
+                <div class="day-top"><span class="num">13</span><span class="weight-trace down">-0.2</span></div>
+                <div class="weight-chip"><span class="weight-val">72.4</span><span class="weight-unit">kg</span></div>
+                <div class="checkin-row"><span class="checkin-badge food">轻</span><span class="checkin-badge water">8</span></div>
+                <div class="day-note">继续回落</div>
+            </div>
+
+            <div class="day-card">
+                <div class="day-top"><span class="num">14</span><span class="weight-trace flat">0.0</span></div>
+                <div class="weight-chip"><span class="weight-val">72.4</span><span class="weight-unit">kg</span></div>
+                <div class="checkin-row"><span class="checkin-badge food">餐</span><span class="checkin-badge habit">2</span></div>
+                <div class="day-note">平稳</div>
+            </div>
+            <div class="day-card heavy-down">
+                <div class="day-top"><span class="num">15</span><span class="weight-trace down">-0.2</span></div>
+                <div class="weight-chip"><span class="weight-val">72.2</span><span class="weight-unit">kg</span></div>
+                <div class="checkin-row"><span class="checkin-badge exercise">走</span><span class="checkin-badge water">8</span><span class="checkin-badge habit">2</span></div>
+                <div class="day-note">恢复节奏</div>
+            </div>
+            <div class="day-card heavy-down">
+                <div class="day-top"><span class="num">16</span><span class="weight-trace down">-0.4</span></div>
+                <div class="weight-chip"><span class="weight-val">71.8</span><span class="weight-unit">kg</span></div>
+                <div class="checkin-row"><span class="checkin-badge food">轻</span><span class="checkin-badge water">8</span><span class="checkin-badge habit">2</span></div>
+                <div class="day-note">阶段低点</div>
+            </div>
+            <div class="day-card">
+                <div class="day-top"><span class="num">17</span><span class="weight-trace up">+0.1</span></div>
+                <div class="weight-chip"><span class="weight-val">71.9</span><span class="weight-unit">kg</span></div>
+                <div class="checkin-row"><span class="checkin-badge water">6</span></div>
+                <div class="day-note">轻微波动</div>
+            </div>
+            <div class="day-card">
+                <div class="day-top"><span class="num">18</span><span>--</span></div>
+                <div class="weight-chip"><span class="weight-val">--</span><span class="weight-unit">kg</span></div>
+                <div class="checkin-row"><span class="checkin-badge food">餐</span><span class="checkin-badge habit">1</span></div>
+                <div class="day-note">未称重</div>
+            </div>
+            <div class="day-card">
+                <div class="day-top"><span class="num">19</span><span>--</span></div>
+                <div class="weight-chip"><span class="weight-val">--</span><span class="weight-unit">kg</span></div>
+                <div class="checkin-row"><span class="checkin-badge exercise">练</span><span class="checkin-badge water">7</span></div>
+                <div class="day-note">未称重</div>
+            </div>
+            <div class="day-card">
+                <div class="day-top"><span class="num">20</span><span>--</span></div>
+                <div class="weight-chip"><span class="weight-val">--</span><span class="weight-unit">kg</span></div>
+                <div class="checkin-row"><span class="checkin-badge food">餐</span><span class="checkin-badge water">8</span><span class="checkin-badge habit">2</span></div>
+                <div class="day-note">等待更新</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="surface">
+        <div class="section-header">
+            <div class="section-copy">
+                <div class="section-kicker">Selected Day</div>
+                <div class="section-title">单日联动拆解</div>
+                <div class="section-desc">点日历里的某一天，就把当天打卡和体重变化单独拆开看。</div>
+            </div>
+            <div class="pill-rail">
+                <div class="pill active">4 月 8 日</div>
+            </div>
+        </div>
+
+        <div class="selected-panel">
+            <div class="selected-summary">
+                <div class="selected-date">4 月 8 日 · 周二</div>
+                <div class="selected-weight">72.7 kg</div>
+                <div class="selected-sub">较前一天下降 0.4 kg。当天饮食偏轻、饮水达标、完成散步与 2 项习惯打卡，属于“高完成日”。</div>
+            </div>
+            <div class="selected-correlation stack">
+                <div class="mini-item">
+                    <div class="mini-label">饮食</div>
+                    <div class="mini-value">轻食 3 餐</div>
+                </div>
+                <div class="mini-item">
+                    <div class="mini-label">运动</div>
+                    <div class="mini-value">步行 48 分钟</div>
+                </div>
+                <div class="mini-item">
+                    <div class="mini-label">饮水 / 习惯</div>
+                    <div class="mini-value">8 杯 / 2 项</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="surface">
+        <div class="section-header">
+            <div class="section-copy">
+                <div class="section-kicker">Insights</div>
+                <div class="section-title">从日历里读出的规律</div>
+                <div class="section-desc">原型里把“看图”再往前推一步，直接输出日历型结论。</div>
+            </div>
+        </div>
+
+        <div class="insight-list">
+            <div class="insight-item">
+                <div class="insight-label">规律 01</div>
+                <div class="insight-title">饮水 7 杯以上的 6 天里，次日体重有 4 天继续回落。</div>
+                <div class="insight-desc">这说明“补水达标”在你的体重节奏里更像稳定器，适合和体重一起看，而不是单独丢在饮水模块里。</div>
+            </div>
+            <div class="insight-item">
+                <div class="insight-label">规律 02</div>
+                <div class="insight-title">夜宵 / 外食偏重的次日，体重上浮更明显。</div>
+                <div class="insight-desc">像 4 月 1 日、7 日、11 日这样的日期，在日历里会形成一眼可见的“上浮岛”。</div>
+            </div>
+            <div class="insight-item">
+                <div class="insight-label">规律 03</div>
+                <div class="insight-title">运动 + 饮水 + 习惯同时完成时，体重波动最平滑。</div>
+                <div class="insight-desc">这种信息很难从单一折线图看出来，但在日历格里叠加打卡后会非常直观。</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="surface">
+        <div class="section-header">
+            <div class="section-copy">
+                <div class="section-kicker">Prototype Direction</div>
+                <div class="section-title">这版原型想验证的点</div>
+                <div class="section-desc">如果这个方向成立，下一步再决定是否把体重折线详情降级为次级视图。</div>
+            </div>
+        </div>
+        <div class="footer-cta">
+            <button class="cta primary">保留月历作为主分析</button>
+            <button class="cta secondary">折线图退为辅助</button>
+        </div>
+    </div>
+
+    <div class="tab-bar">
+        <div class="tab-item">首页</div>
+        <div class="tab-item">圈子</div>
+        <div class="tab-center">
+            <div class="center-btn">+</div>
+        </div>
+        <div class="tab-item active">分析</div>
+        <div class="tab-item">我的</div>
+    </div>
+</body>
+
+</html>

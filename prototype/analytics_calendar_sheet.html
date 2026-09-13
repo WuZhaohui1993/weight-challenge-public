@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Weight Challenge - 日历分析弹出页原型</title>
+    <style>
+        :root {
+            --primary: #4a90e2;
+            --primary-soft: #eaf3ff;
+            --primary-deep: #1d4ed8;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --ink: #162033;
+            --sub: #64748b;
+            --muted: #94a3b8;
+            --line: #e2e8f0;
+            --page: #f4f7fb;
+            --card: #ffffff;
+            --shadow: 0 20px 60px rgba(15, 23, 42, 0.14);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            min-height: 100vh;
+            background:
+                radial-gradient(circle at top right, rgba(74, 144, 226, 0.16), transparent 28%),
+                linear-gradient(180deg, #f7f9fc 0%, #eef3f9 100%);
+            color: var(--ink);
+            overflow-x: hidden;
+        }
+
+        .page-backdrop {
+            padding: 48px 16px 120px;
+            filter: blur(2px);
+            opacity: 0.42;
+            transform: scale(0.985);
+        }
+
+        .backdrop-header {
+            font-size: 28px;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 12px;
+        }
+
+        .backdrop-strip {
+            height: 118px;
+            border-radius: 28px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(245, 249, 255, 0.98));
+            border: 1px solid rgba(226, 232, 240, 0.84);
+            margin-bottom: 14px;
+        }
+
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.22);
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding-top: 30px;
+        }
+
+        .sheet {
+            width: 100%;
+            max-width: 430px;
+            height: calc(100vh - 34px);
+            background: rgba(255, 255, 255, 0.98);
+            border-top-left-radius: 34px;
+            border-top-right-radius: 34px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            backdrop-filter: blur(18px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sheet-handle {
+            width: 46px;
+            height: 5px;
+            border-radius: 999px;
+            background: rgba(148, 163, 184, 0.48);
+            margin: 12px auto 10px;
+        }
+
+        .sheet-scroll {
+            overflow-y: auto;
+            padding: 0 16px 28px;
+        }
+
+        .sheet-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 14px;
+            margin-bottom: 18px;
+        }
+
+        .sheet-copy {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .eyebrow {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            color: var(--primary);
+        }
+
+        .sheet-title {
+            font-size: 26px;
+            font-weight: 800;
+            line-height: 1.18;
+        }
+
+        .sheet-desc {
+            font-size: 13px;
+            line-height: 1.7;
+            color: var(--sub);
+        }
+
+        .close-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: #f8fafc;
+            border: 1px solid rgba(226, 232, 240, 0.92);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--sub);
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .hero {
+            padding: 18px;
+            border-radius: 26px;
+            background:
+                radial-gradient(circle at top right, rgba(74, 144, 226, 0.16), transparent 34%),
+                linear-gradient(180deg, rgba(247, 250, 255, 0.99), rgba(255, 255, 255, 0.98));
+            border: 1px solid rgba(226, 232, 240, 0.86);
+            margin-bottom: 16px;
+        }
+
+        .hero-title {
+            font-size: 20px;
+            font-weight: 800;
+            line-height: 1.35;
+        }
+
+        .hero-desc {
+            margin-top: 8px;
+            font-size: 13px;
+            line-height: 1.7;
+            color: var(--sub);
+        }
+
+        .hero-metrics {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 10px;
+            margin-top: 14px;
+        }
+
+        .hero-metric {
+            padding: 12px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.92);
+            border: 1px solid rgba(226, 232, 240, 0.88);
+        }
+
+        .hero-metric .label {
+            font-size: 11px;
+            color: var(--muted);
+        }
+
+        .hero-metric .value {
+            margin-top: 5px;
+            font-size: 20px;
+            font-weight: 800;
+        }
+
+        .block {
+            padding: 18px;
+            border-radius: 26px;
+            background: white;
+            border: 1px solid rgba(226, 232, 240, 0.86);
+            box-shadow: 0 10px 26px rgba(15, 23, 42, 0.04);
+            margin-bottom: 14px;
+        }
+
+        .block-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .block-copy {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .block-title {
+            font-size: 17px;
+            font-weight: 800;
+        }
+
+        .block-desc {
+            font-size: 13px;
+            line-height: 1.6;
+            color: var(--sub);
+        }
+
+        .month-rail {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .month-chip {
+            min-height: 34px;
+            padding: 0 12px;
+            border-radius: 999px;
+            background: #f8fafc;
+            border: 1px solid rgba(226, 232, 240, 0.92);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--ink);
+        }
+
+        .nav-btn {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: #f8fafc;
+            border: 1px solid rgba(226, 232, 240, 0.92);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--sub);
+            font-size: 15px;
+        }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .legend-item {
+            min-height: 28px;
+            padding: 0 10px;
+            border-radius: 999px;
+            background: #f8fafc;
+            border: 1px solid rgba(226, 232, 240, 0.92);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: var(--sub);
+        }
+
+        .legend-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .weekday-row,
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, minmax(0, 1fr));
+            gap: 8px;
+        }
+
+        .weekday {
+            text-align: center;
+            font-size: 11px;
+            color: var(--muted);
+            margin-bottom: 2px;
+        }
+
+        .day {
+            min-height: 80px;
+            padding: 8px 7px;
+            border-radius: 18px;
+            background: linear-gradient(180deg, rgba(250, 251, 252, 0.94), rgba(255, 255, 255, 0.98));
+            border: 1px solid rgba(226, 232, 240, 0.92);
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .day.is-outside {
+            opacity: 0.28;
+        }
+
+        .day.is-selected {
+            background: linear-gradient(180deg, rgba(234, 243, 255, 0.98), rgba(255, 255, 255, 0.98));
+            border-color: rgba(74, 144, 226, 0.36);
+            box-shadow: inset 0 0 0 1px rgba(74, 144, 226, 0.06);
+        }
+
+        .day.is-up {
+            border-color: rgba(239, 68, 68, 0.18);
+        }
+
+        .day.is-down {
+            border-color: rgba(34, 197, 94, 0.18);
+        }
+
+        .day-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 10px;
+            color: var(--muted);
+        }
+
+        .day-num {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--ink);
+        }
+
+        .day-weight {
+            font-size: 15px;
+            font-weight: 800;
+            line-height: 1;
+            color: var(--ink);
+        }
+
+        .day-weight small {
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--muted);
+        }
+
+        .day-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+            margin-top: auto;
+        }
+
+        .day-trace {
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .day-trace.up {
+            color: var(--danger);
+        }
+
+        .day-trace.down {
+            color: var(--success);
+        }
+
+        .day-trace.flat {
+            color: var(--warning);
+        }
+
+        .signal-row {
+            display: flex;
+            gap: 4px;
+            justify-content: flex-end;
+        }
+
+        .signal {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            opacity: 0.28;
+        }
+
+        .signal.active {
+            opacity: 1;
+        }
+
+        .signal.food {
+            background: #22c55e;
+        }
+
+        .signal.exercise {
+            background: #f97316;
+        }
+
+        .signal.water {
+            background: #38bdf8;
+        }
+
+        .signal.habit {
+            background: #8b5cf6;
+        }
+
+        .selected-strip {
+            padding: 16px;
+            border-radius: 22px;
+            background: linear-gradient(180deg, rgba(248, 251, 255, 0.98), rgba(255, 255, 255, 0.98));
+            border: 1px solid rgba(226, 232, 240, 0.92);
+            margin-bottom: 14px;
+        }
+
+        .selected-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 12px;
+        }
+
+        .selected-date {
+            font-size: 16px;
+            font-weight: 800;
+        }
+
+        .selected-weight {
+            font-size: 30px;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .selected-desc {
+            margin-top: 8px;
+            font-size: 13px;
+            line-height: 1.7;
+            color: var(--sub);
+        }
+
+        .event-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+            margin-top: 14px;
+        }
+
+        .event-card {
+            padding: 12px;
+            border-radius: 18px;
+            background: white;
+            border: 1px solid rgba(226, 232, 240, 0.92);
+        }
+
+        .event-label {
+            font-size: 11px;
+            color: var(--muted);
+        }
+
+        .event-value {
+            margin-top: 4px;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .insight-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .insight {
+            padding: 14px;
+            border-radius: 18px;
+            background: linear-gradient(180deg, rgba(248, 250, 252, 0.96), rgba(255, 255, 255, 0.98));
+            border: 1px solid rgba(226, 232, 240, 0.92);
+        }
+
+        .insight-tag {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            color: var(--primary);
+            margin-bottom: 6px;
+        }
+
+        .insight-title {
+            font-size: 14px;
+            font-weight: 700;
+            line-height: 1.55;
+        }
+
+        .insight-desc {
+            margin-top: 6px;
+            font-size: 12px;
+            line-height: 1.65;
+            color: var(--sub);
+        }
+
+        .sheet-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 14px;
+        }
+
+        .btn {
+            flex: 1;
+            min-height: 44px;
+            border-radius: 999px;
+            border: none;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .btn.primary {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 10px 22px rgba(74, 144, 226, 0.22);
+        }
+
+        .btn.secondary {
+            background: #f8fafc;
+            color: var(--ink);
+            border: 1px solid rgba(226, 232, 240, 0.92);
+        }
+
+        @media (max-width: 420px) {
+            .hero-metrics {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+
+            .event-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .day {
+                min-height: 74px;
+                padding: 7px 6px;
+            }
+
+            .day-weight {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page-backdrop">
+        <div class="backdrop-header">健康数据分析</div>
+        <div class="backdrop-strip"></div>
+        <div class="backdrop-strip" style="height: 220px;"></div>
+        <div class="backdrop-strip" style="height: 160px;"></div>
+    </div>
+
+    <div class="overlay">
+        <div class="sheet">
+            <div class="sheet-handle"></div>
+
+            <div class="sheet-scroll">
+                <div class="sheet-header">
+                    <div class="sheet-copy">
+                        <div class="eyebrow">Calendar Analysis</div>
+                        <div class="sheet-title">体重日历分析</div>
+                        <div class="sheet-desc">把月历当成单独分析视图，先看日期，再看体重波动和当天打卡之间的关系。</div>
+                    </div>
+                    <div class="close-btn">✕</div>
+                </div>
+
+                <div class="hero">
+                    <div class="hero-title">这版把“哪天发生了什么”和“体重怎么动”收进同一个弹出页里看。</div>
+                    <div class="hero-desc">日历格里只保留三类信息：日期、体重、打卡信号。详细内容全部下沉到下方分析面板，避免把每个格子塞满。</div>
+                    <div class="hero-metrics">
+                        <div class="hero-metric">
+                            <div class="label">本月低点</div>
+                            <div class="value">71.8</div>
+                        </div>
+                        <div class="hero-metric">
+                            <div class="label">波动区间</div>
+                            <div class="value">1.4kg</div>
+                        </div>
+                        <div class="hero-metric">
+                            <div class="label">高完成日</div>
+                            <div class="value">6天</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="block">
+                    <div class="block-header">
+                        <div class="block-copy">
+                            <div class="eyebrow">Month View</div>
+                            <div class="block-title">4 月体重月历</div>
+                            <div class="block-desc">每格只看体重与完成信号，不在月历里堆满餐次、分钟数和备注。</div>
+                        </div>
+                        <div class="month-rail">
+                            <div class="nav-btn">‹</div>
+                            <div class="month-chip">2026 / 04</div>
+                            <div class="nav-btn">›</div>
+                        </div>
+                    </div>
+
+                    <div class="legend">
+                        <div class="legend-item"><span class="legend-dot" style="background:#4a90e2;"></span>体重主信息</div>
+                        <div class="legend-item"><span class="legend-dot" style="background:#22c55e;"></span>饮食</div>
+                        <div class="legend-item"><span class="legend-dot" style="background:#f97316;"></span>运动</div>
+                        <div class="legend-item"><span class="legend-dot" style="background:#38bdf8;"></span>饮水</div>
+                        <div class="legend-item"><span class="legend-dot" style="background:#8b5cf6;"></span>习惯</div>
+                    </div>
+
+                    <div class="weekday-row">
+                        <div class="weekday">一</div>
+                        <div class="weekday">二</div>
+                        <div class="weekday">三</div>
+                        <div class="weekday">四</div>
+                        <div class="weekday">五</div>
+                        <div class="weekday">六</div>
+                        <div class="weekday">日</div>
+                    </div>
+
+                    <div class="calendar-grid">
+                        <div class="day is-outside">
+                            <div class="day-top"><span class="day-num">31</span><span>上月</span></div>
+                            <div class="day-weight">72.9 <small>kg</small></div>
+                            <div class="day-meta">
+                                <span class="day-trace flat">0.0</span>
+                                <div class="signal-row"><span class="signal water active"></span></div>
+                            </div>
+                        </div>
+                        <div class="day is-up">
+                            <div class="day-top"><span class="day-num">1</span><span>周二</span></div>
+                            <div class="day-weight">73.3 <small>kg</small></div>
+                            <div class="day-meta">
+                                <span class="day-trace up">+0.4</span>
+                                <div class="signal-row">
+                                    <span class="signal food active"></span>
+                                    <span class="signal water active"></span>
+                                    <span class="signal exercise"></span>
+                                    <span class="signal habit"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="day">
+                            <div class="day-top"><span class="day-num">2</span><span>周三</span></div>
+                            <div class="day-weight">73.3 <small>kg</small></div>
+                            <div class="day-meta">
+                                <span class="day-trace flat">0.0</span>
+                                <div class="signal-row">
+                                    <span class="signal food active"></span>
+                                    <span class="signal water"></span>
+                                    <span class="signal exercise"></span>
+                                    <span class="signal habit active"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="day is-down">
+                            <div class="day-top"><span class="day-num">3</span><span>周四</span></div>
+                            <div class="day-weight">72.8 <small>kg</small></div>
+                            <div class="day-meta">
+                                <span class="day-trace down">-0.5</span>
+                                <div class="signal-row">
+                                    <span class="signal food"></span>
+                                    <span class="signal water active"></span>
+                                    <span class="signal exercise active"></span>
+                                    <span class="signal habit"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="day is-down">
+                            <div class="day-top"><span class="day-num">4</span><span>周五</span></div>
+                            <div class="day-weight">72.6 <small>kg</small></div>
+                            <div class="day-meta">
+                                <span class="day-trace down">-0.2</span>
+                                <div class="signal-row">
+                                    <span class="signal food active"></span>
+                                    <span class="signal water active"></span>
+                                    <span class="signal exercise"></span>
+                                    <span class="signal habit active"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="day">
+                            <div class="day-top"><span class="day-num">5</span><span>周六</span></div>
+                            <div class="day-weight">72.6 <small>kg</small></div>
+                            <div class="day-meta">
+                                <span class="day-trace flat">0.0</span>
+                                <div class="signal-row">
+                                    <span class="signal food"></span>
+                                    <span class="signal water active"></span>
+                                    <span class="signal exercise"></span>
+                                    <span class="signal habit"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="day is-up">
+                            <div class="day-top"><span class="day-num">6</span><span>周日</span></div>
+                            <div class="day-weight">72.8 <small>kg</small></div>
+                            <div class="day-meta">
+                                <span class="day-trace up">+0.2</span>
+                                <div class="signal-row">
+                                    <span class="signal food active"></span>
+                                    <span class="signal water active"></span>
+                                    <span class="signal exercise"></span>
+                                    <span class="signal habit"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="day is-up">
+                            <div class="day-top"><span class="day-num">7</span><span>周一</span></div>
+                            <div class="day-weight">73.1 <small>kg</small></div>
+                            <div class="day-meta">
+                                <span class="day-trace up">+0.3</span>
+                                <div class="signal-row">
+                                    <span class="signal food active"></span>
+                                    <span class="signal water"></span>
+                                    <span class="signal exercise"></span>
+                                    <span class="signal habit active"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="day is-selected is-down">
+                            <div class="day-top"><span class="day-num">8</span><span>周二</span></div>
+                            <div class="day-weight">72.7 <small>kg</small></div>
+                            <div class="day-meta">
+                                <span class="day-trace down">-0.4</span>
+                                <div class="signal-row">
+                                    <span class="signal food active"></span>
+                                    <span class="signal water active"></span>
+                                    <span class="signal exercise active"></span>
+                                    <span class="signal habit active"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="day is-down">
+                            <div class="day-top"><span class="day-num">9</span><span>周三</span></div>
+                            <div class="day-weight">72.5 <small>kg</small></div>
+                            <div class="day-meta">
+                                <span class="day-trace down">-0.2</span>
+                                <div class="signal-row">
+                                    <span class="signal food"></span>
+                                    <span class="signal water active"></span>
+                                    <span class="signal exercise active"></span>
+                                    <span class="signal habit"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="day">
+                            <div class="day-top"><span class="day-num">10</span><span>周四</span></div>
+                            <div class="day-weight">72.5 <small>kg</small></div>
+                            <div class="day-meta">
+                                <span class="day-trace flat">0.0</span>
+                                <div class="signal-row">
+                                    <span class="signal food active"></span>
+                                    <span class="signal water active"></span>
+                                    <span class="signal exercise"></span>
+                                    <span class="signal habit active"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="day is-up">
+                            <div class="day-top"><span class="day-num">11</span><span>周五</span></div>
+                            <div class="day-weight">72.9 <small>kg</small></div>
+                            <div class="day-meta">
+                                <span class="day-trace up">+0.4</span>
+                                <div class="signal-row">
+                                    <span class="signal food active"></span>
+                                    <span class="signal water"></span>
+                                    <span class="signal exercise"></span>
+                                    <span class="signal habit"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="day is-down">
+                            <div class="day-top"><span class="day-num">12</span><span>周六</span></div>
+                            <div class="day-weight">72.6 <small>kg</small></div>
+                            <div class="day-meta">
+                                <span class="day-trace down">-0.3</span>
+                                <div class="signal-row">
+                                    <span class="signal food"></span>
+                                    <span class="signal water active"></span>
+                                    <span class="signal exercise active"></span>
+                                    <span class="signal habit active"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="day is-down">
+                            <div class="day-top"><span class="day-num">13</span><span>周日</span></div>
+                            <div class="day-weight">72.4 <small>kg</small></div>
+                            <div class="day-meta">
+                                <span class="day-trace down">-0.2</span>
+                                <div class="signal-row">
+                                    <span class="signal food active"></span>
+                                    <span class="signal water active"></span>
+                                    <span class="signal exercise"></span>
+                                    <span class="signal habit"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="day">
+                            <div class="day-top"><span class="day-num">14</span><span>周一</span></div>
+                            <div class="day-weight">72.4 <small>kg</small></div>
+                            <div class="day-meta">
+                                <span class="day-trace flat">0.0</span>
+                                <div class="signal-row">
+                                    <span class="signal food active"></span>
+                                    <span class="signal water active"></span>
+                                    <span class="signal exercise"></span>
+                                    <span class="signal habit active"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="day is-down">
+                            <div class="day-top"><span class="day-num">15</span><span>周二</span></div>
+                            <div class="day-weight">72.2 <small>kg</small></div>
+                            <div class="day-meta">
+                                <span class="day-trace down">-0.2</span>
+                                <div class="signal-row">
+                                    <span class="signal food"></span>
+                                    <span class="signal water active"></span>
+                                    <span class="signal exercise active"></span>
+                                    <span class="signal habit active"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="day is-down">
+                            <div class="day-top"><span class="day-num">16</span><span>周三</span></div>
+                            <div class="day-weight">71.8 <small>kg</small></div>
+                            <div class="day-meta">
+                                <span class="day-trace down">-0.4</span>
+                                <div class="signal-row">
+                                    <span class="signal food active"></span>
+                                    <span class="signal water active"></span>
+                                    <span class="signal exercise"></span>
+                                    <span class="signal habit active"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="day">
+                            <div class="day-top"><span class="day-num">17</span><span>周四</span></div>
+                            <div class="day-weight">71.9 <small>kg</small></div>
+                            <div class="day-meta">
+                                <span class="day-trace up">+0.1</span>
+                                <div class="signal-row">
+                                    <span class="signal food"></span>
+                                    <span class="signal water active"></span>
+                                    <span class="signal exercise"></span>
+                                    <span class="signal habit"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="day">
+                            <div class="day-top"><span class="day-num">18</span><span>周五</span></div>
+                            <div class="day-weight">-- <small>kg</small></div>
+                            <div class="day-meta">
+                                <span class="day-trace flat">缺失</span>
+                                <div class="signal-row">
+                                    <span class="signal food active"></span>
+                                    <span class="signal water"></span>
+                                    <span class="signal exercise"></span>
+                                    <span class="signal habit active"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="day">
+                            <div class="day-top"><span class="day-num">19</span><span>周六</span></div>
+                            <div class="day-weight">-- <small>kg</small></div>
+                            <div class="day-meta">
+                                <span class="day-trace flat">缺失</span>
+                                <div class="signal-row">
+                                    <span class="signal food"></span>
+                                    <span class="signal water active"></span>
+                                    <span class="signal exercise active"></span>
+                                    <span class="signal habit"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="day">
+                            <div class="day-top"><span class="day-num">20</span><span>周日</span></div>
+                            <div class="day-weight">-- <small>kg</small></div>
+                            <div class="day-meta">
+                                <span class="day-trace flat">待记</span>
+                                <div class="signal-row">
+                                    <span class="signal food active"></span>
+                                    <span class="signal water active"></span>
+                                    <span class="signal exercise"></span>
+                                    <span class="signal habit active"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="selected-strip">
+                    <div class="selected-head">
+                        <div class="selected-date">已选中 · 4 月 8 日 周二</div>
+                        <div class="selected-weight">72.7 kg</div>
+                    </div>
+                    <div class="selected-desc">较前一天下降 0.4 kg。当天轻食、步行、饮水达标、习惯全完成，属于典型的“高完成日”。</div>
+
+                    <div class="event-grid">
+                        <div class="event-card">
+                            <div class="event-label">饮食</div>
+                            <div class="event-value">轻食 3 餐</div>
+                        </div>
+                        <div class="event-card">
+                            <div class="event-label">运动</div>
+                            <div class="event-value">步行 48 分钟</div>
+                        </div>
+                        <div class="event-card">
+                            <div class="event-label">饮水</div>
+                            <div class="event-value">8 / 8 杯</div>
+                        </div>
+                        <div class="event-card">
+                            <div class="event-label">习惯</div>
+                            <div class="event-value">2 / 2 完成</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="block">
+                    <div class="block-header">
+                        <div class="block-copy">
+                            <div class="eyebrow">Insights</div>
+                            <div class="block-title">结合日历的分析</div>
+                            <div class="block-desc">月历只负责呈现，解释和规律统一放在月历下方，阅读更集中。</div>
+                        </div>
+                    </div>
+
+                    <div class="insight-list">
+                        <div class="insight">
+                            <div class="insight-tag">观察 01</div>
+                            <div class="insight-title">饮水达标 + 习惯完成的日子，体重更容易在次日继续回落。</div>
+                            <div class="insight-desc">像 4 月 8 日、12 日、15 日这样的日期，在日历里会形成连续的低波动区。</div>
+                        </div>
+                        <div class="insight">
+                            <div class="insight-tag">观察 02</div>
+                            <div class="insight-title">外食或夜宵后的次日，月历里会出现明显的“上浮点”。</div>
+                            <div class="insight-desc">这种规律在折线图里不够直观，但在月历里很容易和当天打卡信号对应起来。</div>
+                        </div>
+                        <div class="insight">
+                            <div class="insight-tag">观察 03</div>
+                            <div class="insight-title">未称重的日子不再挤占注意力，只保留为“缺失点”。</div>
+                            <div class="insight-desc">这也是为什么这版原型把日历单元信息压缩到“日期 + 体重 + 四个信号点”。</div>
+                        </div>
+                    </div>
+
+                    <div class="sheet-actions">
+                        <button class="btn primary">把月历分析做成主入口</button>
+                        <button class="btn secondary">折线图退到二级</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

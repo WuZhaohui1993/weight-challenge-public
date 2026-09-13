@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.weight.mapper.WeightUserMapper">
+    
+    <resultMap type="WeightUser" id="WeightUserResult">
+        <result property="userId"    column="user_id"    />
+        <result property="nickname"    column="nickname"    />
+        <result property="avatar"    column="avatar"    />
+        <result property="gender"    column="gender"    />
+        <result property="height"    column="height"    />
+        <result property="birthday"    column="birthday"    />
+        <result property="targetWeight"    column="target_weight"    />
+        <result property="currentWeight"    column="current_weight"    />
+        <result property="bmi"    column="bmi"    />
+        <result property="dailyCalorieTarget"    column="daily_calorie_target"    />
+        <result property="dailyWaterTarget"    column="daily_water_target"    />
+        <result property="streakDays"    column="streak_days"    />
+        <result property="achievementPoints"    column="achievement_points"    />
+        <result property="mainCircleId"    column="main_circle_id"    />
+        <result property="circleFeatureEnabled"    column="circle_feature_enabled"    />
+        <result property="syncMode"    column="sync_mode"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectWeightUserVo">
+        select user_id, nickname, avatar, gender, height, birthday, target_weight, current_weight, bmi, daily_calorie_target, daily_water_target, streak_days, achievement_points, main_circle_id, circle_feature_enabled, sync_mode, create_by, create_time, update_by, update_time, remark from weight_user
+    </sql>
+
+    <select id="selectWeightUserList" parameterType="WeightUser" resultMap="WeightUserResult">
+        <include refid="selectWeightUserVo"/>
+        <where>  
+            <if test="nickname != null  and nickname != ''"> and nickname like concat('%', #{nickname}, '%')</if>
+            <if test="avatar != null  and avatar != ''"> and avatar = #{avatar}</if>
+            <if test="gender != null  and gender != ''"> and gender = #{gender}</if>
+            <if test="height != null "> and height = #{height}</if>
+            <if test="birthday != null "> and birthday = #{birthday}</if>
+            <if test="targetWeight != null "> and target_weight = #{targetWeight}</if>
+            <if test="currentWeight != null "> and current_weight = #{currentWeight}</if>
+            <if test="bmi != null "> and bmi = #{bmi}</if>
+            <if test="dailyCalorieTarget != null "> and daily_calorie_target = #{dailyCalorieTarget}</if>
+            <if test="dailyWaterTarget != null "> and daily_water_target = #{dailyWaterTarget}</if>
+            <if test="streakDays != null "> and streak_days = #{streakDays}</if>
+            <if test="achievementPoints != null "> and achievement_points = #{achievementPoints}</if>
+            <if test="mainCircleId != null "> and main_circle_id = #{mainCircleId}</if>
+            <if test="circleFeatureEnabled != null "> and circle_feature_enabled = #{circleFeatureEnabled}</if>
+            <if test="syncMode != null  and syncMode != ''"> and sync_mode = #{syncMode}</if>
+        </where>
+    </select>
+    
+    <select id="selectWeightUserByUserId" parameterType="Long" resultMap="WeightUserResult">
+        <include refid="selectWeightUserVo"/>
+        where user_id = #{userId}
+    </select>
+
+    <insert id="insertWeightUser" parameterType="WeightUser">
+        insert into weight_user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="nickname != null">nickname,</if>
+            <if test="avatar != null">avatar,</if>
+            <if test="gender != null">gender,</if>
+            <if test="height != null">height,</if>
+            <if test="birthday != null">birthday,</if>
+            <if test="targetWeight != null">target_weight,</if>
+            <if test="currentWeight != null">current_weight,</if>
+            <if test="bmi != null">bmi,</if>
+            <if test="dailyCalorieTarget != null">daily_calorie_target,</if>
+            <if test="dailyWaterTarget != null">daily_water_target,</if>
+            <if test="streakDays != null">streak_days,</if>
+            <if test="achievementPoints != null">achievement_points,</if>
+            <if test="mainCircleId != null">main_circle_id,</if>
+            <if test="circleFeatureEnabled != null">circle_feature_enabled,</if>
+            <if test="syncMode != null">sync_mode,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="nickname != null">#{nickname},</if>
+            <if test="avatar != null">#{avatar},</if>
+            <if test="gender != null">#{gender},</if>
+            <if test="height != null">#{height},</if>
+            <if test="birthday != null">#{birthday},</if>
+            <if test="targetWeight != null">#{targetWeight},</if>
+            <if test="currentWeight != null">#{currentWeight},</if>
+            <if test="bmi != null">#{bmi},</if>
+            <if test="dailyCalorieTarget != null">#{dailyCalorieTarget},</if>
+            <if test="dailyWaterTarget != null">#{dailyWaterTarget},</if>
+            <if test="streakDays != null">#{streakDays},</if>
+            <if test="achievementPoints != null">#{achievementPoints},</if>
+            <if test="mainCircleId != null">#{mainCircleId},</if>
+            <if test="circleFeatureEnabled != null">#{circleFeatureEnabled},</if>
+            <if test="syncMode != null">#{syncMode},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateWeightUser" parameterType="WeightUser">
+        update weight_user
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="nickname != null">nickname = #{nickname},</if>
+            <if test="avatar != null">avatar = #{avatar},</if>
+            <if test="gender != null">gender = #{gender},</if>
+            <if test="height != null">height = #{height},</if>
+            <if test="birthday != null">birthday = #{birthday},</if>
+            <if test="targetWeight != null">target_weight = #{targetWeight},</if>
+            <if test="currentWeight != null">current_weight = #{currentWeight},</if>
+            <if test="bmi != null">bmi = #{bmi},</if>
+            <if test="dailyCalorieTarget != null">daily_calorie_target = #{dailyCalorieTarget},</if>
+            <if test="dailyWaterTarget != null">daily_water_target = #{dailyWaterTarget},</if>
+            <if test="streakDays != null">streak_days = #{streakDays},</if>
+            <if test="achievementPoints != null">achievement_points = #{achievementPoints},</if>
+            <if test="mainCircleId != null">main_circle_id = #{mainCircleId},</if>
+            <if test="circleFeatureEnabled != null">circle_feature_enabled = #{circleFeatureEnabled},</if>
+            <if test="syncMode != null">sync_mode = #{syncMode},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where user_id = #{userId}
+    </update>
+
+    <delete id="deleteWeightUserByUserId" parameterType="Long">
+        delete from weight_user where user_id = #{userId}
+    </delete>
+
+    <delete id="deleteWeightUserByUserIds" parameterType="String">
+        delete from weight_user where user_id in 
+        <foreach item="userId" collection="array" open="(" separator="," close=")">
+            #{userId}
+        </foreach>
+    </delete>
+</mapper>

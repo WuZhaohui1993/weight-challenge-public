@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Weight Challenge - 消息通知</title>
+    <style>
+        :root {
+            --primary: #4A90E2;
+            --accent: #50E3C2;
+            --success: #4CAF50;
+            --warning: #FF9800;
+            --danger: #FF6B6B;
+            --bg-page: #F7F8FA;
+            --card-bg: #FFFFFF;
+            --text-main: #333333;
+            --text-sub: #888888;
+            --radius-m: 16px;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            padding-bottom: 40px;
+        }
+
+        /* Header */
+        .header {
+            padding: 44px 20px 10px;
+            background: white;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05);
+            height: 88px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .header-icon {
+            font-size: 20px;
+        }
+
+        .header-right {
+            font-size: 14px;
+            color: var(--primary);
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        /* 通知类型Tab */
+        .tab-bar {
+            background: white;
+            display: flex;
+            padding: 0 20px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .tab-item {
+            flex: 1;
+            text-align: center;
+            padding: 12px 0;
+            font-size: 14px;
+            color: var(--text-sub);
+            cursor: pointer;
+            position: relative;
+            transition: color 0.2s;
+        }
+
+        .tab-item.active {
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        .tab-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 24px;
+            height: 3px;
+            background: var(--primary);
+            border-radius: 3px;
+        }
+
+        .tab-badge {
+            display: inline-block;
+            background: var(--danger);
+            color: white;
+            font-size: 10px;
+            padding: 1px 5px;
+            border-radius: 8px;
+            margin-left: 4px;
+        }
+
+        /* 通知列表 */
+        .notification-list {
+            padding: 12px 20px;
+        }
+
+        .notification-item {
+            background: white;
+            border-radius: var(--radius-m);
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: var(--shadow);
+            display: flex;
+            gap: 12px;
+            position: relative;
+            transition: transform 0.1s;
+        }
+
+        .notification-item:active {
+            transform: scale(0.98);
+        }
+
+        .notification-item.unread {
+            background: linear-gradient(135deg, #F8FBFF, #FFFFFF);
+        }
+
+        .notification-item.unread::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 60%;
+            background: var(--primary);
+            border-radius: 0 4px 4px 0;
+        }
+
+        .notification-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .notification-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .notification-text {
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 6px;
+        }
+
+        .notification-text .highlight {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .notification-meta {
+            font-size: 12px;
+            color: var(--text-sub);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .notification-type {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 8px;
+            background: #F5F7FA;
+            border-radius: 10px;
+            font-size: 11px;
+        }
+
+        .notification-type.like {
+            background: #FFF0F0;
+            color: #E53E3E;
+        }
+
+        .notification-type.comment {
+            background: #E8F5E9;
+            color: #43A047;
+        }
+
+        .notification-type.system {
+            background: #E3F2FD;
+            color: #1976D2;
+        }
+
+        .notification-type.circle {
+            background: #FFF3E0;
+            color: #FB8C00;
+        }
+
+        .notification-preview {
+            margin-top: 10px;
+            background: #F9FAFB;
+            border-radius: 8px;
+            padding: 10px 12px;
+            font-size: 13px;
+            color: var(--text-sub);
+            border-left: 3px solid #E0E0E0;
+        }
+
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-sub);
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .empty-text {
+            font-size: 14px;
+        }
+
+        /* 日期分组 */
+        .date-divider {
+            font-size: 12px;
+            color: var(--text-sub);
+            padding: 16px 0 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .date-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #E8E8E8;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Header -->
+    <div class="header">
+        <div class="header-left" onclick="location.href='index.html'">
+            <span class="header-icon">←</span>
+            <span>消息通知</span>
+        </div>
+        <div class="header-right" onclick="markAllRead()">全部已读</div>
+    </div>
+
+    <!-- Tab Bar -->
+    <div class="tab-bar">
+        <div class="tab-item active" onclick="switchTab(this, 'all')">
+            全部
+            <span class="tab-badge">5</span>
+        </div>
+        <div class="tab-item" onclick="switchTab(this, 'like')">点赞</div>
+        <div class="tab-item" onclick="switchTab(this, 'comment')">评论</div>
+        <div class="tab-item" onclick="switchTab(this, 'system')">系统</div>
+    </div>
+
+    <!--
+        [后端关联] 消息通知数据来源：
+        
+        1. 通知列表 API: GET /api/notifications?type={all|like|comment|system}&page=1
+        返回: [
+            {
+                id, type: "like|comment|reply|system|circle",
+                from_user: { id, nickname, avatar },
+                content: "点赞了你的动态",
+                target_id: "feed_id",
+                target_preview: "今天减重0.5kg...",
+                is_read: false,
+                created_at: "2025-01-21T10:30:00Z"
+            }
+        ]
+        
+        2. 标记已读 API: PUT /api/notifications/read-all
+        3. 未读数量 API: GET /api/notifications/unread-count
+    -->
+
+    <!-- 通知列表 -->
+    <div class="notification-list">
+
+        <!-- 今天 -->
+        <div class="date-divider">今天</div>
+
+        <!-- 点赞通知 -->
+        <div class="notification-item unread" onclick="location.href='feed_detail.html'">
+            <img src="https://i.pravatar.cc/100?img=5" class="notification-avatar">
+            <div class="notification-content">
+                <div class="notification-text">
+                    <span class="highlight">小美</span> 赞了你的动态
+                </div>
+                <div class="notification-meta">
+                    <span class="notification-type like">❤️ 点赞</span>
+                    <span>10分钟前</span>
+                </div>
+                <div class="notification-preview">
+                    今天减重0.5kg，继续加油！💪
+                </div>
+            </div>
+        </div>
+
+        <!-- 评论通知 -->
+        <div class="notification-item unread" onclick="location.href='feed_detail.html'">
+            <img src="https://i.pravatar.cc/100?img=8" class="notification-avatar">
+            <div class="notification-content">
+                <div class="notification-text">
+                    <span class="highlight">阿杰</span> 评论了你的动态：「太棒了，一起加油！」
+                </div>
+                <div class="notification-meta">
+                    <span class="notification-type comment">💬 评论</span>
+                    <span>30分钟前</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 圈子通知 -->
+        <div class="notification-item unread" onclick="location.href='circle_private.html'">
+            <img src="https://i.pravatar.cc/100?img=12" class="notification-avatar">
+            <div class="notification-content">
+                <div class="notification-text">
+                    <span class="highlight">健身达人Lisa</span> 加入了「减脂三剑客」圈子
+                </div>
+                <div class="notification-meta">
+                    <span class="notification-type circle">⭕ 圈子</span>
+                    <span>1小时前</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 昨天 -->
+        <div class="date-divider">昨天</div>
+
+        <!-- 回复通知 -->
+        <div class="notification-item" onclick="location.href='feed_detail.html'">
+            <img src="https://i.pravatar.cc/100?img=3" class="notification-avatar">
+            <div class="notification-content">
+                <div class="notification-text">
+                    <span class="highlight">运动小王子</span> 回复了你的评论：「谢谢鼓励~」
+                </div>
+                <div class="notification-meta">
+                    <span class="notification-type comment">💬 回复</span>
+                    <span>昨天 18:32</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 系统通知 -->
+        <div class="notification-item" onclick="location.href='achievements.html'">
+            <div class="notification-avatar"
+                style="background: linear-gradient(135deg, #FFD700, #FFA000); display: flex; align-items: center; justify-content: center; font-size: 20px;">
+                🏆</div>
+            <div class="notification-content">
+                <div class="notification-text">
+                    恭喜你获得「连续打卡7天」成就徽章！
+                </div>
+                <div class="notification-meta">
+                    <span class="notification-type system">📢 系统</span>
+                    <span>昨天 08:00</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 更早 -->
+        <div class="date-divider">更早</div>
+
+        <!-- 催打卡通知 -->
+        <div class="notification-item">
+            <img src="https://i.pravatar.cc/100?img=5" class="notification-avatar">
+            <div class="notification-content">
+                <div class="notification-text">
+                    <span class="highlight">小美</span> 戳了戳你：「今天打卡了吗？」👉
+                </div>
+                <div class="notification-meta">
+                    <span class="notification-type circle">⭕ 催促</span>
+                    <span>3天前</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function switchTab(el, type) {
+            document.querySelectorAll('.tab-item').forEach(tab => tab.classList.remove('active'));
+            el.classList.add('active');
+
+            // 模拟筛选（实际开发中调用 API）
+            console.log(`切换到: ${type}`);
+        }
+
+        function markAllRead() {
+            document.querySelectorAll('.notification-item.unread').forEach(item => {
+                item.classList.remove('unread');
+            });
+            document.querySelector('.tab-badge').style.display = 'none';
+            alert('已全部标记为已读');
+        }
+    </script>
+
+</body>
+
+</html>

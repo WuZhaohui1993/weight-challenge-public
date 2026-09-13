@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>健康挑战 - 我的 Frontend Design</title>
+  <link rel="stylesheet" href="fd-system.css">
+  <style>
+    body {
+      background: #e8edf5;
+    }
+
+    .online-page {
+      --bg: #f5f7fb;
+      --shell: #e8edf5;
+      --paper: #ffffff;
+      --paper-soft: rgba(255, 255, 255, 0.9);
+      --ink: #18202d;
+      --ink-2: #344255;
+      --muted: #5f6b7a;
+      --faint: #8b95a4;
+      --line: rgba(23, 37, 84, 0.09);
+      --primary: #4a90e2;
+      --primary-deep: #2e6fc8;
+      --primary-soft: #edf5ff;
+      --success: #2ba779;
+      --success-soft: #e9f8f2;
+      --warning: #f29b38;
+      --warning-soft: #fff3df;
+      --danger: #e56767;
+      --danger-soft: #ffefef;
+      --shadow: 0 6px 18px rgba(16, 24, 40, 0.04);
+      --shadow-strong: 0 12px 32px rgba(16, 24, 40, 0.07);
+      --radius: 14px;
+      background: linear-gradient(180deg, #f7f9fc 0%, #f3f6fb 100%);
+    }
+
+    .online-page .app {
+      padding: 18px 16px 112px;
+    }
+
+    .page-title {
+      display: block;
+      color: var(--ink);
+      font-size: 22px;
+      line-height: 1.12;
+      font-weight: 800;
+    }
+
+    .sub-title {
+      display: block;
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .profile-card,
+    .stats-row,
+    .achievement-card,
+    .body-card,
+    .menu-list {
+      margin-bottom: 14px;
+      border-radius: 16px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      animation: fd-enter 280ms ease both;
+    }
+
+    .profile-card {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 13px;
+      align-items: center;
+      padding: 15px;
+      background:
+        radial-gradient(circle at top right, rgba(74, 144, 226, 0.16), transparent 38%),
+        linear-gradient(180deg, rgba(246, 250, 255, 0.98), rgba(255, 255, 255, 0.98));
+    }
+
+    .avatar-large {
+      width: 68px;
+      height: 68px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: #fff;
+      background: linear-gradient(135deg, var(--primary-deep), var(--primary));
+      border: 3px solid #fff;
+      box-shadow: 0 14px 28px rgba(46, 111, 200, 0.18);
+      font-size: 22px;
+      font-weight: 800;
+    }
+
+    .nickname {
+      display: block;
+      color: var(--ink);
+      font-size: 20px;
+      line-height: 1.25;
+      font-weight: 800;
+    }
+
+    .user-id,
+    .meta-chip,
+    .stat-label,
+    .card-sub,
+    .body-label,
+    .menu-note {
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.4;
+    }
+
+    .user-id {
+      display: block;
+      margin-top: 4px;
+    }
+
+    .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .meta-chip,
+    .mini-badge {
+      min-height: 22px;
+      display: inline-flex;
+      align-items: center;
+      padding: 0 8px;
+      border-radius: 999px;
+      background: var(--primary-soft);
+      color: var(--primary-deep);
+      font-weight: 800;
+    }
+
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1px;
+      overflow: hidden;
+    }
+
+    .stat-item {
+      display: grid;
+      gap: 5px;
+      justify-items: center;
+      padding: 13px 8px;
+      background: rgba(248, 251, 255, 0.9);
+      text-align: center;
+    }
+
+    .stat-val {
+      color: var(--ink);
+      font-size: 22px;
+      line-height: 1;
+      font-weight: 800;
+    }
+
+    .achievement-card,
+    .body-card {
+      padding: 14px;
+    }
+
+    .card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .card-title {
+      color: var(--ink);
+      font-size: 16px;
+      line-height: 1.25;
+      font-weight: 800;
+    }
+
+    .card-link {
+      color: var(--primary-deep);
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .badge-list {
+      display: flex;
+      gap: 10px;
+    }
+
+    .badge-item {
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      background: var(--primary-soft);
+      font-size: 20px;
+    }
+
+    .body-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 9px;
+    }
+
+    .body-item {
+      min-width: 0;
+      display: grid;
+      gap: 6px;
+      padding: 11px;
+      border-radius: 13px;
+      background: linear-gradient(180deg, rgba(248, 251, 255, 0.98), rgba(255, 255, 255, 0.98));
+      border: 1px solid rgba(210, 218, 230, 0.75);
+    }
+
+    .body-value {
+      color: var(--ink);
+      font-size: 17px;
+      line-height: 1.2;
+      font-weight: 800;
+    }
+
+    .unit {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .bmi-tag {
+      margin-left: 6px;
+      color: #a76716;
+      background: var(--warning-soft);
+    }
+
+    .menu-list {
+      overflow: hidden;
+    }
+
+    .menu-item {
+      display: grid;
+      grid-template-columns: 34px minmax(0, 1fr) auto auto;
+      gap: 9px;
+      align-items: center;
+      width: 100%;
+      min-height: 54px;
+      padding: 0 13px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+    }
+
+    .menu-item:last-child {
+      border-bottom: 0;
+    }
+
+    .menu-icon {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      background: var(--primary-soft);
+      font-size: 17px;
+    }
+
+    .menu-text {
+      color: var(--ink);
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .menu-arrow {
+      color: var(--faint);
+      font-size: 17px;
+      font-weight: 800;
+    }
+
+    .logout-btn {
+      width: 100%;
+      min-height: 44px;
+      margin-bottom: 10px;
+      border-radius: 999px;
+      color: var(--primary-deep);
+      background: var(--primary-soft);
+      font-size: 13px;
+      font-weight: 800;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="phone online-page">
+    <section class="app" aria-label="我的">
+      <header class="topbar">
+        <div>
+          <strong class="page-title">我的</strong>
+          <span class="sub-title">个人中心</span>
+        </div>
+      </header>
+
+      <section class="profile-card">
+        <div class="avatar-large">穗</div>
+        <div>
+          <strong class="nickname">穗爸爸</strong>
+          <span class="user-id">ID: 1578324412</span>
+          <div class="meta-row">
+            <span class="meta-chip">男</span>
+            <span class="meta-chip">1993-06-12</span>
+            <span class="meta-chip">微信小程序</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="stats-row" aria-label="账户数据">
+        <div class="stat-item">
+          <strong class="stat-val">0</strong>
+          <span class="stat-label">连续打卡</span>
+        </div>
+        <div class="stat-item">
+          <strong class="stat-val">10.1</strong>
+          <span class="stat-label">距离目标(kg)</span>
+        </div>
+        <div class="stat-item">
+          <strong class="stat-val">3</strong>
+          <span class="stat-label">获得勋章</span>
+        </div>
+      </section>
+
+      <section class="achievement-card">
+        <div class="card-head">
+          <h2 class="card-title">我的成就</h2>
+          <button class="card-link" data-toast="查看全部成就">查看全部 ›</button>
+        </div>
+        <div class="badge-list">
+          <span class="badge-item">💧</span>
+          <span class="badge-item">⚖️</span>
+          <span class="badge-item">⭕</span>
+          <span class="badge-item">📋</span>
+        </div>
+      </section>
+
+      <section class="body-card">
+        <div class="card-head">
+          <h2 class="card-title">📋 个人资料</h2>
+          <button class="card-link" data-toast="打开资料编辑">编辑</button>
+        </div>
+        <div class="body-grid">
+          <div class="body-item">
+            <span class="body-label">身高</span>
+            <strong class="body-value">176 <span class="unit">cm</span></strong>
+          </div>
+          <div class="body-item">
+            <span class="body-label">当前体重</span>
+            <strong class="body-value">80.1 <span class="unit">kg</span></strong>
+          </div>
+          <div class="body-item">
+            <span class="body-label">目标体重</span>
+            <strong class="body-value">70 <span class="unit">kg</span></strong>
+          </div>
+          <div class="body-item">
+            <span class="body-label">目标日期</span>
+            <strong class="body-value">2026-08-01</strong>
+          </div>
+          <div class="body-item">
+            <span class="body-label">摄入上限</span>
+            <strong class="body-value">1500 <span class="unit">kcal</span></strong>
+          </div>
+          <div class="body-item">
+            <span class="body-label">每日缺口</span>
+            <strong class="body-value">1467 <span class="unit">kcal</span></strong>
+          </div>
+          <div class="body-item">
+            <span class="body-label">BMI</span>
+            <strong class="body-value">25.9 <span class="mini-badge bmi-tag">超重</span></strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="menu-list" aria-label="常用功能">
+        <button class="menu-item" data-nav="record_fd.html?tab=habit">
+          <span class="menu-icon">✅</span>
+          <span class="menu-text">习惯管理</span>
+          <span></span>
+          <span class="menu-arrow">›</span>
+        </button>
+        <button class="menu-item" data-toast="打开新手指南">
+          <span class="menu-icon">🧭</span>
+          <span class="menu-text">新手指南</span>
+          <span class="menu-note">3 步上手</span>
+          <span class="menu-arrow">›</span>
+        </button>
+        <button class="menu-item" data-nav="circle_fd.html">
+          <span class="menu-icon">⭕</span>
+          <span class="menu-text">我的圈子</span>
+          <span class="mini-badge">已加入</span>
+          <span class="menu-arrow">›</span>
+        </button>
+        <button class="menu-item" data-toast="打开消息通知">
+          <span class="menu-icon">🔔</span>
+          <span class="menu-text">消息通知</span>
+          <span class="menu-note">互动、系统提醒</span>
+          <span class="menu-arrow">›</span>
+        </button>
+        <button class="menu-item" data-toast="打开反馈入口">
+          <span class="menu-icon">💬</span>
+          <span class="menu-text">建议 / Bug 反馈</span>
+          <span class="menu-note">问题、建议、体验</span>
+          <span class="menu-arrow">›</span>
+        </button>
+      </section>
+
+      <button class="logout-btn" data-toast="退出登录需要在小程序内确认">退出登录</button>
+    </section>
+
+    <nav class="bottom-nav" aria-label="底部导航">
+      <button class="tab" data-nav="index_simplified.html">首页<span class="tab-dot"></span></button>
+      <button class="tab" data-nav="circle_fd.html">圈子<span class="tab-dot"></span></button>
+      <button class="tab tab-action" data-sheet-open="#quickRecordSheet"><span class="tab-plus">+</span><span>记录</span></button>
+      <button class="tab" data-nav="analytics_fd.html">分析<span class="tab-dot"></span></button>
+      <button class="tab is-active">我的<span class="tab-dot"></span></button>
+    </nav>
+
+    <section class="sheet" id="quickRecordSheet" aria-label="快捷记录">
+      <div class="sheet-panel">
+        <div class="sheet-head">
+          <strong class="sheet-title">快速记录</strong>
+          <button class="chip-btn" data-sheet-close>关闭</button>
+        </div>
+        <div class="sheet-grid">
+          <button class="sheet-item" data-nav="record_fd.html?tab=dinner"><span class="mark rose">食</span><span>饮食</span></button>
+          <button class="sheet-item" data-nav="record_fd.html?tab=morning"><span class="mark">重</span><span>体重</span></button>
+          <button class="sheet-item" data-nav="record_fd.html?tab=move"><span class="mark warning">动</span><span>运动</span></button>
+          <button class="sheet-item" data-nav="record_fd.html?tab=habit"><span class="mark success">惯</span><span>习惯</span></button>
+          <button class="sheet-item" data-nav="record_fd.html?tab=water"><span class="mark success">水</span><span>饮水</span></button>
+        </div>
+      </div>
+    </section>
+    <div class="toast" id="toast">已打开</div>
+  </main>
+  <script src="fd-interactions.js"></script>
+</body>
+
+</html>

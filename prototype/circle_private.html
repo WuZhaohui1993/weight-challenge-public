@@ -1,0 +1,1456 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Weight Challenge - 私密圈子详情</title>
+    <style>
+        /* 复用 circle.html 的核心变量 */
+        :root {
+            --primary: #4A90E2;
+            --accent: #50E3C2;
+            --success: #4CAF50;
+            --warning: #FF9800;
+            --bg-page: #F7F8FA;
+            --card-bg: #FFFFFF;
+            --text-main: #333333;
+            --text-sub: #888888;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            padding-bottom: 100px;
+            /* 为底部操作栏留空 */
+        }
+
+        /* 统一 Header 风格 */
+        .header {
+            padding: 44px 20px 10px;
+            background: white;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05);
+            height: 88px;
+            /* 固定高度确保对齐 */
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-main);
+            cursor: pointer;
+        }
+
+        .header-icon {
+            font-size: 20px;
+        }
+
+        .header-right {
+            font-size: 20px;
+            color: var(--text-main);
+        }
+
+        /* 通用 Section Title (复用) */
+        .section-title {
+            padding: 20px 20px 12px;
+            font-weight: 700;
+            font-size: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* 此页面特有的：圈子信息卡片 */
+        /* 改为卡片式设计，而非全宽背景，以匹配 circle.html 风格 */
+        .group-info-card {
+            background: white;
+            margin: 20px 20px 0;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .group-info-bg {
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            opacity: 0.1;
+            border-radius: 50%;
+        }
+
+        .group-name {
+            font-size: 22px;
+            font-weight: 800;
+            margin-bottom: 6px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .group-desc {
+            font-size: 13px;
+            color: var(--text-sub);
+            margin-bottom: 16px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .group-meta-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .member-stack {
+            display: flex;
+        }
+
+        .member-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid white;
+            margin-left: -10px;
+            object-fit: cover;
+            background: #eee;
+        }
+
+        .member-avatar:first-child {
+            margin-left: 0;
+        }
+
+        .btn-invite {
+            font-size: 12px;
+            color: var(--primary);
+            background: #E3F2FD;
+            padding: 6px 12px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        /* 目标进度卡片 */
+        .goal-card {
+            background: white;
+            margin: 20px 20px 0;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+        }
+
+        .goal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .goal-label {
+            font-weight: 700;
+            font-size: 15px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .goal-badge {
+            font-size: 10px;
+            background: #FFF3E0;
+            color: #FF9800;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .progress-container {
+            height: 8px;
+            background: #F0F0F0;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            width: 53%;
+            border-radius: 4px;
+        }
+
+        .goal-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--text-sub);
+        }
+
+        /* 排行榜列表 (样式复用 Group Item) */
+        .ranking-list {
+            padding: 0 20px;
+        }
+
+        .ranking-item {
+            background: white;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+        }
+
+        .rank-num {
+            width: 24px;
+            font-size: 16px;
+            font-weight: 700;
+            color: #999;
+            text-align: center;
+            margin-right: 12px;
+        }
+
+        .rank-num.top-1 {
+            color: #FFD700;
+            font-size: 20px;
+        }
+
+        .rank-num.top-2 {
+            color: #C0C0C0;
+            font-size: 18px;
+        }
+
+        .rank-num.top-3 {
+            color: #CD7F32;
+            font-size: 18px;
+        }
+
+        .rank-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 12px;
+            object-fit: cover;
+        }
+
+        .rank-info {
+            flex: 1;
+        }
+
+        .rank-name {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .rank-status {
+            font-size: 12px;
+            color: var(--text-sub);
+        }
+
+        .rank-status.done {
+            color: var(--success);
+        }
+
+        .rank-change {
+            text-align: right;
+        }
+
+        .change-val {
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .change-val.down {
+            color: var(--success);
+        }
+
+        .change-val.up {
+            color: #FF6B6B;
+        }
+
+        .btn-nudge {
+            font-size: 12px;
+            background: #F5F5F5;
+            color: var(--text-sub);
+            padding: 4px 10px;
+            border-radius: 12px;
+            border: none;
+        }
+
+        /* 动态流 (复用 circle.html 中的 feed-card) */
+        .feed-list {
+            padding: 0 20px;
+        }
+
+        .feed-card {
+            background: white;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+        }
+
+        .feed-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .feed-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #eee;
+            margin-right: 12px;
+            object-fit: cover;
+        }
+
+        .feed-user {
+            flex: 1;
+        }
+
+        .feed-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .feed-time {
+            font-size: 12px;
+            color: #999;
+            margin-top: 2px;
+        }
+
+        /* 自动同步样式 (保留原有逻辑，优化视觉) */
+        .sync-box {
+            background: #F8F9FA;
+            border-radius: 12px;
+            padding: 12px;
+            display: flex;
+            justify-content: space-around;
+            margin-top: 10px;
+            border: 1px solid rgba(0, 0, 0, 0.03);
+        }
+
+        .sync-item {
+            text-align: center;
+        }
+
+        .sync-val {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .sync-val.good {
+            color: var(--success);
+        }
+
+        .sync-label {
+            font-size: 11px;
+            color: #999;
+            margin-top: 2px;
+        }
+
+        .feed-content {
+            font-size: 15px;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .feed-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 24px;
+            margin-top: 14px;
+            color: var(--text-sub);
+            font-size: 13px;
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+
+        /* 底部操作栏 (适配风格) */
+        .bottom-actions {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 12px 20px 30px;
+            /* 适配 iPhone 底部 */
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.03);
+            display: flex;
+            gap: 12px;
+            z-index: 100;
+        }
+
+        .btn-main {
+            flex: 1;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            height: 44px;
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 10px rgba(74, 144, 226, 0.3);
+        }
+
+        .btn-icon {
+            width: 44px;
+            height: 44px;
+            background: #F0F2F5;
+            border-radius: 20px;
+            /* 圆角矩形，更现代 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: var(--text-main);
+        }
+
+        @keyframes nudge {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-4px);
+            }
+
+            75% {
+                transform: translateX(4px);
+            }
+        }
+
+        .nudging {
+            animation: nudge 0.3s ease-in-out;
+        }
+
+        /* 成员列表弹窗 */
+        .member-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: flex-end;
+        }
+
+        .member-modal.show {
+            display: flex;
+        }
+
+        .member-modal-content {
+            background: white;
+            border-radius: 20px 20px 0 0;
+            width: 100%;
+            max-height: 70vh;
+            padding: 20px;
+            animation: slideUpModal 0.3s ease;
+        }
+
+        @keyframes slideUpModal {
+            from {
+                transform: translateY(100%);
+            }
+
+            to {
+                transform: translateY(0);
+            }
+        }
+
+        .member-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .member-modal-title {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .member-modal-close {
+            font-size: 24px;
+            color: #999;
+            cursor: pointer;
+        }
+
+        .member-list {
+            max-height: calc(70vh - 100px);
+            overflow-y: auto;
+        }
+
+        .member-list-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #F5F5F5;
+        }
+
+        .member-list-item:last-child {
+            border-bottom: none;
+        }
+
+        .member-list-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            margin-right: 12px;
+            object-fit: cover;
+        }
+
+        .member-list-info {
+            flex: 1;
+        }
+
+        .member-list-name {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .member-list-stats {
+            font-size: 12px;
+            color: var(--text-sub);
+        }
+
+        .member-list-badge {
+            padding: 4px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            background: #E8F5E9;
+            color: #43A047;
+        }
+
+        .member-list-badge.creator {
+            background: #FFF3E0;
+            color: #FB8C00;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- 统一风格 Header -->
+    <div class="header">
+        <div class="header-left" onclick="location.href='circle.html'">
+            <span class="header-icon">←</span>
+            <span>私密圈子</span>
+        </div>
+        <div class="header-right" onclick="alert('更多设置')">⋯</div>
+    </div>
+
+    <!-- 圈子概览卡片 -->
+    <div class="group-info-card">
+        <div class="group-info-bg"></div>
+        <div class="group-name">🔥 减脂三剑客</div>
+        <div class="group-desc">每人每天热量缺口 500kcal，不减不散！</div>
+
+        <!-- 连续打卡火焰勋章 -->
+        <div class="streak-badge">
+            <div class="streak-flame">🔥</div>
+            <div class="streak-info">
+                <div class="streak-count">连续 <span id="streakDays">12</span> 天</div>
+                <div class="streak-progress">
+                    <div class="streak-bar" style="width: 57%;"></div>
+                </div>
+                <div class="streak-next">距离 21天勋章 还差 9 天</div>
+            </div>
+            <div class="streak-badges">
+                <span class="badge earned">🔥3</span>
+                <span class="badge earned">🔥7</span>
+                <span class="badge">🔥21</span>
+            </div>
+        </div>
+
+        <div class="group-meta-row">
+            <div class="member-stack" onclick="showMemberModal()" style="cursor: pointer;">
+                <img src="https://i.pravatar.cc/100?img=3" class="member-avatar">
+                <img src="https://i.pravatar.cc/100?img=5" class="member-avatar">
+                <img src="https://i.pravatar.cc/100?img=8" class="member-avatar">
+                <div style="font-size: 12px; color: #888; margin-left:8px; line-height:32px;">3人 ></div>
+            </div>
+            <div style="display: flex; gap: 8px;">
+                <div class="btn-invite" onclick="location.href='achievements.html'"
+                    style="background:#FFF3E0; color:#FF9800;">🏅 成就</div>
+                <div class="btn-invite" onclick="alert('邀请链接已复制')">+ 邀请</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 挑战规则信息卡 (新增) -->
+    <div class="rule-info-card">
+        <div class="rule-header">
+            <span class="rule-title">📋 挑战规则</span>
+            <span class="rule-edit" onclick="alert('规则仅创建者可修改')">编辑</span>
+        </div>
+        <div class="rule-items">
+            <div class="rule-item">
+                <span class="rule-icon">📅</span>
+                <div class="rule-content">
+                    <div class="rule-label">挑战周期</div>
+                    <div class="rule-value">21天 (剩余9天)</div>
+                </div>
+            </div>
+            <div class="rule-item">
+                <span class="rule-icon">💰</span>
+                <div class="rule-content">
+                    <div class="rule-label">押金</div>
+                    <div class="rule-value">¥20 <span class="deposit-status paid">已缴纳</span></div>
+                </div>
+            </div>
+            <div class="rule-item">
+                <span class="rule-icon">⚠️</span>
+                <div class="rule-content">
+                    <div class="rule-label">未打卡惩罚</div>
+                    <div class="rule-value">发送提醒 + 公开催促</div>
+                </div>
+            </div>
+        </div>
+        <div class="rule-tip">💡 完成21天挑战后押金全额退还</div>
+    </div>
+
+    <style>
+        /* 挑战规则卡片样式 */
+        .rule-info-card {
+            background: white;
+            margin: 16px 20px 0;
+            border-radius: 16px;
+            padding: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+        }
+
+        .rule-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .rule-title {
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .rule-edit {
+            font-size: 12px;
+            color: var(--primary);
+            cursor: pointer;
+        }
+
+        .rule-items {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .rule-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: #F9FAFC;
+            border-radius: 10px;
+        }
+
+        .rule-icon {
+            font-size: 18px;
+        }
+
+        .rule-content {
+            flex: 1;
+        }
+
+        .rule-label {
+            font-size: 11px;
+            color: var(--text-sub);
+        }
+
+        .rule-value {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .deposit-status {
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 6px;
+        }
+
+        .deposit-status.paid {
+            background: #E8F5E9;
+            color: #4CAF50;
+        }
+
+        .deposit-status.pending {
+            background: #FFF3E0;
+            color: #FF9800;
+        }
+
+        .rule-tip {
+            margin-top: 12px;
+            font-size: 11px;
+            color: var(--text-sub);
+            text-align: center;
+            padding: 8px;
+            background: #F5F5F5;
+            border-radius: 8px;
+        }
+    </style>
+
+    <style>
+        /* 连续打卡火焰勋章样式 */
+        .streak-badge {
+            display: flex;
+            align-items: center;
+            background: linear-gradient(135deg, #FFF3E0, #FFECB3);
+            border-radius: 12px;
+            padding: 12px;
+            margin: 12px 0;
+            gap: 12px;
+        }
+
+        .streak-flame {
+            font-size: 32px;
+            animation: flicker 1s ease-in-out infinite alternate;
+        }
+
+        @keyframes flicker {
+            from {
+                transform: scale(1) rotate(-5deg);
+            }
+
+            to {
+                transform: scale(1.1) rotate(5deg);
+            }
+        }
+
+        .streak-info {
+            flex: 1;
+        }
+
+        .streak-count {
+            font-size: 14px;
+            font-weight: 700;
+            color: #E65100;
+            margin-bottom: 6px;
+        }
+
+        .streak-count span {
+            font-size: 18px;
+        }
+
+        .streak-progress {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 3px;
+            margin-bottom: 4px;
+            overflow: hidden;
+        }
+
+        .streak-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #FF9800, #FF5722);
+            border-radius: 3px;
+        }
+
+        .streak-next {
+            font-size: 11px;
+            color: #BF360C;
+        }
+
+        .streak-badges {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .badge {
+            font-size: 12px;
+            padding: 2px 6px;
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.1);
+            opacity: 0.4;
+        }
+
+        .badge.earned {
+            background: #FF9800;
+            color: white;
+            opacity: 1;
+        }
+    </style>
+
+    <!-- 共同目标卡片 -->
+    <div class="goal-card">
+        <div class="goal-header">
+            <div class="goal-label">
+                🎯 本月目标
+                <span class="goal-badge">剩余14天</span>
+            </div>
+            <div class="goal-text">人均减重 3kg</div>
+        </div>
+        <div class="progress-container">
+            <div class="progress-bar"></div>
+        </div>
+        <div class="goal-text">
+            <span>团队进度 53%</span>
+            <span>已减 4.8kg</span>
+        </div>
+    </div>
+
+    <!-- 今日任务清单 (新增核心功能) -->
+    <!--
+        [后端关联] 今日任务数据来源：
+        API: GET /api/circles/{id}/tasks/today
+        
+        返回数据结构：
+        {
+            completed: 1,
+            total: 3,
+            bonus_points: 10,
+            tasks: [
+                { id: "task-1", goal_id: "goal-1", name: "记录今日体重", type: "weight_record", completed: true },
+                { id: "task-2", goal_id: "goal-2", name: "给好友点赞鼓励", type: "social_interaction", completed: false },
+                { id: "task-3", goal_id: "goal-3", name: "完成 500kcal 热量缺口", type: "calorie_deficit", completed: false }
+            ]
+        }
+        
+        任务生成逻辑（后端）：
+        1. 查询 Circle 关联的 CircleGoal 列表
+        2. 根据 goal_type 和 period 生成当日任务
+        3. 查询 CircleMember 今日打卡记录判断完成状态
+        
+        完成任务 API: POST /api/circles/{id}/tasks/{taskId}/complete
+    -->
+    <div class="goal-card"
+        style="background: linear-gradient(135deg, #E8F5E915, #C8E6C915); border: 1px solid #4CAF5020;">
+        <div class="goal-header">
+            <div class="goal-label">
+                ✅ 今日任务
+                <span class="goal-badge" style="background:#E8F5E9; color:#4CAF50;">1/3</span>
+            </div>
+            <div class="goal-text" style="color: var(--success);">+10 积分</div>
+        </div>
+        <div class="task-list" id="taskList">
+            <!-- 任务项由 CircleGoal 动态生成 -->
+            <div class="task-item done" onclick="toggleTask(this)" data-task-id="task-1">
+                <div class="task-check">✓</div>
+                <div class="task-text">记录今日体重</div>
+            </div>
+            <div class="task-item" onclick="toggleTask(this)" data-task-id="task-2">
+                <div class="task-check"></div>
+                <div class="task-text">给好友点赞鼓励</div>
+            </div>
+            <div class="task-item" onclick="toggleTask(this)" data-task-id="task-3">
+                <div class="task-check"></div>
+                <div class="task-text">完成 500kcal 热量缺口</div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            background: white;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .task-item:active {
+            transform: scale(0.98);
+        }
+
+        .task-check {
+            width: 22px;
+            height: 22px;
+            border: 2px solid #DDD;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: white;
+            transition: all 0.2s;
+        }
+
+        .task-item.done .task-check {
+            background: var(--success);
+            border-color: var(--success);
+        }
+
+        .task-item.done .task-text {
+            color: #999;
+            text-decoration: line-through;
+        }
+
+        .task-text {
+            font-size: 14px;
+            color: var(--text-main);
+        }
+    </style>
+
+    <!-- 排行榜 (支持 今日/本周/本月 切换) -->
+    <div class="section-title" style="flex-direction: column; align-items: flex-start; gap: 12px;">
+        <span>🏆 排行榜</span>
+        <div class="rank-tabs">
+            <div class="rank-tab active" onclick="switchRankTab('today', this)">今日</div>
+            <div class="rank-tab" onclick="switchRankTab('week', this)">本周</div>
+            <div class="rank-tab" onclick="switchRankTab('month', this)">本月</div>
+        </div>
+    </div>
+
+    <style>
+        .rank-tabs {
+            display: flex;
+            gap: 8px;
+        }
+
+        .rank-tab {
+            padding: 6px 14px;
+            border-radius: 16px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-sub);
+            background: #F0F0F0;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .rank-tab.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .rank-crown {
+            font-size: 16px;
+            margin-left: 4px;
+        }
+    </style>
+    <div class="ranking-list">
+        <!-- No.1 -->
+        <div class="ranking-item">
+            <div class="rank-num top-1">1</div>
+            <img src="https://i.pravatar.cc/100?img=5" class="rank-avatar">
+            <div class="rank-info">
+                <div class="rank-name">小美</div>
+                <div class="rank-status done">✓ 已打卡 · 饮食&运动</div>
+            </div>
+            <div class="rank-change">
+                <div class="change-val down">-0.4</div>
+                <div class="rank-status">较昨日</div>
+            </div>
+        </div>
+        <!-- No.2 -->
+        <div class="ranking-item">
+            <div class="rank-num top-2">2</div>
+            <img src="https://i.pravatar.cc/100?img=3" class="rank-avatar">
+            <div class="rank-info">
+                <div class="rank-name">阿杰</div>
+                <div class="rank-status done">✓ 已打卡 · 晨跑5km</div>
+            </div>
+            <div class="rank-change">
+                <div class="change-val down">-0.2</div>
+                <div class="rank-status">较昨日</div>
+            </div>
+        </div>
+        <!-- No.3 (未打卡) -->
+        <div class="ranking-item">
+            <div class="rank-num top-3">3</div>
+            <img src="https://i.pravatar.cc/100?img=8" class="rank-avatar">
+            <div class="rank-info">
+                <div class="rank-name" style="color:#999">大壮</div>
+                <div class="rank-status">💤 今日未打卡</div>
+            </div>
+            <div class="rank-change">
+                <button class="btn-nudge" onclick="nudge(this)">👋 催一下</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 圈内动态 -->
+    <div class="section-title">圈内动态</div>
+
+    <!--
+        [后端关联] 圈内动态分类展示：
+        
+        API: GET /api/circles/{id}/feeds?type={feed_type}
+        参数: type = all | weight | food | exercise | habit
+    -->
+    <!--
+        [后端关联] 每人每天一卡的动态展示：
+        
+        API: GET /api/circles/{id}/feeds/daily
+        返回: [
+            {
+                user_id, user_name, avatar, date: "2025-01-18",
+                checkin_items: [
+                    { type: "weight", weight: 52.3, change: -0.4, time: "08:32" },
+                    { type: "food", total_calories: 1280, meals: 3, time: "最近 12:30" },
+                    { type: "exercise", distance: 5.2, calories: 320, time: "07:15" },
+                    { type: "habit", habits_done: 3, habits_total: 4, time: "06:00" }
+                ],
+                total_items: 4,
+                likes_count: 12,
+                comments_count: 5
+            },
+            ...
+        ]
+        
+        逻辑：每人每天聚合成一张卡片，动态显示已打卡的项目
+    -->
+
+    <div class="feed-list" id="feedList">
+        <!-- 小美的今日全能卡片（图文+数据）-->
+        <div class="feed-card daily-card">
+            <div class="feed-header">
+                <img src="https://i.pravatar.cc/100?img=5" class="feed-avatar">
+                <div class="feed-user">
+                    <div class="feed-name">小美</div>
+                    <div class="feed-time">今日 12:30 更新 · 坚持第 23 天</div>
+                </div>
+                <div class="checkin-progress">4/4 ✓</div>
+            </div>
+
+            <!-- 1. 动态文字 -->
+            <div class="feed-text">
+                今天吃得很健康，中午的鸡胸肉沙拉意外地好吃！😋 昨晚的有氧运动效果显著，体重终于下了 52kg 大关，开心！继续保持 💪
+            </div>
+
+            <!-- 2. 动态图片（九宫格布局） -->
+            <div class="feed-images">
+                <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&h=400&fit=crop"
+                    class="feed-img">
+                <img src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=400&h=400&fit=crop"
+                    class="feed-img">
+            </div>
+
+            <!-- 3. 打卡数据聚合 -->
+            <div class="checkin-grid">
+                <!-- 体重 -->
+                <div class="checkin-item weight">
+                    <div class="checkin-icon">⚖️</div>
+                    <div class="checkin-data">
+                        <div class="checkin-value">51.9<span class="unit">kg</span></div>
+                        <div class="checkin-meta-row">
+                            <span class="checkin-change down">↓0.4</span>
+                            <span class="checkin-label">新低</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- 饮食 -->
+                <div class="checkin-item food">
+                    <div class="checkin-icon">🍽️</div>
+                    <div class="checkin-data">
+                        <div class="checkin-value">1280<span class="unit">kcal</span></div>
+                        <div class="checkin-meta-row">
+                            <span class="checkin-change">3餐</span>
+                            <span class="checkin-label">达标</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- 运动 -->
+                <div class="checkin-item exercise">
+                    <div class="checkin-icon">🏃</div>
+                    <div class="checkin-data">
+                        <div class="checkin-value">5.2<span class="unit">km</span></div>
+                        <div class="checkin-meta-row">
+                            <span class="checkin-change">320cal</span>
+                            <span class="checkin-label">晨跑</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- 习惯 -->
+                <div class="checkin-item habit">
+                    <div class="checkin-icon">✅</div>
+                    <div class="checkin-data">
+                        <div class="checkin-value">3<span class="unit">/4</span></div>
+                        <div class="checkin-meta-row">
+                            <span class="checkin-change">🔥7天</span>
+                            <span class="checkin-label">全勤</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feed-actions">
+                <div class="action-btn" onclick="toggleLike(this)">🤍 12</div>
+                <div class="action-btn" onclick="location.href='feed_detail.html'">💬 5</div>
+            </div>
+        </div>
+
+        <!-- 阿杰的卡片（只有数据，无文字图片）-->
+        <div class="feed-card daily-card">
+            <div class="feed-header">
+                <img src="https://i.pravatar.cc/100?img=3" class="feed-avatar">
+                <div class="feed-user">
+                    <div class="feed-name">阿杰</div>
+                    <div class="feed-time">07:15 更新</div>
+                </div>
+                <div class="checkin-progress partial">2/4</div>
+            </div>
+
+            <!-- 纯数据展示 -->
+            <div class="checkin-grid cols-2">
+                <div class="checkin-item weight">
+                    <div class="checkin-icon">⚖️</div>
+                    <div class="checkin-data">
+                        <div class="checkin-value">75.8<span class="unit">kg</span></div>
+                        <div class="checkin-meta-row">
+                            <span class="checkin-change down">↓0.2</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="checkin-item exercise">
+                    <div class="checkin-icon">🏃</div>
+                    <div class="checkin-data">
+                        <div class="checkin-value">5.2<span class="unit">km</span></div>
+                        <div class="checkin-meta-row">
+                            <span class="checkin-change">320cal</span>
+                            <span class="checkin-label">晨跑</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feed-actions">
+                <div class="action-btn" onclick="toggleLike(this)">🤍 5</div>
+                <div class="action-btn" onclick="location.href='feed_detail.html'">💬 1</div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .daily-card {
+            padding: 16px !important;
+        }
+
+        .feed-text {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.5;
+            margin: 12px 0 8px;
+        }
+
+        .feed-images {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+            overflow: hidden;
+            border-radius: 12px;
+        }
+
+        .feed-img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .checkin-progress {
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 12px;
+            background: #E8F5E9;
+            color: #4CAF50;
+        }
+
+        .checkin-progress.partial {
+            background: #FFF3E0;
+            color: #FF9800;
+        }
+
+        .checkin-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            /* 改为2列 */
+            gap: 8px;
+            /* 减小间距 */
+            margin: 12px 0;
+        }
+
+        /* 移除特定列数修饰，统一用2列，或者单列时宽一些 */
+        .checkin-grid.cols-2 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .checkin-grid.cols-1 {
+            grid-template-columns: 1fr;
+        }
+
+        .checkin-item {
+            background: #F8FAFC;
+            border-radius: 12px;
+            padding: 10px 12px;
+            text-align: left;
+            /* 改为左对齐 */
+            display: flex;
+            /* 启用Flex布局 */
+            align-items: center;
+            gap: 12px;
+            min-height: 56px;
+            /* 增加一点高度感 */
+        }
+
+        /* 图标样式调整 */
+        .checkin-icon {
+            font-size: 20px;
+            margin-bottom: 0;
+            /* 移除下边距 */
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 8px;
+        }
+
+        .checkin-item.full-width .checkin-icon {
+            font-size: 24px;
+            width: 40px;
+            height: 40px;
+        }
+
+        /* 数据区域自适应 */
+        .checkin-data {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 2px;
+        }
+
+        /* 标签区域（原本在最下面，现在可以放右边或合并） */
+        /* 新设计中，左边图标，中间数值，右侧变化量/标签 */
+
+        .checkin-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: #333;
+            line-height: 1.2;
+        }
+
+        .checkin-value .unit {
+            font-size: 11px;
+            font-weight: normal;
+            color: #888;
+            margin-left: 2px;
+        }
+
+        /* 将变化量和标签合并显示在第二行 */
+        .checkin-meta-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+        }
+
+        .checkin-change {
+            font-size: 11px;
+            color: #888;
+            font-weight: 500;
+        }
+
+        .checkin-label {
+            font-size: 11px;
+            color: #999;
+            margin-top: 0;
+            background: rgba(0, 0, 0, 0.03);
+            padding: 1px 5px;
+            border-radius: 4px;
+        }
+
+        .checkin-item.full-width .checkin-label {
+            display: none;
+        }
+    </style>
+
+    <!-- 底部操作 -->
+    <div class="bottom-actions">
+        <div class="btn-icon" onclick="alert('相册')">🖼️</div>
+        <button class="btn-main" onclick="location.href='record.html'">
+            <span style="font-size:18px">＋</span> 记录并同步
+        </button>
+    </div>
+
+    <script>
+        function toggleLike(el) {
+            const isLiked = el.innerHTML.includes('❤️');
+            let count = parseInt(el.textContent.match(/\d+/)[0]);
+            if (isLiked) {
+                el.innerHTML = `🤍 ${count - 1}`;
+            } else {
+                el.innerHTML = `❤️ ${count + 1}`;
+            }
+        }
+
+        function nudge(btn) {
+            btn.innerHTML = "已发送";
+            btn.style.color = "#4CAF50";
+            btn.parentElement.classList.add('nudging');
+        }
+
+        // 任务切换
+        function toggleTask(el) {
+            el.classList.toggle('done');
+            const check = el.querySelector('.task-check');
+            if (el.classList.contains('done')) {
+                check.innerHTML = '✓';
+            } else {
+                check.innerHTML = '';
+            }
+            // 更新任务计数
+            const doneCount = document.querySelectorAll('.task-item.done').length;
+            const totalCount = document.querySelectorAll('.task-item').length;
+            document.querySelector('.goal-badge').innerHTML = `${doneCount}/${totalCount}`;
+
+            // 全部完成时的动画
+            if (doneCount === totalCount) {
+                alert('🎉 恭喜！今日任务全部完成，获得 30 积分！');
+            }
+        }
+
+        // 排行榜 Tab 切换
+        function switchRankTab(period, el) {
+            // 更新 Tab 样式
+            document.querySelectorAll('.rank-tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+
+            // 模拟不同时间段的数据（实际开发会请求不同API）
+            const periodLabels = {
+                'today': '较昨日',
+                'week': '本周累计',
+                'month': '本月累计'
+            };
+
+            // 更新所有排名项的标签
+            document.querySelectorAll('.rank-change .rank-status').forEach(el => {
+                el.textContent = periodLabels[period] || '较昨日';
+            });
+
+            // 显示切换提示
+            console.log('Switched to:', period);
+        }
+
+        // 动态分类筛选
+        function filterFeedType(el, type) {
+            // 更新 Tab 样式
+            document.querySelectorAll('.feed-type-tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+
+            // 筛选动态
+            const feeds = document.querySelectorAll('.feed-card[data-type]');
+            feeds.forEach(feed => {
+                if (type === 'all' || feed.dataset.type === type) {
+                    feed.style.display = 'block';
+                } else {
+                    feed.style.display = 'none';
+                }
+            });
+        }
+
+        // 成员列表弹窗
+        function showMemberModal() {
+            document.getElementById('memberModal').classList.add('show');
+        }
+
+        function closeMemberModal(event) {
+            if (!event || event.target === document.getElementById('memberModal')) {
+                document.getElementById('memberModal').classList.remove('show');
+            }
+        }
+    </script>
+
+    <!-- 成员列表弹窗 -->
+    <div class="member-modal" id="memberModal" onclick="closeMemberModal(event)">
+        <div class="member-modal-content" onclick="event.stopPropagation()">
+            <div class="member-modal-header">
+                <span class="member-modal-title">👥 圈子成员（3人）</span>
+                <span class="member-modal-close" onclick="closeMemberModal()">×</span>
+            </div>
+            <div class="member-list">
+                <!-- 创建者 -->
+                <div class="member-list-item" onclick="location.href='user_profile.html'">
+                    <img src="https://i.pravatar.cc/100?img=3" class="member-list-avatar">
+                    <div class="member-list-info">
+                        <div class="member-list-name">阿杰</div>
+                        <div class="member-list-stats">🔥 12天连续 · -2.3kg</div>
+                    </div>
+                    <span class="member-list-badge creator">创建者</span>
+                </div>
+
+                <!-- 成员2 -->
+                <div class="member-list-item" onclick="location.href='user_profile.html'">
+                    <img src="https://i.pravatar.cc/100?img=5" class="member-list-avatar">
+                    <div class="member-list-info">
+                        <div class="member-list-name">小美</div>
+                        <div class="member-list-stats">🔥 8天连续 · -1.8kg</div>
+                    </div>
+                    <span class="member-list-badge">活跃</span>
+                </div>
+
+                <!-- 成员3 -->
+                <div class="member-list-item" onclick="location.href='user_profile.html'">
+                    <img src="https://i.pravatar.cc/100?img=8" class="member-list-avatar">
+                    <div class="member-list-info">
+                        <div class="member-list-name">大壮</div>
+                        <div class="member-list-stats">🔥 5天连续 · -0.9kg</div>
+                    </div>
+                    <span class="member-list-badge">活跃</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

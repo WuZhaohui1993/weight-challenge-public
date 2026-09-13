@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Weight Challenge - 圈子管理</title>
+    <style>
+        :root {
+            --primary: #4A90E2;
+            --accent: #50E3C2;
+            --danger: #FF6B6B;
+            --bg-page: #F7F8FA;
+            --card-bg: #FFFFFF;
+            --text-main: #333333;
+            --text-sub: #888888;
+            --radius-m: 16px;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            padding-bottom: 40px;
+        }
+
+        .header {
+            padding: 44px 20px 10px;
+            background: white;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05);
+            height: 88px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-main);
+            cursor: pointer;
+        }
+
+        .header-icon {
+            font-size: 20px;
+        }
+
+        .section-title {
+            padding: 24px 20px 12px;
+            font-size: 14px;
+            color: var(--text-sub);
+        }
+
+        /* 圈子列表 */
+        .circle-list {
+            padding: 0 20px;
+        }
+
+        .circle-item {
+            background: var(--card-bg);
+            border-radius: var(--radius-m);
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+            position: relative;
+        }
+
+        .circle-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: #eee;
+            margin-right: 12px;
+            object-fit: cover;
+        }
+
+        .circle-info {
+            flex: 1;
+        }
+
+        .circle-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .tag-main {
+            font-size: 10px;
+            background: #E3F2FD;
+            color: var(--primary);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        .circle-desc {
+            font-size: 12px;
+            color: var(--text-sub);
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 500;
+            border: 1px solid #eee;
+            background: white;
+            color: var(--text-main);
+            margin-left: 8px;
+        }
+
+        .action-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .drag-handle {
+            padding: 10px;
+            color: #ccc;
+            font-size: 20px;
+            margin-right: -4px;
+        }
+
+        /* 底部操作 */
+        .footer-action {
+            margin: 40px 20px;
+            text-align: center;
+        }
+
+        .btn-create {
+            background: var(--primary);
+            color: white;
+            padding: 14px 0;
+            border-radius: 24px;
+            width: 100%;
+            font-size: 16px;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+            border: none;
+        }
+
+        /* 退出按钮 */
+        .btn-quit {
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            border: 1px solid #FFCDD2;
+            background: #FFF5F5;
+            color: #E53935;
+            cursor: pointer;
+            margin-right: 8px;
+        }
+
+        /* 确认弹窗 */
+        .confirm-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .confirm-modal.show {
+            display: flex;
+        }
+
+        .confirm-content {
+            background: white;
+            border-radius: 20px;
+            width: 85%;
+            max-width: 320px;
+            padding: 24px;
+            text-align: center;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .confirm-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        .confirm-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .confirm-desc {
+            font-size: 14px;
+            color: var(--text-sub);
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .confirm-warning {
+            background: #FFF3E0;
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 12px;
+            color: #E65100;
+            margin-bottom: 20px;
+        }
+
+        .confirm-btns {
+            display: flex;
+            gap: 12px;
+        }
+
+        .confirm-btns .btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 24px;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+        }
+
+        .confirm-btns .btn-cancel {
+            background: #F0F0F0;
+            color: var(--text-main);
+        }
+
+        .confirm-btns .btn-danger {
+            background: #E53935;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <div class="header-left" onclick="history.back()">
+            <span class="header-icon">←</span>
+            <span>管理圈子</span>
+        </div>
+    </div>
+
+    <div class="section-title">由于首页版面限制，仅展示置顶的主圈子</div>
+
+    <div class="circle-list">
+        <!-- Item 1: 主圈子 -->
+        <div class="circle-item">
+            <img src="https://picsum.photos/100/100?random=1" class="circle-avatar">
+            <div class="circle-info">
+                <div class="circle-name">
+                    减脂三剑客
+                    <span class="tag-main">主圈子</span>
+                </div>
+                <div class="circle-desc">3位成员 · 私密圈子</div>
+            </div>
+            <button class="action-btn active">已置顶</button>
+            <div class="drag-handle">≡</div>
+        </div>
+
+        <!-- Item 2 -->
+        <div class="circle-item">
+            <img src="https://picsum.photos/100/100?random=2" class="circle-avatar">
+            <div class="circle-info">
+                <div class="circle-name">早起打卡挑战</div>
+                <div class="circle-desc">128位成员 · 公开挑战</div>
+            </div>
+            <button class="btn-quit" onclick="showQuitConfirm('早起打卡挑战', this)">退出</button>
+            <button class="action-btn" onclick="setMainCircle(this)">置顶</button>
+            <div class="drag-handle">≡</div>
+        </div>
+
+        <!-- Item 3 -->
+        <div class="circle-item">
+            <img src="https://picsum.photos/100/100?random=3" class="circle-avatar">
+            <div class="circle-info">
+                <div class="circle-name">不吃夜宵组</div>
+                <div class="circle-desc">56位成员 · 习惯养成</div>
+            </div>
+            <button class="btn-quit" onclick="showQuitConfirm('不吃夜宵组', this)">退出</button>
+            <button class="action-btn" onclick="setMainCircle(this)">置顶</button>
+            <div class="drag-handle">≡</div>
+        </div>
+    </div>
+
+    <div class="footer-action">
+        <button class="btn-create" onclick="location.href='circle_create.html'">+ 创建新圈子</button>
+    </div>
+
+    <!-- 退出确认弹窗 -->
+    <div class="confirm-modal" id="quitModal" onclick="closeQuitModal(event)">
+        <div class="confirm-content" onclick="event.stopPropagation()">
+            <div class="confirm-icon">⚠️</div>
+            <div class="confirm-title">确认退出圈子？</div>
+            <div class="confirm-desc" id="quitModalDesc">
+                你确定要退出「<span id="quitCircleName"></span>」吗？
+            </div>
+            <div class="confirm-warning">
+                ⚠️ 退出后将无法查看圈子动态，如有押金将不予退还
+            </div>
+            <div class="confirm-btns">
+                <button class="btn btn-cancel" onclick="closeQuitModal()">再想想</button>
+                <button class="btn btn-danger" onclick="confirmQuit()">确认退出</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let pendingQuitItem = null;
+
+        function showQuitConfirm(circleName, btn) {
+            document.getElementById('quitCircleName').textContent = circleName;
+            document.getElementById('quitModal').classList.add('show');
+            pendingQuitItem = btn.closest('.circle-item');
+        }
+
+        function closeQuitModal(event) {
+            if (!event || event.target === document.getElementById('quitModal')) {
+                document.getElementById('quitModal').classList.remove('show');
+                pendingQuitItem = null;
+            }
+        }
+
+        function confirmQuit() {
+            closeQuitModal();
+            if (pendingQuitItem) {
+                pendingQuitItem.style.transition = 'all 0.3s';
+                pendingQuitItem.style.transform = 'translateX(100%)';
+                pendingQuitItem.style.opacity = '0';
+                setTimeout(() => {
+                    pendingQuitItem.remove();
+                    alert('已成功退出圈子');
+                }, 300);
+            }
+        }
+
+        function setMainCircle(btn) {
+            // 移除其他主圈子标记
+            document.querySelectorAll('.tag-main').forEach(el => el.remove());
+            document.querySelectorAll('.action-btn:not(.btn-quit)').forEach(el => {
+                el.classList.remove('active');
+                el.innerText = '置顶';
+                el.setAttribute('onclick', 'setMainCircle(this)');
+            });
+
+            // 设置当前为置顶
+            btn.classList.add('active');
+            btn.innerText = '已置顶';
+            btn.removeAttribute('onclick');
+
+            // 添加主圈子标签
+            const nameDiv = btn.parentElement.querySelector('.circle-name');
+            const tag = document.createElement('span');
+            tag.className = 'tag-main';
+            tag.innerText = '主圈子';
+            nameDiv.appendChild(tag);
+
+            // 移动到第一位 (动画模拟)
+            const item = btn.parentElement;
+            const list = document.querySelector('.circle-list');
+
+            item.style.transition = 'all 0.3s';
+            item.style.transform = 'scale(1.02)';
+            setTimeout(() => {
+                list.prepend(item);
+                item.style.transform = 'none';
+                alert('已设为主圈子，首页将默认展示此圈子内容');
+            }, 300);
+        }
+    </script>
+</body>
+
+</html>

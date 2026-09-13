@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.weight.mapper.WeightFoodRecordMapper">
+    
+    <resultMap type="WeightFoodRecord" id="WeightFoodRecordResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="mealType"    column="meal_type"    />
+        <result property="foodName"    column="food_name"    />
+        <result property="calories"    column="calories"    />
+        <result property="protein"    column="protein"    />
+        <result property="fat"    column="fat"    />
+        <result property="carbs"    column="carbs"    />
+        <result property="imageUrl"    column="image_url"    />
+        <result property="images"    column="images"    />
+        <result property="recordedAt"    column="recorded_at"    />
+        <result property="syncToCircles"    column="sync_to_circles"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectWeightFoodRecordVo">
+        select id, user_id, meal_type, food_name, calories, protein, fat, carbs, image_url, images, recorded_at, sync_to_circles, create_by, create_time, update_by, update_time, remark from weight_food_record
+    </sql>
+
+    <select id="selectWeightFoodRecordList" parameterType="WeightFoodRecord" resultMap="WeightFoodRecordResult">
+        <include refid="selectWeightFoodRecordVo"/>
+        <where>  
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="mealType != null  and mealType != ''"> and meal_type = #{mealType}</if>
+            <if test="foodName != null  and foodName != ''"> and food_name like concat('%', #{foodName}, '%')</if>
+            <if test="calories != null "> and calories = #{calories}</if>
+            <if test="protein != null "> and protein = #{protein}</if>
+            <if test="fat != null "> and fat = #{fat}</if>
+            <if test="carbs != null "> and carbs = #{carbs}</if>
+            <if test="imageUrl != null  and imageUrl != ''"> and image_url = #{imageUrl}</if>
+            <if test="recordedAt != null "> and recorded_at = #{recordedAt}</if>
+            <if test="params.beginRecordedAt != null"> and recorded_at &gt;= #{params.beginRecordedAt}</if>
+            <if test="params.endRecordedAt != null"> and recorded_at &lt;= #{params.endRecordedAt}</if>
+            <if test="syncToCircles != null  and syncToCircles != ''"> and sync_to_circles = #{syncToCircles}</if>
+        </where>
+    </select>
+    
+    <select id="selectWeightFoodRecordById" parameterType="Long" resultMap="WeightFoodRecordResult">
+        <include refid="selectWeightFoodRecordVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertWeightFoodRecord" parameterType="WeightFoodRecord" useGeneratedKeys="true" keyProperty="id">
+        insert into weight_food_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="mealType != null and mealType != ''">meal_type,</if>
+            <if test="foodName != null and foodName != ''">food_name,</if>
+            <if test="calories != null">calories,</if>
+            <if test="protein != null">protein,</if>
+            <if test="fat != null">fat,</if>
+            <if test="carbs != null">carbs,</if>
+            <if test="imageUrl != null">image_url,</if>
+            <if test="images != null">images,</if>
+            <if test="recordedAt != null">recorded_at,</if>
+            <if test="syncToCircles != null">sync_to_circles,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="mealType != null and mealType != ''">#{mealType},</if>
+            <if test="foodName != null and foodName != ''">#{foodName},</if>
+            <if test="calories != null">#{calories},</if>
+            <if test="protein != null">#{protein},</if>
+            <if test="fat != null">#{fat},</if>
+            <if test="carbs != null">#{carbs},</if>
+            <if test="imageUrl != null">#{imageUrl},</if>
+            <if test="images != null">#{images},</if>
+            <if test="recordedAt != null">#{recordedAt},</if>
+            <if test="syncToCircles != null">#{syncToCircles},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateWeightFoodRecord" parameterType="WeightFoodRecord">
+        update weight_food_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="mealType != null and mealType != ''">meal_type = #{mealType},</if>
+            <if test="foodName != null and foodName != ''">food_name = #{foodName},</if>
+            <if test="calories != null">calories = #{calories},</if>
+            <if test="protein != null">protein = #{protein},</if>
+            <if test="fat != null">fat = #{fat},</if>
+            <if test="carbs != null">carbs = #{carbs},</if>
+            <if test="imageUrl != null">image_url = #{imageUrl},</if>
+            <if test="images != null">images = #{images},</if>
+            <if test="recordedAt != null">recorded_at = #{recordedAt},</if>
+            <if test="syncToCircles != null">sync_to_circles = #{syncToCircles},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteWeightFoodRecordById" parameterType="Long">
+        delete from weight_food_record where id = #{id}
+    </delete>
+
+    <delete id="deleteWeightFoodRecordByIds" parameterType="String">
+        delete from weight_food_record where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
